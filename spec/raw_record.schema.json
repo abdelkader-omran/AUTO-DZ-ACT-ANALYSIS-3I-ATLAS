@@ -25,7 +25,7 @@
       "properties": {
         "target_id": {
           "type": "string",
-          "description": "Primary target identifier. For 3I/ATLAS use a canonical ID agreed by the project (e.g., '3I/ATLAS')."
+          "description": "Canonical target identifier used as a stable key across the project (e.g., '3I_ATLAS'). Human designations such as '3I/ATLAS' MUST be stored in aliases[]."
         },
         "target_type": {
           "type": "string",
@@ -53,11 +53,11 @@
     },
     "source": {
       "type": "object",
-      "required": ["source_id", "source_type", "authority_rank"],
+      "required": ["source_id", "source_type", "authority_rank", "endpoint_id"],
       "properties": {
         "source_id": {
           "type": "string",
-          "description": "Canonical source identifier. Examples: 'JPL_HORIZONS', 'MPC', 'NASA_HUBBLE', 'JWST_MAST', 'NASA_JPL_SBDB'."
+          "description": "Canonical source identifier (must match a source_id declared in data/metadata/sources.json). Examples: 'JPL_HORIZONS', 'MPC', 'NASA_JPL_SBDB', 'MAST', 'ESO'."
         },
         "source_type": {
           "type": "string",
@@ -65,10 +65,13 @@
           "description": "High-level classification."
         },
         "authority_rank": {
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1,
-          "description": "Deterministic priority order. For 3I/ATLAS default: JPL_HORIZONS > NASA_JPL_SBDB > MPC > JWST_MAST > NASA_HUBBLE > ESA_*."
+          "type": "integer",
+          "minimum": 1,
+          "description": "Authority rank of THIS source (1 = highest). Must be consistent with data/metadata/sources.json."
+        },
+        "endpoint_id": {
+          "type": "string",
+          "description": "Endpoint identifier used for retrieval (must match an endpoint_id declared for this source in data/metadata/sources.json)."
         },
         "url": {
           "type": "string",
@@ -112,8 +115,14 @@
               "type": "string",
               "description": "Facility/mission/observatory identifier. Examples: 'JWST', 'HST', 'ALMA', 'VLT', 'MPC', 'JPL'."
             },
-            "instrument": { "type": "string", "description": "Instrument name if applicable (e.g., NIRSpec)." },
-            "program_id": { "type": "string", "description": "Observing program/proposal ID if applicable." }
+            "instrument": {
+              "type": "string",
+              "description": "Instrument name if applicable (e.g., NIRSpec)."
+            },
+            "program_id": {
+              "type": "string",
+              "description": "Observing program/proposal ID if applicable."
+            }
           },
           "additionalProperties": false
         }
