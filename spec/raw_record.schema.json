@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/trizel/ingest/raw_record.schema.json",
+  "title": "TRIZEL Scientific Ingest Layer — Raw Record Schema",
+  "description": "A general-purpose schema for describing raw observational data records with strict provenance and reproducibility. Default authority ordering prioritizes 3I/ATLAS sources (JPL/MPC/JWST/Hubble) while remaining extensible to any observatory or facility.",
+  "type": "object",
+  "required": [
+    "record_id",
+    "target",
+    "dataset_role",
+    "source",
+    "acquisition",
+    "files",
+    "provenance",
+    "integrity"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "description": "Unique record identifier (stable). Recommended: ULID or UUID."
+    },
+    "target": {
+      "type": "object",
+      "required": ["target_id", "target_type"],
+      "properties": {
+        "target_id": {
+          "type": "string",
+          "description": "Primary target identifier. For 3I/ATLAS use a canonical ID agreed by the project (e.g., '3I/ATLAS')."
+        },
+        "target_type": {
+          "type": "string",
+          "enum": ["object", "field", "survey", "calibration", "unknown"],
+          "description": "Type of the target."
+        },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "dataset_role": {
+      "type": "string",
+      "enum": ["raw", "reduced", "catalog", "ephemeris", "metadata_only"],
+      "description": "Role of this record in the pipeline. 'raw' is preferred for ingest."
+    },
+    "priority_profile": {
+      "type": "string",
+      "enum": ["3I_ATLAS_DEFAULT", "GENERAL_DEFAULT", "CUSTOM"],
+      "default": "3I_ATLAS_DEFAULT",
+      "description": "Determines default authority ordering for measurement selection."
+    },
+    "source": {
+      "type": "object",
+      "required": ["source_id", "source_type", "authority_rank"],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "description": "Canonical source identifier. Examples: 'JPL_HORIZONS', 'MPC', 'NASA_HUBBLE', 'JWST_MAST', 'NASA_JPL_SBDB'."
+        },
+        "source_type": {
+          "type": "string",
+          "enum": ["ephemeris_service", "archive", "observatory", "mission", "survey", "registry"],
+          "description": "High-level classification."
+        },
+        "authority_rank": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Deterministic priority order. For 3I/ATLAS default: JPL_HORIZONS > NASA_JPL_SBDB > MPC > JWST_MAST > NASA_HUBBLE > ESA_*."
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Primary landing URL for the dataset (not necessarily direct download)."
+        },
+        "license": {
+          "type": "string",
+          "description": "License or usage statement if known (e.g., Public Domain, CC-BY-4.0, archive-specific terms)."
+        },
+        "citation": {
+          "type": "string",
+          "description": "Preferred citation text, if provided by the archive/mission."
+        }
+      },
+      "additionalProperties": false
+    },
+    "acquisition": {
+      "type": "object",
+      "required": ["retrieved_utc", "time_coverage"],
+      "properties": {
+        "retrieved_utc": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When this record was retrieved by ingest."
+        },
+        "time_coverage": {
+          "type": "object",
+          "required": ["start_utc", "end_utc"],
+          "properties": {
+            "start_utc": { "type": "string", "format": "date-time" },
+            "end_utc": { "type": "string", "format": "date-time" }
+          },
+          "additionalProperties": false
+        },
+        "facility": {
+          "type": "object",
+          "required": ["facility_id"],
+          "properties": {
+            "facility_id": {
+              "type": "string",
+              "description": "Facility/mission/observatory identifier. Examples: 'JWST', 'HST', 'ALMA', 'VLT', 'MPC', 'JPL'."
+            },
+            "instrument": { "type": "string", "description": "Instrument name if applicable (e.g., NIRSpec)." },
+            "program_id": { "type": "string", "description": "Observing program/proposal ID if applicable." }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One record can reference multiple files (raw + headers + ancillary).",
+      "items": {
+        "type": "object",
+        "required": ["path", "media_type", "role", "sha256"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Repository-relative storage path under data/raw/ or data/metadata/. Example: 'data/raw/JWST/2025-12-19/file.fits'."
+          },
+          "media_type": {
+            "type": "string",
+            "description": "MIME type if known (e.g., 'application/fits', 'text/csv', 'application/json')."
+          },
+          "role": {
+            "type": "string",
+            "enum": ["primary", "ancillary", "calibration", "preview", "documentation"],
+            "description": "Role of the file in this record."
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "description": "SHA-256 checksum of the file content."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["source_query", "upstream_ids"],
+      "properties": {
+        "source_query": {
+          "type": "string",
+          "description": "Exact query or API endpoint used (must be reproducible)."
+        },
+        "upstream_ids": {
+          "type": "object",
+          "description": "Upstream identifiers for traceability (ObsID, productId, Horizons solution, MPC designation, etc.).",
+          "additionalProperties": { "type": "string" }
+        },
+        "zenodo_anchor": {
+          "type": "object",
+          "description": "Optional anchoring to Zenodo releases/DOIs for auditable snapshots or software versions.",
+          "properties": {
+            "doi": { "type": "string" },
+            "record_url": { "type": "string", "format": "uri" },
+            "version": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["record_sha256"],
+      "properties": {
+        "record_sha256": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{64}$",
+          "description": "SHA-256 of the canonical JSON serialization of this record (post-normalization), used to detect tampering."
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional human notes; must not contain interpretation, only operational comments."
+    }
+  },
+  "additionalProperties": false
+}
