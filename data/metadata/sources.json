@@ -1,0 +1,193 @@
+{
+  "version": "1.0.0",
+  "generated_utc": "2025-12-20T18:00:00Z",
+
+  "governance": {
+    "identifier_stability_policy": {
+      "scope": "source_id",
+      "rule": "Each source_id defined in this registry is a persistent logical identifier. Once introduced and referenced by downstream artifacts (raw records, metadata, snapshots, provenance manifests), a source_id MUST remain immutable.",
+      "rationale": "source_id values act as stable foreign keys across the ingest layer, provenance tracking, snapshot locking, and epistemic state derivation. Uncontrolled modification breaks referential integrity and invalidates reproducibility.",
+      "migration_requirement": "If a source_id must be altered for scientifically justified reasons, a formal migration procedure is REQUIRED. The migration MUST include: (1) explicit deprecation of the old identifier, (2) a deterministic mapping table from old to new identifiers, and (3) versioned reconciliation of all affected records.",
+      "prohibited_actions": [
+        "Renaming source_id without migration",
+        "Reusing a deprecated source_id for a different physical source",
+        "Deleting a source_id referenced by any persisted artifact"
+      ]
+    },
+    "timestamp_authority_policy": {
+      "field": "generated_utc",
+      "definition": "generated_utc is the authoritative UTC timestamp at which this registry version was generated or formally validated.",
+      "semantics": "This timestamp is a scientific provenance anchor, not a user annotation. It defines the temporal validity of the registry and is used for traceability across ingest, snapshot, and analysis layers.",
+      "generation_rule": "The value MUST correspond to the actual generation or validation time of this registry instance. It may be injected automatically by tooling or fixed at release time, but MUST NOT be edited retroactively.",
+      "reproducibility_constraint": "Downstream processes may rely on generated_utc for compatibility checks. Altering this value post hoc invalidates temporal provenance guarantees."
+    }
+  },
+
+  "policy": {
+    "purpose": "TRIZEL Scientific Ingest Layer source registry (authoritative-first, reproducible, state-defined).",
+    "data_rule": "No interpretation is permitted at ingest level. Store raw data and metadata only. Analysis consumes pinned snapshots exclusively.",
+    "priority_rule": "3I/ATLAS is treated as a priority target, while the registry remains generalizable to all future targets.",
+    "auth_rule": "Official archives and APIs are preferred. Any mirrored content must include full provenance and cryptographic checksums."
+  },
+
+  "targets": [
+    {
+      "target_id": "3I_ATLAS",
+      "preferred_designations": ["3I/ATLAS", "3I ATLAS", "3I"],
+      "notes": "Primary priority target. All associated sources must provide traceable, timestamped provenance."
+    }
+  ],
+
+  "sources": [
+    {
+      "source_id": "MPC",
+      "name": "Minor Planet Center",
+      "category": "orbit_astrometry",
+      "authority_rank": 1,
+      "license_expected": "Public; attribution required",
+      "endpoints": [
+        {
+          "endpoint_id": "mpc_root",
+          "type": "html",
+          "url": "https://minorplanetcenter.net/",
+          "supports_targets": ["3I_ATLAS"],
+          "retrieval": { "method": "GET" },
+          "formats": ["html"],
+          "notes": "Query interfaces vary. Persist accessed URLs and retrieved content verbatim."
+        }
+      ],
+      "integrity": {
+        "requires_sha256": true,
+        "requires_retrieved_utc": true,
+        "requires_raw_path": true
+      }
+    },
+
+    {
+      "source_id": "JPL_HORIZONS",
+      "name": "NASA/JPL Horizons",
+      "category": "ephemeris_orbit",
+      "authority_rank": 1,
+      "license_expected": "Public Domain",
+      "endpoints": [
+        {
+          "endpoint_id": "horizons_api",
+          "type": "api",
+          "url": "https://ssd.jpl.nasa.gov/api/horizons.api",
+          "supports_targets": ["3I_ATLAS"],
+          "retrieval": {
+            "method": "GET",
+            "params_template": {
+              "format": "json",
+              "COMMAND": "<TARGET>",
+              "EPHEM_TYPE": "V",
+              "CENTER": "500@0"
+            }
+          },
+          "formats": ["json", "text"],
+          "notes": "Persist full request parameters and complete response."
+        }
+      ],
+      "integrity": {
+        "requires_sha256": true,
+        "requires_retrieved_utc": true,
+        "requires_raw_path": true
+      }
+    },
+
+    {
+      "source_id": "NASA_JPL_SBDB",
+      "name": "NASA/JPL Small-Body Database",
+      "category": "orbit_physical_summary",
+      "authority_rank": 2,
+      "license_expected": "Public Domain",
+      "endpoints": [
+        {
+          "endpoint_id": "sbdb_api",
+          "type": "api",
+          "url": "https://ssd-api.jpl.nasa.gov/sbdb.api",
+          "supports_targets": ["3I_ATLAS"],
+          "retrieval": {
+            "method": "GET",
+            "params_template": {
+              "des": "<TARGET>",
+              "full-prec": "true"
+            }
+          },
+          "formats": ["json"],
+          "notes": "Persist full JSON response including solution epochs."
+        }
+      ],
+      "integrity": {
+        "requires_sha256": true,
+        "requires_retrieved_utc": true,
+        "requires_raw_path": true
+      }
+    },
+
+    {
+      "source_id": "MAST",
+      "name": "MAST – Mikulski Archive for Space Telescopes",
+      "category": "space_observatory_archive",
+      "authority_rank": 1,
+      "license_expected": "Mission-dependent",
+      "endpoints": [
+        {
+          "endpoint_id": "mast_api",
+          "type": "api",
+          "url": "https://mast.stsci.edu/api/v0.1/",
+          "supports_targets": ["3I_ATLAS"],
+          "retrieval": { "method": "POST" },
+          "formats": ["json"],
+          "notes": "Store query payloads, returned product identifiers, and access URLs."
+        }
+      ],
+      "missions": ["HST", "JWST"],
+      "integrity": {
+        "requires_sha256": true,
+        "requires_retrieved_utc": true,
+        "requires_raw_path": true,
+        "requires_product_uri": true
+      }
+    },
+
+    {
+      "source_id": "ESO",
+      "name": "ESO Science Archive Facility",
+      "category": "ground_observatory_archive",
+      "authority_rank": 2,
+      "license_expected": "ESO data policy applies",
+      "endpoints": [
+        {
+          "endpoint_id": "eso_archive",
+          "type": "html",
+          "url": "https://archive.eso.org/",
+          "supports_targets": ["3I_ATLAS"],
+          "retrieval": { "method": "GET" },
+          "formats": ["html"],
+          "notes": "Persist search criteria and dataset identifiers."
+        }
+      ],
+      "integrity": {
+        "requires_sha256": true,
+        "requires_retrieved_utc": true,
+        "requires_raw_path": true
+      }
+    }
+  ],
+
+  "selection_profiles": [
+    {
+      "profile_id": "3I_ATLAS_AUTHORITY_DEFAULT",
+      "target_id": "3I_ATLAS",
+      "source_priority": [
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_JPL_SBDB",
+        "MAST",
+        "ESO"
+      ],
+      "notes": "Default authoritative ingest order for 3I/ATLAS."
+    }
+  ]
+}
