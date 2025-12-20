@@ -1,0 +1,49 @@
+{
+  "record_id": "01JFMPC3IATLAS0001",
+  "target": {
+    "target_id": "3I_ATLAS",
+    "target_type": "object",
+    "aliases": ["3I/ATLAS", "3I ATLAS", "C/2025 N1 (ATLAS)"]
+  },
+  "dataset_role": "raw",
+  "priority_profile": "3I_ATLAS_DEFAULT",
+  "source": {
+    "source_id": "MPC",
+    "source_type": "registry",
+    "authority_rank": 1,
+    "endpoint_id": "mpc_root",
+    "url": "https://minorplanetcenter.net/",
+    "license": "Public; attribution required",
+    "citation": "Minor Planet Center (MPC), official astrometric registry"
+  },
+  "acquisition": {
+    "retrieved_utc": "2025-12-20T22:15:00Z",
+    "time_coverage": {
+      "start_utc": "2025-07-01T00:00:00Z",
+      "end_utc": "2025-12-20T00:00:00Z"
+    },
+    "facility": {
+      "facility_id": "MPC"
+    }
+  },
+  "files": [
+    {
+      "path": "data/raw/MPC/2025-12-20/3I_ATLAS_mpc_root.html",
+      "media_type": "text/html",
+      "role": "primary",
+      "size_bytes": 0,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "provenance": {
+    "source_query": "https://minorplanetcenter.net/",
+    "upstream_ids": {
+      "mpc_designation": "3I/ATLAS",
+      "comet_designation": "C/2025 N1"
+    }
+  },
+  "integrity": {
+    "record_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "notes": "Initial sample raw record for MPC registry landing page. Content stored verbatim; no interpretation applied."
+}
