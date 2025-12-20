@@ -3,9 +3,13 @@
   "target": {
     "target_id": "3I_ATLAS",
     "target_type": "object",
-    "aliases": ["3I/ATLAS", "3I ATLAS", "C/2025 N1 (ATLAS)"]
+    "aliases": [
+      "3I/ATLAS",
+      "3I ATLAS",
+      "C/2025 N1 (ATLAS)"
+    ]
   },
-  "dataset_role": "raw",
+  "dataset_role": "metadata_only",
   "priority_profile": "3I_ATLAS_DEFAULT",
   "source": {
     "source_id": "MPC",
@@ -19,8 +23,8 @@
   "acquisition": {
     "retrieved_utc": "2025-12-20T22:15:00Z",
     "time_coverage": {
-      "start_utc": "2025-07-01T00:00:00Z",
-      "end_utc": "2025-12-20T00:00:00Z"
+      "start_utc": "2025-12-20T22:15:00Z",
+      "end_utc": "2025-12-20T22:15:00Z"
     },
     "facility": {
       "facility_id": "MPC"
@@ -36,7 +40,7 @@
     }
   ],
   "provenance": {
-    "source_query": "https://minorplanetcenter.net/",
+    "source_query": "GET https://minorplanetcenter.net/ (mpc_root)",
     "upstream_ids": {
       "mpc_designation": "3I/ATLAS",
       "comet_designation": "C/2025 N1"
@@ -45,5 +49,5 @@
   "integrity": {
     "record_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
-  "notes": "Initial sample raw record for MPC registry landing page. Content stored verbatim; no interpretation applied."
+  "notes": "Canonical metadata-only raw record for MPC landing page snapshot. Content stored verbatim with no interpretation."
 }
