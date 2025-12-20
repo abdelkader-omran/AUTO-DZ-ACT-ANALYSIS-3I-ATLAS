@@ -1,7 +1,6 @@
 {
   "version": "1.0.0",
   "generated_utc": "2025-12-20T18:00:00Z",
-
   "governance": {
     "identifier_stability_policy": {
       "scope": "source_id",
@@ -22,22 +21,25 @@
       "reproducibility_constraint": "Downstream processes may rely on generated_utc for compatibility checks. Altering this value post hoc invalidates temporal provenance guarantees."
     }
   },
-
   "policy": {
     "purpose": "TRIZEL Scientific Ingest Layer source registry (authoritative-first, reproducible, state-defined).",
     "data_rule": "No interpretation is permitted at ingest level. Store raw data and metadata only. Analysis consumes pinned snapshots exclusively.",
     "priority_rule": "3I/ATLAS is treated as a priority target, while the registry remains generalizable to all future targets.",
     "auth_rule": "Official archives and APIs are preferred. Any mirrored content must include full provenance and cryptographic checksums."
   },
-
   "targets": [
     {
       "target_id": "3I_ATLAS",
-      "preferred_designations": ["3I/ATLAS", "3I ATLAS", "3I"],
+      "preferred_designations": [
+        "3I/ATLAS",
+        "3I ATLAS",
+        "3I",
+        "C/2025 N1 (ATLAS)",
+        "C/2025 N1"
+      ],
       "notes": "Primary priority target. All associated sources must provide traceable, timestamped provenance."
     }
   ],
-
   "sources": [
     {
       "source_id": "MPC",
@@ -62,7 +64,6 @@
         "requires_raw_path": true
       }
     },
-
     {
       "source_id": "JPL_HORIZONS",
       "name": "NASA/JPL Horizons",
@@ -94,7 +95,6 @@
         "requires_raw_path": true
       }
     },
-
     {
       "source_id": "NASA_JPL_SBDB",
       "name": "NASA/JPL Small-Body Database",
@@ -124,7 +124,6 @@
         "requires_raw_path": true
       }
     },
-
     {
       "source_id": "MAST",
       "name": "MAST – Mikulski Archive for Space Telescopes",
@@ -150,7 +149,6 @@
         "requires_product_uri": true
       }
     },
-
     {
       "source_id": "ESO",
       "name": "ESO Science Archive Facility",
@@ -175,7 +173,6 @@
       }
     }
   ],
-
   "selection_profiles": [
     {
       "profile_id": "3I_ATLAS_AUTHORITY_DEFAULT",
