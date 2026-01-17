@@ -426,4 +426,4 @@ def main() -> int:
     for m in _iter_measurements_from_snapshot(snapshot):
         snap_meas.setdefault(m.obs_id, []).append(m)
 
-    out_path.parent.mkdir(parents=True, exist
+    out_path.parent.mkdir(parents=True, exist_ok=True)
