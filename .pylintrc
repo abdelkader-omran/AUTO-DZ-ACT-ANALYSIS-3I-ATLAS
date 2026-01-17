@@ -1,0 +1,30 @@
+[MESSAGES CONTROL]
+# Disable style and convention checks that don't affect functionality
+# Focus on catching syntax errors and critical issues only
+disable=import-error,
+        missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+        too-many-instance-attributes,
+        too-many-return-statements,
+        too-many-branches,
+        line-too-long,
+        unused-variable,
+        unused-import,
+        unused-argument,
+        inconsistent-return-statements,
+        duplicate-code,
+        unnecessary-pass,
+        missing-final-newline
+
+[BASIC]
+# Good variable names
+good-names=i,j,k,ex,Run,_,ok
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10

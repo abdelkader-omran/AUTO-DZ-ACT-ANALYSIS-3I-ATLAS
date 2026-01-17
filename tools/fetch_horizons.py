@@ -1,4 +1,17 @@
-validate_record = getattr(mod, "validate_record", None)
-if not callable(validate_record):
-    return False, ["validate_record() not found or not callable in validator"]
-ok, msgs = validate_record(record_path)  # type: ignore
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+Fetch Horizons Data
+
+This module is a placeholder for fetching astronomical data from JPL Horizons.
+"""
+
+
+def fetch_horizons_data():
+    """Fetch data from JPL Horizons system."""
+    pass
+
+
+if __name__ == "__main__":
+    fetch_horizons_data()
