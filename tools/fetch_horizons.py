@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import sys
 import urllib.parse
@@ -36,7 +37,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 from uuid import uuid4
 
 
@@ -51,11 +52,22 @@ RECORDS_DIR = REPO_ROOT / "data" / "records"
 
 @dataclass(frozen=True)
 class RegistryEndpoint:
+    """Represents a registered data source endpoint with authority rank."""
+
     source_id: str
     endpoint_id: str
     url: str
     method: str
     authority_rank: int
+
+
+@dataclass(frozen=True)
+class FileInfo:
+    """File information for record creation."""
+
+    raw_path: Path
+    file_sha: str
+    size_bytes: int
 
 
 def _utc_now_iso() -> str:
@@ -86,8 +98,10 @@ def _sha256_file(path: Path) -> str:
 
 
 def _canonical_json_bytes(obj: Any) -> bytes:
-    # Deterministic serialization for record_sha256
-    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    """Deterministic serialization for record_sha256."""
+    return json.dumps(
+        obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
 
 
 def _find_registry_endpoint(source_id: str, endpoint_id: str) -> RegistryEndpoint:
@@ -107,14 +121,22 @@ def _find_registry_endpoint(source_id: str, endpoint_id: str) -> RegistryEndpoin
             ep = e
             break
     if ep is None:
-        available = [x.get("endpoint_id") for x in src.get("endpoints", []) if isinstance(x, dict)]
+        available = [
+            x.get("endpoint_id")
+            for x in src.get("endpoints", [])
+            if isinstance(x, dict)
+        ]
         raise ValueError(
-            f"endpoint_id not found for source_id={source_id}: {endpoint_id}. Available: {available}"
+            f"endpoint_id not found for source_id={source_id}: "
+            f"{endpoint_id}. Available: {available}"
         )
 
     url = ep.get("url")
     if not isinstance(url, str) or not url.strip():
-        raise ValueError(f"Invalid endpoint url in sources.json for {source_id}.{endpoint_id}")
+        raise ValueError(
+            f"Invalid endpoint url in sources.json for "
+            f"{source_id}.{endpoint_id}"
+        )
 
     retrieval = ep.get("retrieval", {})
     method = "GET"
@@ -123,7 +145,10 @@ def _find_registry_endpoint(source_id: str, endpoint_id: str) -> RegistryEndpoin
 
     ar = src.get("authority_rank")
     if not isinstance(ar, int) or ar < 1:
-        raise ValueError(f"Invalid authority_rank in sources.json for source_id={source_id}")
+        raise ValueError(
+            f"Invalid authority_rank in sources.json for "
+            f"source_id={source_id}"
+        )
 
     return RegistryEndpoint(
         source_id=source_id,
@@ -163,10 +188,15 @@ def _build_horizons_params(command: str, center: str, ephem_type: str, fmt: str)
     return params
 
 
-def _http_get(url: str, params: Dict[str, str], timeout_s: int = 60) -> Tuple[str, bytes]:
+def _http_get(
+    url: str, params: Dict[str, str], timeout_s: int = 60
+) -> Tuple[str, bytes]:
+    """Execute HTTP GET request with query parameters."""
     q = urllib.parse.urlencode(params, doseq=True, safe=":/@+(),;=")
     full_url = f"{url}?{q}"
-    req = urllib.request.Request(full_url, method="GET", headers={"User-Agent": "TRIZEL-AUTO-DZ-ACT/1.0"})
+    req = urllib.request.Request(
+        full_url, method="GET", headers={"User-Agent": "TRIZEL-AUTO-DZ-ACT/1.0"}
+    )
     with urllib.request.urlopen(req, timeout=timeout_s) as resp:
         data = resp.read()
     return full_url, data
@@ -185,94 +215,48 @@ def _write_bytes(path: Path, data: bytes) -> None:
 
 
 def _validate_created_record(record_path: Path) -> Tuple[bool, List[str]]:
-    # Reuse existing validator logic if present
+    """Validate a created record using the validator module."""
     validator_path = REPO_ROOT / "tools" / "validate_raw_record.py"
     if not validator_path.exists():
         return True, ["(validator not found)"]
 
     try:
-        # Import as module by path (no extra deps)
-        import importlib.util
-
-        spec = importlib.util.spec_from_file_location("validate_raw_record", str(validator_path))
+        spec = importlib.util.spec_from_file_location(
+            "validate_raw_record", str(validator_path)
+        )
         if spec is None or spec.loader is None:
             return False, ["Failed to load validator module"]
 
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)  # type: ignore
 
-        validate_record = getattr(mod, "validate_record", None)
-        if validate_record is None:
+        validate_record: Callable[[Path], Tuple[bool, List[str]]] = getattr(
+            mod, "validate_record", None
+        )
+        if validate_record is None or not callable(validate_record):
             return False, ["validate_record() not found in validator"]
 
-        ok, msgs = validate_record(record_path)  # type: ignore
+        ok, msgs = validate_record(record_path)  # pylint: disable=not-callable
         return bool(ok), list(msgs)
-    except Exception as e:
-        return False, [f"Validator execution failed: {e}"]
+    except ImportError as e:
+        return False, [f"Validator import failed: {e}"]
+    except (OSError, ValueError) as e:
+        return False, [f"Validator execution error: {e}"]
 
 
-def main(argv: List[str]) -> int:
-    p = argparse.ArgumentParser()
-    p.add_argument("--target-id", default="3I_ATLAS", help="Canonical target_id (default: 3I_ATLAS)")
-    p.add_argument(
-        "--aliases",
-        default="3I/ATLAS,3I ATLAS,C/2025 N1 (ATLAS)",
-        help="Comma-separated human designations stored in target.aliases[]",
-    )
-    p.add_argument(
-        "--command",
-        required=True,
-        help="Horizons COMMAND value (e.g., 'DES=C/2025 N1', 'DES=3I/ATLAS', or 'C/2025 N1')",
-    )
-    p.add_argument("--date", default=None, help="UTC date folder YYYY-MM-DD (default: today UTC)")
-    p.add_argument("--center", default="500@0", help="Horizons CENTER (default: 500@0)")
-    p.add_argument("--ephem-type", default="V", help="Horizons EPHEM_TYPE (default: V)")
-    p.add_argument("--timeout", type=int, default=60, help="HTTP timeout seconds (default: 60)")
-    p.add_argument(
-        "--validate",
-        action="store_true",
-        help="Validate produced record using tools/validate_raw_record.py",
-    )
-    args = p.parse_args(argv[1:])
-
-    date_str = args.date
-    if date_str is None:
-        date_str = datetime.now(timezone.utc).date().isoformat()
-
-    target_id = str(args.target_id).strip()
-    if not target_id:
-        raise ValueError("target-id must be non-empty")
-
-    aliases = [x.strip() for x in str(args.aliases).split(",") if x.strip()]
-    cmd = _normalize_command(str(args.command))
-
-    # Registry endpoint (must exist in data/metadata/sources.json)
-    reg_ep = _find_registry_endpoint(source_id="JPL_HORIZONS", endpoint_id="horizons_api")
-    if reg_ep.method != "GET":
-        raise ValueError(f"Unsupported method for horizons_api: {reg_ep.method} (expected GET)")
-
-    out_dir = _ensure_dirs(date_str)
-
-    # Build request
-    params = _build_horizons_params(command=cmd, center=str(args.center), ephem_type=str(args.ephem_type), fmt="json")
-
-    # Execute fetch
-    full_url, raw_bytes = _http_get(reg_ep.url, params, timeout_s=int(args.timeout))
-
-    # Persist raw response (verbatim)
-    raw_filename = f"{target_id}__JPL_HORIZONS__horizons_api__{date_str}.json"
-    raw_path = out_dir / raw_filename
-    _write_bytes(raw_path, raw_bytes)
-
-    file_sha = _sha256_file(raw_path)
-    size_bytes = raw_path.stat().st_size
-
-    retrieved_utc = _utc_now_iso()
-
-    # Build record
+def _build_record_dict(
+    target_id: str,
+    aliases: List[str],
+    date_str: str,
+    reg_ep: RegistryEndpoint,
+    file_info: FileInfo,
+    retrieved_utc: str,
+    full_url: str,
+    params: Dict[str, str],
+) -> Dict[str, Any]:
+    """Build the record dictionary structure."""
     record_id = f"{target_id}__JPL_HORIZONS__{date_str}__{uuid4().hex}"
-
-    record: Dict[str, Any] = {
+    return {
         "record_id": record_id,
         "target": {
             "target_id": target_id,
@@ -304,11 +288,13 @@ def main(argv: List[str]) -> int:
         },
         "files": [
             {
-                "path": str(raw_path.relative_to(REPO_ROOT)).replace("\\", "/"),
+                "path": str(file_info.raw_path.relative_to(REPO_ROOT)).replace(
+                    "\\", "/"
+                ),
                 "media_type": "application/json",
                 "role": "primary",
-                "size_bytes": int(size_bytes),
-                "sha256": file_sha,
+                "size_bytes": int(file_info.size_bytes),
+                "sha256": file_info.file_sha,
             }
         ],
         "provenance": {
@@ -321,27 +307,127 @@ def main(argv: List[str]) -> int:
             },
         },
         "integrity": {
-            "record_sha256": "0" * 64,  # set after canonicalization below
+            "record_sha256": "0" * 64,
         },
-        "notes": "Canonical JPL Horizons ephemeris record. Response stored verbatim; no interpretation applied.",
+        "notes": (
+            "Canonical JPL Horizons ephemeris record. "
+            "Response stored verbatim; no interpretation applied."
+        ),
     }
 
-    # Compute record_sha256 over canonical JSON with record_sha256 field set to zeros
-    record_bytes = _canonical_json_bytes(record)
-    record_sha = _sha256_bytes(record_bytes)
-    record["integrity"]["record_sha256"] = record_sha
 
-    # Write record JSON
-    record_filename = f"{target_id}__JPL_HORIZONS__horizons_api.sample.json"
-    record_path = RECORDS_DIR / record_filename
-    record_path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
+def _save_and_print_results(
+    raw_path: Path, file_sha: str, record_path: Path, record_sha: str, full_url: str
+) -> None:
+    """Print fetch results."""
     print("FETCH: OK")
     print(f"  Raw saved:    {raw_path.relative_to(REPO_ROOT)}")
     print(f"  Raw sha256:   {file_sha}")
     print(f"  Record saved: {record_path.relative_to(REPO_ROOT)}")
     print(f"  Record sha256:{record_sha}")
     print(f"  Request URL:  {full_url}")
+
+
+def _write_and_finalize_record(
+    target_id: str,
+    record: Dict[str, Any],
+) -> Tuple[Path, str]:
+    """Write record JSON and return path and sha256."""
+    record_sha = _sha256_bytes(_canonical_json_bytes(record))
+    record["integrity"]["record_sha256"] = record_sha
+
+    record_filename = f"{target_id}__JPL_HORIZONS__horizons_api.sample.json"
+    record_path = RECORDS_DIR / record_filename
+    record_path.write_text(
+        json.dumps(record, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8"
+    )
+    return record_path, record_sha
+
+
+def _parse_arguments(argv: List[str]) -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--target-id", default="3I_ATLAS", help="Canonical target_id"
+    )
+    parser.add_argument(
+        "--aliases",
+        default="3I/ATLAS,3I ATLAS,C/2025 N1 (ATLAS)",
+        help="Comma-separated human designations",
+    )
+    parser.add_argument(
+        "--command",
+        required=True,
+        help="Horizons COMMAND value",
+    )
+    parser.add_argument("--date", help="UTC date folder YYYY-MM-DD")
+    parser.add_argument("--center", default="500@0", help="Horizons CENTER")
+    parser.add_argument("--ephem-type", default="V", help="Horizons EPHEM_TYPE")
+    parser.add_argument("--timeout", type=int, default=60, help="HTTP timeout")
+    parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Validate produced record",
+    )
+    return parser.parse_args(argv[1:])
+
+
+def main(argv: List[str]) -> int:
+    """
+    Fetch JPL Horizons data and create a raw record.
+
+    Fetches ephemeris data from JPL Horizons API, stores the raw response,
+    and creates a schema-compliant raw record with integrity checksums.
+    """
+    args = _parse_arguments(argv)
+
+    date_str = args.date or datetime.now(timezone.utc).date().isoformat()
+    target_id = str(args.target_id).strip()
+    if not target_id:
+        raise ValueError("target-id must be non-empty")
+
+    # Registry endpoint
+    reg_ep = _find_registry_endpoint(
+        source_id="JPL_HORIZONS", endpoint_id="horizons_api"
+    )
+    if reg_ep.method != "GET":
+        raise ValueError(
+            f"Unsupported method for horizons_api: {reg_ep.method}"
+        )
+
+    # Fetch and save data
+    params = _build_horizons_params(
+        command=_normalize_command(str(args.command)),
+        center=str(args.center),
+        ephem_type=str(args.ephem_type),
+        fmt="json"
+    )
+    full_url, raw_bytes = _http_get(reg_ep.url, params, int(args.timeout))
+
+    # Write raw response
+    raw_path = _ensure_dirs(date_str) / (
+        f"{target_id}__JPL_HORIZONS__horizons_api__{date_str}.json"
+    )
+    _write_bytes(raw_path, raw_bytes)
+
+    # Build and write record
+    file_info = FileInfo(raw_path, _sha256_file(raw_path), raw_path.stat().st_size)
+    record = _build_record_dict(
+        target_id,
+        [x.strip() for x in str(args.aliases).split(",") if x.strip()],
+        date_str,
+        reg_ep,
+        file_info,
+        _utc_now_iso(),
+        full_url,
+        params
+    )
+    record_path, record_sha = _write_and_finalize_record(target_id, record)
+
+    _save_and_print_results(
+        raw_path, file_info.file_sha, record_path, record_sha, full_url
+    )
 
     if args.validate:
         ok, msgs = _validate_created_record(record_path)

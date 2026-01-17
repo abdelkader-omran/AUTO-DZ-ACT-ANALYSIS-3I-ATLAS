@@ -426,4 +426,56 @@ def main() -> int:
     for m in _iter_measurements_from_snapshot(snapshot):
         snap_meas.setdefault(m.obs_id, []).append(m)
 
-    out_path.parent.mkdir(parents=True, exist
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Build rows
+    rows: List[Dict[str, Any]] = []
+    for spec in specs:
+        meas_list = snap_meas.get(spec.obs_id, [])
+        chosen_meas = select_measurement(spec, meas_list, snapshot_ref_time)
+
+        e_val = chosen_meas.value if chosen_meas else None
+        t_val = theory_map.get(spec.obs_id)
+
+        state, dist = compute_state(spec, t_val, e_val)
+
+        row = {
+            "observable_id": spec.obs_id,
+            "unit": spec.unit,
+            "state": state,
+            "distance": dist if dist is not None else "",
+            "theory_value": t_val if t_val is not None else "",
+            "empirical_value": e_val if e_val is not None else "",
+            "empirical_source_id": chosen_meas.source_id if chosen_meas else "",
+            "empirical_retrieved_utc": chosen_meas.retrieved_utc if chosen_meas else "",
+            "empirical_epoch_utc": chosen_meas.epoch_utc if chosen_meas else "",
+            "snapshot_sha256": prov.get("snapshot_sha256") or "",
+            "snapshot_date": prov.get("snapshot_date") or "",
+        }
+        rows.append(row)
+
+    # Write CSV
+    fieldnames = [
+        "observable_id",
+        "unit",
+        "state",
+        "distance",
+        "theory_value",
+        "empirical_value",
+        "empirical_source_id",
+        "empirical_retrieved_utc",
+        "empirical_epoch_utc",
+        "snapshot_sha256",
+        "snapshot_date",
+    ]
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"State table written: {out_path}", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
