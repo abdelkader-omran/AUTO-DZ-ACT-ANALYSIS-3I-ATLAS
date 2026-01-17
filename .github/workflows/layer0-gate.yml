@@ -1,0 +1,24 @@
+name: Layer-0 Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-layer0-reference:
+    name: "Layer-0 Gate / Verify Layer-0 reference"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Layer-0 reference in README.md
+        run: |
+          if ! grep -q "https://github.com/abdelkader-omran/trizel-core" README.md; then
+            echo "ERROR: Layer-0 reference missing from README.md"
+            echo "Expected reference: https://github.com/abdelkader-omran/trizel-core"
+            exit 1
+          fi
+          echo "✓ Layer-0 reference found in README.md"
