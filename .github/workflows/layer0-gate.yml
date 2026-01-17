@@ -1,0 +1,22 @@
+name: Layer-0 Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify-layer0-reference:
+    name: Layer-0 Gate / Verify Layer-0 reference
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Verify trizel-core reference in README
+        run: |
+          if ! grep -q "https://github.com/abdelkader-omran/trizel-core" README.md; then
+            echo "ERROR: README.md must contain a reference to the Layer-0 governance repository:"
+            echo "       https://github.com/abdelkader-omran/trizel-core"
+            exit 1
+          fi
+          echo "✓ Layer-0 governance reference found in README.md"
