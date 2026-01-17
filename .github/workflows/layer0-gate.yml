@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Verify trizel-core reference in README
         run: |
           if ! grep -q "https://github.com/abdelkader-omran/trizel-core" README.md; then
