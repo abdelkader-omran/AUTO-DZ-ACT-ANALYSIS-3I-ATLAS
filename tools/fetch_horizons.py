@@ -202,10 +202,10 @@ def _validate_created_record(record_path: Path) -> Tuple[bool, List[str]]:
         spec.loader.exec_module(mod)  # type: ignore
 
         validate_record = getattr(mod, "validate_record", None)
-        if validate_record is None:
-            return False, ["validate_record() not found in validator"]
+        if not callable(validate_record):
+            return False, ["validate_record() not found or not callable in validator"]
 
-        ok, msgs = validate_record(record_path)  # type: ignore
+        ok, msgs = validate_record(record_path)  # type: ignore # pylint: disable=not-callable
         return bool(ok), list(msgs)
     except Exception as e:
         return False, [f"Validator execution failed: {e}"]
