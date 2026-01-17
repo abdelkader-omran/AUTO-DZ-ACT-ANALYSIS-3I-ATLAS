@@ -8,6 +8,8 @@ jobs:
   verify-layer0-reference:
     name: Layer-0 Gate / Verify Layer-0 reference
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
