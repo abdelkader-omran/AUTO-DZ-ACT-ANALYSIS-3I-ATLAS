@@ -26,11 +26,10 @@ import csv
 import datetime as dt
 import json
 import math
-import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 
 STATE_NON_COMPARABLE = "NON_COMPARABLE"
@@ -166,6 +165,7 @@ def _distance_l2(tv: List[float], ev: List[float]) -> float:
 
 
 def compute_distance(metric: str, t_val: Any, e_val: Any) -> Optional[float]:
+    """Compute distance between theory and empirical values using specified metric."""
     tv = _vectorize(t_val)
     ev = _vectorize(e_val)
     if tv is None or ev is None:
@@ -181,6 +181,8 @@ def compute_distance(metric: str, t_val: Any, e_val: Any) -> Optional[float]:
 
 @dataclass(frozen=True)
 class ObservableSpec:
+    """Specification for an observable with tolerances and metadata."""
+
     obs_id: str
     unit: str
     sources_allowed: List[str]
@@ -194,6 +196,8 @@ class ObservableSpec:
 
 @dataclass(frozen=True)
 class Measurement:
+    """A single measurement with provenance metadata."""
+
     obs_id: str
     value: Any
     unit: Optional[str]
@@ -201,10 +205,11 @@ class Measurement:
     retrieved_utc: Optional[str]
     raw_path: Optional[str]
     measurement_sha256: Optional[str]
-    epoch_utc: Optional[str]  # optional measurement epoch
+    epoch_utc: Optional[str]
 
 
 def load_observables(observables_path: Path) -> List[ObservableSpec]:
+    """Load observable specifications from JSON file."""
     data = json.loads(observables_path.read_text(encoding="utf-8"))
     obs_list = data.get("observables", [])
     out: List[ObservableSpec] = []
@@ -227,9 +232,18 @@ def load_observables(observables_path: Path) -> List[ObservableSpec]:
 
 
 def _extract_snapshot_provenance(snapshot: Dict[str, Any]) -> Dict[str, Optional[str]]:
+    """Extract provenance metadata from snapshot."""
     return {
-        "snapshot_sha256": snapshot.get("snapshot_sha256") or snapshot.get("sha256") or snapshot.get("checksum"),
-        "snapshot_date": snapshot.get("snapshot_date") or snapshot.get("date") or snapshot.get("as_of_date"),
+        "snapshot_sha256": (
+            snapshot.get("snapshot_sha256")
+            or snapshot.get("sha256")
+            or snapshot.get("checksum")
+        ),
+        "snapshot_date": (
+            snapshot.get("snapshot_date")
+            or snapshot.get("date")
+            or snapshot.get("as_of_date")
+        ),
     }
 
 
@@ -292,10 +306,15 @@ def select_measurement(
     Deterministic selection:
     1) Filter sources_allowed (if provided)
     2) Rank by authority_rank (first match)
-    3) If multiple in same rank: choose closest by epoch_utc (if available) else by retrieved_utc else stable sort
+    3) If multiple in same rank: choose closest by epoch_utc
+       (if available) else by retrieved_utc else stable sort
     """
     if spec.sources_allowed:
-        candidates = [m for m in candidates if (m.source_id in spec.sources_allowed) or (m.source_id is None)]
+        candidates = [
+            m
+            for m in candidates
+            if (m.source_id in spec.sources_allowed) or (m.source_id is None)
+        ]
         # If all have source_id and none allowed -> empty
         if not candidates:
             return None
@@ -375,60 +394,37 @@ def compute_state(spec: ObservableSpec, t_pred: Any, e_obs: Any) -> Tuple[str, O
     return (STATE_DZ, d)
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--snapshot", required=True, help="Path to snapshot JSON (from DAILY repo).")
-    ap.add_argument("--observables", required=True, help="Path to input/observables.json")
-    ap.add_argument("--out", required=True, help="Output CSV path")
-    ap.add_argument("--theory", default=None, help="Optional path to theoretical predictions JSON {id: value} or {predictions:{id:value}}.")
-    args = ap.parse_args()
-
-    snapshot_path = Path(args.snapshot)
-    observables_path = Path(args.observables)
-    out_path = Path(args.out)
-
-    if not snapshot_path.exists():
-        print(f"ERROR: snapshot not found: {snapshot_path}", file=sys.stderr)
-        return 2
-    if not observables_path.exists():
-        print(f"ERROR: observables not found: {observables_path}", file=sys.stderr)
-        return 2
-
-    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
-    prov = _extract_snapshot_provenance(snapshot)
-
-    # Reference time for time_window enforcement: snapshot_date if parseable, else now-UTC
-    snapshot_ref_time = _parse_iso_datetime(snapshot.get("snapshot_utc") or snapshot.get("snapshot_time_utc") or snapshot.get("snapshot_time"))
-    if snapshot_ref_time is None:
-        sd = prov.get("snapshot_date")
-        snapshot_ref_time = _parse_iso_datetime(sd) if isinstance(sd, str) else None
-
-    # Load theory predictions (optional)
+def _load_theory_map(theory_path_str: Optional[str]) -> Dict[str, Any]:
+    """Load theory predictions from JSON file."""
     theory_map: Dict[str, Any] = {}
-    if args.theory:
-        theory_path = Path(args.theory)
+    if theory_path_str:
+        theory_path = Path(theory_path_str)
         if not theory_path.exists():
             print(f"ERROR: theory file not found: {theory_path}", file=sys.stderr)
-            return 2
+            raise FileNotFoundError(f"Theory file not found: {theory_path}")
+
         tdata = json.loads(theory_path.read_text(encoding="utf-8"))
-        if isinstance(tdata, dict) and "predictions" in tdata and isinstance(tdata["predictions"], dict):
+        if (
+            isinstance(tdata, dict)
+            and "predictions" in tdata
+            and isinstance(tdata["predictions"], dict)
+        ):
             theory_map = tdata["predictions"]
         elif isinstance(tdata, dict):
             theory_map = tdata
         else:
-            print("ERROR: theory JSON must be an object", file=sys.stderr)
-            return 2
+            raise ValueError("Theory JSON must be an object")
+    return theory_map
 
-    specs = load_observables(observables_path)
 
-    # Index snapshot measurements by obs_id
-    snap_meas: Dict[str, List[Measurement]] = {}
-    for m in _iter_measurements_from_snapshot(snapshot):
-        snap_meas.setdefault(m.obs_id, []).append(m)
-
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Build rows
+def _build_state_rows(
+    specs: List[ObservableSpec],
+    snap_meas: Dict[str, List[Measurement]],
+    theory_map: Dict[str, Any],
+    snapshot_ref_time: Optional[dt.datetime],
+    prov: Dict[str, Optional[str]],
+) -> List[Dict[str, Any]]:
+    """Build state table rows from measurements and theory."""
     rows: List[Dict[str, Any]] = []
     for spec in specs:
         meas_list = snap_meas.get(spec.obs_id, [])
@@ -453,8 +449,11 @@ def main() -> int:
             "snapshot_date": prov.get("snapshot_date") or "",
         }
         rows.append(row)
+    return rows
 
-    # Write CSV
+
+def _write_state_table(out_path: Path, rows: List[Dict[str, Any]]) -> None:
+    """Write state table rows to CSV file."""
     fieldnames = [
         "observable_id",
         "unit",
@@ -468,12 +467,79 @@ def main() -> int:
         "snapshot_sha256",
         "snapshot_date",
     ]
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"State table written: {out_path}", file=sys.stderr)
+
+def main() -> int:
+    """
+    Generate state table comparing theoretical predictions with empirical observations.
+
+    Reads snapshot data and observables, computes distance metrics,
+    and outputs a CSV state table.
+    """
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--snapshot",
+        required=True,
+        help="Path to snapshot JSON (from DAILY repo).",
+    )
+    ap.add_argument(
+        "--observables", required=True, help="Path to input/observables.json"
+    )
+    ap.add_argument("--out", required=True, help="Output CSV path")
+    ap.add_argument(
+        "--theory",
+        default=None,
+        help="Optional path to theoretical predictions JSON",
+    )
+    args = ap.parse_args()
+
+    # Validate paths
+    snapshot_path = Path(args.snapshot)
+    observables_path = Path(args.observables)
+    if not snapshot_path.exists():
+        print(f"ERROR: snapshot not found: {snapshot_path}", file=sys.stderr)
+        return 2
+    if not observables_path.exists():
+        print(f"ERROR: observables not found: {observables_path}", file=sys.stderr)
+        return 2
+
+    # Load data
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    prov = _extract_snapshot_provenance(snapshot)
+    specs = load_observables(observables_path)
+
+    # Determine reference time
+    snapshot_ref_time = _parse_iso_datetime(
+        snapshot.get("snapshot_utc")
+        or snapshot.get("snapshot_time_utc")
+        or snapshot.get("snapshot_time")
+    )
+    if snapshot_ref_time is None:
+        sd = prov.get("snapshot_date")
+        snapshot_ref_time = _parse_iso_datetime(sd) if isinstance(sd, str) else None
+
+    # Load theory
+    try:
+        theory_map = _load_theory_map(args.theory)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        return 2
+
+    # Index snapshot measurements
+    snap_meas: Dict[str, List[Measurement]] = {}
+    for m in _iter_measurements_from_snapshot(snapshot):
+        snap_meas.setdefault(m.obs_id, []).append(m)
+
+    # Build and write state table
+    rows = _build_state_rows(specs, snap_meas, theory_map, snapshot_ref_time, prov)
+    _write_state_table(Path(args.out), rows)
+
+    print(f"State table written: {args.out}", file=sys.stderr)
     return 0
 
 
