@@ -1,0 +1,13 @@
+{
+  "repository_name": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+  "layer": "Layer-1",
+  "role": "analysis / production",
+  "domain": "cosmic phenomena",
+  "input_dependency": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+  "governance_reference": "trizel-core",
+  "policy_flags": [
+    "no_execution",
+    "no_inference",
+    "no_publication"
+  ]
+}
