@@ -9,4 +9,6 @@ Canonical source:
 - trizel-ai/trizel-core/docs/governance/CROSS_REPO_GOVERNANCE.md
 
 Current state:
-Execution remains intentionally locked pending verifiable governance enforcement checks.
+Governance lock ENABLED after PR #9 merge. Branch protection ruleset "trizel-main-protection" is configured.
+
+See `docs/GOVERNANCE_LOCK_STATUS.md` for detailed enforcement status.
