@@ -26,11 +26,10 @@ import csv
 import datetime as dt
 import json
 import math
-import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 
 STATE_NON_COMPARABLE = "NON_COMPARABLE"
@@ -74,7 +73,7 @@ def _is_finite_number(x: Any) -> bool:
     return v is not None and math.isfinite(v)
 
 
-def _vectorize(value: Any) -> Optional[List[float]]:
+def _vectorize(value: Any) -> Optional[List[float]]:  # pylint: disable=too-many-return-statements,too-many-branches
     """
     Converts scalar or list/object into a vector for distance calculations.
     Supported:
@@ -166,6 +165,7 @@ def _distance_l2(tv: List[float], ev: List[float]) -> float:
 
 
 def compute_distance(metric: str, t_val: Any, e_val: Any) -> Optional[float]:
+    """Compute distance between theory and experimental values using specified metric."""
     tv = _vectorize(t_val)
     ev = _vectorize(e_val)
     if tv is None or ev is None:
@@ -180,7 +180,8 @@ def compute_distance(metric: str, t_val: Any, e_val: Any) -> Optional[float]:
 
 
 @dataclass(frozen=True)
-class ObservableSpec:
+class ObservableSpec:  # pylint: disable=too-many-instance-attributes
+    """Specification for an observable quantity."""
     obs_id: str
     unit: str
     sources_allowed: List[str]
@@ -193,7 +194,8 @@ class ObservableSpec:
 
 
 @dataclass(frozen=True)
-class Measurement:
+class Measurement:  # pylint: disable=too-many-instance-attributes
+    """A measurement record with metadata."""
     obs_id: str
     value: Any
     unit: Optional[str]
@@ -205,6 +207,7 @@ class Measurement:
 
 
 def load_observables(observables_path: Path) -> List[ObservableSpec]:
+    """Load observable specifications from JSON file."""
     data = json.loads(observables_path.read_text(encoding="utf-8"))
     obs_list = data.get("observables", [])
     out: List[ObservableSpec] = []
@@ -228,8 +231,16 @@ def load_observables(observables_path: Path) -> List[ObservableSpec]:
 
 def _extract_snapshot_provenance(snapshot: Dict[str, Any]) -> Dict[str, Optional[str]]:
     return {
-        "snapshot_sha256": snapshot.get("snapshot_sha256") or snapshot.get("sha256") or snapshot.get("checksum"),
-        "snapshot_date": snapshot.get("snapshot_date") or snapshot.get("date") or snapshot.get("as_of_date"),
+        "snapshot_sha256": (
+            snapshot.get("snapshot_sha256")
+            or snapshot.get("sha256")
+            or snapshot.get("checksum")
+        ),
+        "snapshot_date": (
+            snapshot.get("snapshot_date")
+            or snapshot.get("date")
+            or snapshot.get("as_of_date")
+        ),
     }
 
 
@@ -292,10 +303,14 @@ def select_measurement(
     Deterministic selection:
     1) Filter sources_allowed (if provided)
     2) Rank by authority_rank (first match)
-    3) If multiple in same rank: choose closest by epoch_utc (if available) else by retrieved_utc else stable sort
+    3) If multiple in same rank: choose closest by epoch_utc (if available)
+       else by retrieved_utc else stable sort
     """
     if spec.sources_allowed:
-        candidates = [m for m in candidates if (m.source_id in spec.sources_allowed) or (m.source_id is None)]
+        candidates = [
+            m for m in candidates
+            if (m.source_id in spec.sources_allowed) or (m.source_id is None)
+        ]
         # If all have source_id and none allowed -> empty
         if not candidates:
             return None
@@ -375,12 +390,20 @@ def compute_state(spec: ObservableSpec, t_pred: Any, e_obs: Any) -> Tuple[str, O
     return (STATE_DZ, d)
 
 
-def main() -> int:
+def main() -> int:  # pylint: disable=too-many-locals,too-many-statements
+    """Main entry point for state table generation."""
     ap = argparse.ArgumentParser()
     ap.add_argument("--snapshot", required=True, help="Path to snapshot JSON (from DAILY repo).")
     ap.add_argument("--observables", required=True, help="Path to input/observables.json")
     ap.add_argument("--out", required=True, help="Output CSV path")
-    ap.add_argument("--theory", default=None, help="Optional path to theoretical predictions JSON {id: value} or {predictions:{id:value}}.")
+    ap.add_argument(
+        "--theory",
+        default=None,
+        help=(
+            "Optional path to theoretical predictions JSON "
+            "{id: value} or {predictions:{id:value}}."
+        ),
+    )
     args = ap.parse_args()
 
     snapshot_path = Path(args.snapshot)
@@ -398,7 +421,11 @@ def main() -> int:
     prov = _extract_snapshot_provenance(snapshot)
 
     # Reference time for time_window enforcement: snapshot_date if parseable, else now-UTC
-    snapshot_ref_time = _parse_iso_datetime(snapshot.get("snapshot_utc") or snapshot.get("snapshot_time_utc") or snapshot.get("snapshot_time"))
+    snapshot_ref_time = _parse_iso_datetime(
+        snapshot.get("snapshot_utc")
+        or snapshot.get("snapshot_time_utc")
+        or snapshot.get("snapshot_time")
+    )
     if snapshot_ref_time is None:
         sd = prov.get("snapshot_date")
         snapshot_ref_time = _parse_iso_datetime(sd) if isinstance(sd, str) else None
@@ -411,7 +438,11 @@ def main() -> int:
             print(f"ERROR: theory file not found: {theory_path}", file=sys.stderr)
             return 2
         tdata = json.loads(theory_path.read_text(encoding="utf-8"))
-        if isinstance(tdata, dict) and "predictions" in tdata and isinstance(tdata["predictions"], dict):
+        if (
+            isinstance(tdata, dict)
+            and "predictions" in tdata
+            and isinstance(tdata["predictions"], dict)
+        ):
             theory_map = tdata["predictions"]
         elif isinstance(tdata, dict):
             theory_map = tdata
@@ -426,4 +457,44 @@ def main() -> int:
     for m in _iter_measurements_from_snapshot(snapshot):
         snap_meas.setdefault(m.obs_id, []).append(m)
 
-    out_path.parent.mkdir(parents=True, exist
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Build state table rows
+    rows: List[Dict[str, Any]] = []
+    for spec in specs:
+        obs_id = spec.obs_id
+        measurements = snap_meas.get(obs_id, [])
+
+        # Select best measurement
+        meas = select_measurement(measurements, spec, snapshot_ref_time)
+
+        # Get theory prediction if available
+        t_pred = theory_map.get(obs_id)
+
+        # Compute state
+        e_obs = meas.value if meas else None
+        state_val, ratio = compute_state(spec, t_pred, e_obs)
+
+        row = {
+            "obs_id": obs_id,
+            "state": state_val,
+            "ratio": ratio if ratio is not None else "",
+            "e_obs": e_obs if e_obs is not None else "",
+            "t_pred": t_pred if t_pred is not None else "",
+            "source_rank": meas.authority_rank if meas else "",
+        }
+        rows.append(row)
+
+    # Write CSV
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        fieldnames = ["obs_id", "state", "ratio", "e_obs", "t_pred", "source_rank"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"State table written to {out_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
