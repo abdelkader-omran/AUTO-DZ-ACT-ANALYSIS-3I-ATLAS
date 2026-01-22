@@ -426,4 +426,45 @@ def main() -> int:
     for m in _iter_measurements_from_snapshot(snapshot):
         snap_meas.setdefault(m.obs_id, []).append(m)
 
-    out_path.parent.mkdir(parents=True, exist
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Build state table rows
+    rows: List[Dict[str, Any]] = []
+    for spec in specs:
+        obs_id = spec.obs_id
+        measurements = snap_meas.get(obs_id, [])
+
+        # Select best measurement
+        meas = select_measurement(measurements, spec, snapshot_ref_time)
+
+        # Get theory prediction if available
+        t_pred = theory_map.get(obs_id)
+
+        # Compute state
+        e_obs = meas.value if meas else None
+        state_val, ratio = compute_state(spec, t_pred, e_obs)
+
+        row = {
+            "obs_id": obs_id,
+            "state": state_val,
+            "ratio": ratio if ratio is not None else "",
+            "e_obs": e_obs if e_obs is not None else "",
+            "t_pred": t_pred if t_pred is not None else "",
+            "source_rank": meas.authority_rank if meas else "",
+        }
+        rows.append(row)
+
+    # Write CSV
+    with out_path.open("w", encoding="utf-8", newline="") as f:
+        fieldnames = ["obs_id", "state", "ratio", "e_obs", "t_pred", "source_rank"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"State table written to {out_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
