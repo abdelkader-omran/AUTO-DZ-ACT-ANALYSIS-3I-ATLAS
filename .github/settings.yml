@@ -43,5 +43,5 @@ branches:
       allow_deletions: false
       required_conversation_resolution: false
       
-      # CLEAR bypass_list - No restrictions to allow all users/teams
+      # CLEAR bypass_list - No push access restrictions (protection applies to all)
       restrictions: null
