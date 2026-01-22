@@ -1,0 +1,47 @@
+# GitHub Repository Settings
+# This configuration defines the branch protection ruleset for the main branch
+# Applied after PR #9 merge as per POST_MERGE_GOVERNANCE_LOCK requirements
+
+repository:
+  name: AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
+  description: Verification-first third-layer analysis for 3I/ATLAS using AUTO DZ ACT
+  homepage: ""
+  private: false
+  has_issues: true
+  has_projects: true
+  has_wiki: false
+  has_downloads: true
+
+branches:
+  - name: main
+    # Branch protection ruleset: "trizel-main-protection"
+    protection:
+      # REQUIRE require_pull_request == TRUE
+      required_pull_request_reviews:
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: false
+        required_approving_review_count: 1
+        # CLEAR bypass_list
+        dismissal_restrictions:
+          users: []
+          teams: []
+      
+      # REQUIRE require_status_checks == TRUE
+      # SET required_checks = {"Pylint / build (3.8)", "Pylint / build (3.9)", "Pylint / build (3.10)"}
+      required_status_checks:
+        strict: true
+        contexts:
+          - "Pylint / build (3.8)"
+          - "Pylint / build (3.9)"
+          - "Pylint / build (3.10)"
+      
+      # REQUIRE restrict_updates == TRUE
+      # VERIFY direct_push(main) == DENY
+      enforce_admins: true
+      required_linear_history: false
+      allow_force_pushes: false
+      allow_deletions: false
+      required_conversation_resolution: false
+      
+      # CLEAR bypass_list - No restrictions to allow all users/teams
+      restrictions: null
