@@ -222,7 +222,7 @@ def _validate_created_record(record_path: Path) -> Tuple[bool, List[str]]:
         return False, [f"Validator execution failed: {e}"]
 
 
-def _build_raw_record(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def _build_raw_record(  # pylint: disable=too-many-arguments
     target_id: str,
     aliases: List[str],
     date_str: str,
