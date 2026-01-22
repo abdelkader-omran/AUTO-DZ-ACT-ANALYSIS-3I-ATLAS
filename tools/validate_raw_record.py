@@ -19,4 +19,5 @@ Hard rules enforced:
       it MUST equal the authority_rank declared for that source in sources.json
 
 Usage:
-  python tools/validate_raw_record.py data/
+  python tools/validate_raw_record.py data/records/example.json
+"""
