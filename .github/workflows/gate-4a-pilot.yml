@@ -1,0 +1,33 @@
+name: Gate 4A - Minimal Artifact Workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-4a-artifact:
+    name: Gate 4A Artifact Upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Gate 4A artifact package (placeholder)
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          echo "Gate 4A placeholder artifact" > output/README.txt
+
+      - name: Verify output exists
+        run: |
+          test -d output
+          test -n "$(ls -A output)"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-4a-artifacts
+          path: output/
+          if-no-files-found: error
