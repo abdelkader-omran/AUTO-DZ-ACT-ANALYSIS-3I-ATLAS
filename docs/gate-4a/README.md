@@ -37,7 +37,7 @@ This ensures **deterministic execution**: same pinned input → same outputs (in
 
 ## How to Run the Workflow
 
-The workflow is **manual-only** (no automatic triggers):
+The workflow is **manual-only** (no automatic triggers). It must be executed via the GitHub Actions UI using `workflow_dispatch`:
 
 1. Navigate to the repository on GitHub
 2. Go to **Actions** → **Gate 4A - Lab Execution Pilot (Manual Only)**
