@@ -20,6 +20,9 @@ jobs:
     name: Execute Gate 4A Pilot (Deterministic)
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Need write to commit DERIVED package back to repo
+
     steps:
       # Step 1: Checkout THIS repo (AUTO-DZ-ACT-ANALYSIS-3I-ATLAS)
       - name: Checkout Analysis Repo
