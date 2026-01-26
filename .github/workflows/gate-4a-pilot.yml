@@ -10,11 +10,16 @@ name: Gate 4A - Lab Execution Pilot (Manual Only)
 on:
   workflow_dispatch:  # Manual trigger only
 
+env:
+  SOURCE_REPO: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
+  SOURCE_COMMIT: cc4d8f9020e2a7e084ab643645bc75c18d642188
+  SOURCE_PATH: data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json
+
 jobs:
   gate-4a-pilot:
     name: Execute Gate 4A Pilot (Deterministic)
     runs-on: ubuntu-latest
-    
+
     steps:
       # Step 1: Checkout THIS repo (AUTO-DZ-ACT-ANALYSIS-3I-ATLAS)
       - name: Checkout Analysis Repo
@@ -27,15 +32,15 @@ jobs:
       - name: Checkout Source Repo (Layer-1) at Pinned Commit
         uses: actions/checkout@v4
         with:
-          repository: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
-          ref: cc4d8f9020e2a7e084ab643645bc75c18d642188  # PINNED COMMIT (immutable)
+          repository: ${{ env.SOURCE_REPO }}
+          ref: ${{ env.SOURCE_COMMIT }}  # PINNED COMMIT (immutable)
           path: _input
           fetch-depth: 1  # Shallow clone is fine for pinned commit
       
       # Step 3: Verify pinned file exists (FAIL HARD if missing)
       - name: Verify Pinned Snapshot File
         run: |
-          PINNED_FILE="_input/data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json"
+          PINNED_FILE="_input/${{ env.SOURCE_PATH }}"
           if [ ! -f "$PINNED_FILE" ]; then
             echo "ERROR: Pinned snapshot file not found: $PINNED_FILE"
             exit 1
@@ -55,29 +60,24 @@ jobs:
           # Generate output directory with UTC timestamp
           TIMESTAMP_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           OUTPUT_DIR="data/derived/3i-atlas/pilot/as_of_utc=${TIMESTAMP_UTC}"
-          
+
           # Input file (pinned)
-          INPUT_FILE="_input/data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json"
-          
-          # Source provenance (pinned)
-          SOURCE_REPO="abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY"
-          SOURCE_COMMIT="cc4d8f9020e2a7e084ab643645bc75c18d642188"
-          SOURCE_PATH="data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json"
-          
+          INPUT_FILE="_input/${{ env.SOURCE_PATH }}"
+
           # Run the packaging script
           python3 tools/gate4a_pilot_pack.py \
             --input "$INPUT_FILE" \
             --output-dir "$OUTPUT_DIR" \
-            --source-repo "$SOURCE_REPO" \
-            --source-commit "$SOURCE_COMMIT" \
-            --source-path "$SOURCE_PATH"
-          
+            --source-repo "${{ env.SOURCE_REPO }}" \
+            --source-commit "${{ env.SOURCE_COMMIT }}" \
+            --source-path "${{ env.SOURCE_PATH }}"
+
           # Verify script succeeded
           if [ $? -ne 0 ]; then
             echo "ERROR: Packaging script failed"
             exit 1
           fi
-          
+
           # Store output dir for later steps
           echo "OUTPUT_DIR=$OUTPUT_DIR" >> $GITHUB_ENV
       
@@ -198,25 +198,25 @@ jobs:
       - name: Commit DERIVED Package
         run: |
           git add data/derived/
-          
+
           # Check if there are changes to commit
           if git diff --cached --quiet; then
             echo "No changes to commit (package may already exist)"
           else
             COMMIT_MSG="chore(gate-4a): add DERIVED package from pilot run
-          
+
           Gate: 4A
           Proof Type: lab-exec-pilot
           Classification: DERIVED
           Validation Scope: STRUCTURAL_ONLY
-          
+
           Input Provenance:
-          - Source: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
-          - Commit: cc4d8f9020e2a7e084ab643645bc75c18d642188
-          - Path: data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json
-          
+          - Source: ${{ env.SOURCE_REPO }}
+          - Commit: ${{ env.SOURCE_COMMIT }}
+          - Path: ${{ env.SOURCE_PATH }}
+
           Output: $OUTPUT_DIR"
-            
+
             git commit -m "$COMMIT_MSG"
             git push
             echo "SUCCESS: DERIVED package committed and pushed"
