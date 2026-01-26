@@ -86,6 +86,8 @@ def validate_snapshot_structure(snapshot_data):
     return state, messages
 
 
+# Gate 4A constraints: procedural, deterministic, single-entry structural validation
+# pylint: disable=R0913,R0917
 def create_derived_status(
     gate, proof_type, classification, as_of_utc,
     input_provenance, input_sha256, validation_state, validation_scope
@@ -164,6 +166,8 @@ def create_ro_crate_metadata(as_of_utc, input_filename, source_repo, source_comm
     }
 
 
+# Gate 4A constraints: procedural, deterministic, single-entry structural validation
+# pylint: disable=R0914,R0915
 def main():
     """Main entry point for Gate 4A pilot packaging script."""
     parser = argparse.ArgumentParser(
