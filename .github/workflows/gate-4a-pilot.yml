@@ -203,20 +203,21 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit (package may already exist)"
           else
-            git commit -m "chore(gate-4a): add DERIVED package from pilot run
-
-Gate: 4A
-Proof Type: lab-exec-pilot
-Classification: DERIVED
-Validation Scope: STRUCTURAL_ONLY
-
-Input Provenance:
-- Source: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
-- Commit: cc4d8f9020e2a7e084ab643645bc75c18d642188
-- Path: data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json
-
-Output: $OUTPUT_DIR"
+            COMMIT_MSG="chore(gate-4a): add DERIVED package from pilot run
+          
+          Gate: 4A
+          Proof Type: lab-exec-pilot
+          Classification: DERIVED
+          Validation Scope: STRUCTURAL_ONLY
+          
+          Input Provenance:
+          - Source: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
+          - Commit: cc4d8f9020e2a7e084ab643645bc75c18d642188
+          - Path: data/snapshots/official_snapshot_3I_ATLAS_20251219_123807.json
+          
+          Output: $OUTPUT_DIR"
             
+            git commit -m "$COMMIT_MSG"
             git push
             echo "SUCCESS: DERIVED package committed and pushed"
           fi
