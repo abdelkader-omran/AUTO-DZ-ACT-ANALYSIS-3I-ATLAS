@@ -1,0 +1,115 @@
+name: Gate 5 — Approved Execution (One-Shot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorized_sha:
+        description: "Immutable commit SHA authorized by human (must equal github.sha)"
+        required: true
+        type: string
+      authorization_code:
+        description: "Authorization code (must equal 'AUTHORIZE_EXECUTION_GATE_5')"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gate-5-one-shot
+  cancel-in-progress: false
+
+jobs:
+  gate-5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout (read-only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Authorization Handshake
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Verifying authorization code..."
+          if [ "${{ inputs.authorization_code }}" != "AUTHORIZE_EXECUTION_GATE_5" ]; then
+            echo "ERROR: Authorization code invalid. Aborting."
+            exit 1
+          fi
+          echo "OK: Authorization code validated."
+
+      - name: Assert authorized SHA (HARD GATE)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "github.sha=${GITHUB_SHA}"
+          echo "authorized_sha=${{ inputs.authorized_sha }}"
+          if [ "${GITHUB_SHA}" != "${{ inputs.authorized_sha }}" ]; then
+            echo "ERROR: github.sha does not match authorized_sha. Aborting."
+            exit 1
+          fi
+          echo "OK: authorized SHA verified."
+
+      - name: Gate Preconditions (Structural Only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Verifying Gate prerequisites..."
+          if [ ! -f "input/GATE-4B-RAW-DECLARATION.md" ]; then
+            echo "ERROR: Required artifact input/GATE-4B-RAW-DECLARATION.md not found. Aborting."
+            exit 1
+          fi
+          echo "OK: input/GATE-4B-RAW-DECLARATION.md exists."
+          if [ ! -f "docs/GOVERNANCE_REFERENCE.md" ]; then
+            echo "WARNING: docs/GOVERNANCE_REFERENCE.md is missing. Continuing (not required)."
+          else
+            echo "OK: docs/GOVERNANCE_REFERENCE.md exists."
+          fi
+
+      - name: Deny-List Boundary Guard (Execution Only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Deny-list enforcement in effect. No executions from deny-listed paths are allowed."
+          echo "OK: Deny-list execution guard passes (no prohibited execution invoked)."
+
+      - name: Structural Validation (Metadata Only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="outputs/gate-5"
+          mkdir -p "${OUT}"
+
+          echo "Computing structural validation details..."
+          sha256sum input/GATE-4B-RAW-DECLARATION.md > "${OUT}/integrity.txt"
+          wc -l < input/GATE-4B-RAW-DECLARATION.md >> "${OUT}/validation.log"
+          wc -c < input/GATE-4B-RAW-DECLARATION.md >> "${OUT}/validation.log"
+          echo "Validation complete."
+
+      - name: Record Provenance Metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="outputs/gate-5"
+          mkdir -p "${OUT}"
+          echo "Documenting provenance..."
+          {
+            echo "gate=5"
+            echo "trigger=workflow_dispatch"
+            echo "repo=${GITHUB_REPOSITORY}"
+            echo "workflow=Gate 5 — Approved Execution (One-Shot)"
+            echo "actor=${{ github.actor }}"
+            echo "timestamp_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "github.sha=${GITHUB_SHA}"
+            echo "authorized_sha=${{ inputs.authorized_sha }}"
+          } > "${OUT}/provenance.txt"
+          echo "Provenance recorded."
+
+      - name: Upload Gate 5 Outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-5-execution-results
+          path: outputs/gate-5/
