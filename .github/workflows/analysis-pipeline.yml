@@ -226,7 +226,7 @@ jobs:
             exit 0
           fi
 
-          SITE_REPO="abdelkader-omran/trizel-site-artifacts"
+          SITE_REPO="trizel-ai-site/trizel-site-artifacts"
           SITE_DIR="/tmp/trizel-site-artifacts"
 
           git clone \
