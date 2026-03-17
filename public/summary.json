@@ -1,0 +1,99 @@
+{
+  "pipeline_version": "1.0.0",
+  "generated_utc": "2026-03-17T04:24:41Z",
+  "total_days": 7,
+  "total_records": 42,
+  "days": [
+    {
+      "date": "2026-03-15",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-15.json"
+    },
+    {
+      "date": "2026-03-16",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-16.json"
+    },
+    {
+      "date": "2026-03-17",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-17.json"
+    },
+    {
+      "date": "2026-03-18",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-18.json"
+    },
+    {
+      "date": "2026-03-19",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-19.json"
+    },
+    {
+      "date": "2026-03-20",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-20.json"
+    },
+    {
+      "date": "2026-03-21",
+      "record_count": 6,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-21.json"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "pipeline_version": "1.0.0",
+  "generated_utc": "2026-03-17T04:24:41Z",
+  "requested_day_utc": "2026-03-15",
+  "record_count": 6,
+  "observations": [
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "ESA_NEOCC",
+      "retrieved_utc": "",
+      "sha256": "813431c74378c0ee1b11c16f3f04b9d07f2a0454d0704d30902281ff679b8673",
+      "raw_path": "2026-03-15/ESA_NEOCC.html",
+      "source_url": "https://neo.ssa.esa.int/"
+    },
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "JPL_HORIZONS",
+      "retrieved_utc": "",
+      "sha256": "3141cb27f81e3f29b2c4d953ddaed1181313346cc007e84c95236173d0989255",
+      "raw_path": "2026-03-15/NASA_JPL_HORIZONS.html",
+      "source_url": "https://ssd.jpl.nasa.gov/api/horizons.api"
+    },
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "MPC",
+      "retrieved_utc": "",
+      "sha256": "bd03282508312c52a8bd49e388f15da604dcfca74bf3717f3e493843c7056f82",
+      "raw_path": "2026-03-15/IAU_MPC.html",
+      "source_url": "https://minorplanetcenter.net/"
+    },
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "NASA_CNEOS",
+      "retrieved_utc": "",
+      "sha256": "b2b0245543a10b90a3eddc75229eb4e66ed505418e795d8d6ae9829945ec5b48",
+      "raw_path": "2026-03-15/NASA_CNEOS.html",
+      "source_url": "https://cneos.jpl.nasa.gov/"
+    },
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "NASA_JPL_SBDB",
+      "retrieved_utc": "",
+      "sha256": "880136c3ce1acffb358a245c5c8a64d4f96cbe721b6f79cfbacef3d397795884",
+      "raw_path": "2026-03-15/NASA_JPL_SBDB.html",
+      "source_url": "https://ssd-api.jpl.nasa.gov/sbdb.api"
+    },
+    {
+      "requested_day_utc": "2026-03-15",
+      "source_id": "NASA_PDS",
+      "retrieved_utc": "",
+      "sha256": "6e3ffd596631d0dcf9a5e8b9e7edb279ac5e5f865c7ad1c73c87ff4e19648ebc",
+      "raw_path": "2026-03-15/NASA_PDS_SMALL_BODIES.html",
+      "source_url": "https://pds.nasa.gov/"
+    }
+  ]
+}
