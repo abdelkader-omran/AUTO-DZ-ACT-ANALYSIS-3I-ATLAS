@@ -2,7 +2,7 @@ name: Analysis Pipeline — Build Observations
 
 on:
   # Triggered by AUTO-DZ-ACT-3I-ATLAS-DAILY when a new raw snapshot is ready.
-  # The payload should contain: {"date": "YYYY-MM-DD"}
+  # Expected payload example: {"date": "YYYY-MM-DD", "daily_repo_ref": "main"}
   repository_dispatch:
     types: [raw-snapshot-available]
 
@@ -19,18 +19,27 @@ on:
         description: >
           Git ref (branch/tag/SHA) of AUTO-DZ-ACT-3I-ATLAS-DAILY to check out.
         required: false
-        default: main
+        default: "main"
+
+  # After analysis PR is merged into main and public/ changes land,
+  # publish the already-reviewed public artifacts to the official site repo.
+  push:
+    branches: [main]
+    paths:
+      - "public/**"
 
 permissions:
-  contents: write   # needed to commit public/ outputs back to this repo
+  contents: write
+  pull-requests: write
 
 concurrency:
-  group: analysis-pipeline-${{ github.ref }}
+  group: analysis-pipeline-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build-observations:
     name: Build observation dataset
+    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -41,7 +50,7 @@ jobs:
       - name: Checkout analysis repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # full history needed to push back
+          fetch-depth: 0
 
       # ------------------------------------------------------------------ #
       # 2. Checkout the raw-snapshot repository (read-only)                 #
@@ -70,7 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Priority: repository_dispatch payload → workflow_dispatch input → auto-discover
+
           DATE="${{ github.event.client_payload.date || inputs.date }}"
           if [ -n "${DATE}" ]; then
             echo "date=${DATE}" >> "${GITHUB_OUTPUT}"
@@ -79,6 +88,7 @@ jobs:
             echo "date=" >> "${GITHUB_OUTPUT}"
             echo "date_flag=" >> "${GITHUB_OUTPUT}"
           fi
+
           echo "Resolved date: '${DATE}' (empty = process all available)"
 
       # ------------------------------------------------------------------ #
@@ -100,41 +110,109 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f "public/summary.json"  || { echo "ERROR: public/summary.json missing"; exit 1; }
-          test -f "public/latest.json"   || { echo "ERROR: public/latest.json missing"; exit 1; }
+
+          test -f "public/summary.json" || { echo "ERROR: public/summary.json missing"; exit 1; }
+          test -f "public/latest.json"  || { echo "ERROR: public/latest.json missing"; exit 1; }
+
           python - <<'PYEOF'
-          import json, pathlib
-          summary = json.loads(pathlib.Path("public/summary.json").read_text())
+          import json
+          import pathlib
+
+          summary = json.loads(pathlib.Path("public/summary.json").read_text(encoding="utf-8"))
           total_days = summary.get("total_days", -1)
           total_records = summary.get("total_records", -1)
+
           if not isinstance(total_days, int) or total_days < 0:
               raise ValueError(f"summary.total_days is invalid: {total_days!r}")
+
           if not isinstance(total_records, int) or total_records < 0:
               raise ValueError(f"summary.total_records is invalid: {total_records!r}")
+
           print(f"summary.json: {total_days} days, {total_records} records")
           PYEOF
 
       # ------------------------------------------------------------------ #
-      # 7. Commit public/ outputs back to this repository                   #
+      # 7. Detect whether public/ changed                                    #
       # ------------------------------------------------------------------ #
-      - name: Commit and push public/ to analysis repository
+      - name: Detect public/ changes
+        id: detect_changes
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add public/
+
           if git diff --cached --quiet; then
-            echo "No changes to public/ — nothing to commit."
+            echo "has_changes=false" >> "${GITHUB_OUTPUT}"
+            echo "No changes detected in public/."
           else
-            TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            git commit -m "pipeline: update public/ observations [${TIMESTAMP}]"
-            git push
+            echo "has_changes=true" >> "${GITHUB_OUTPUT}"
+            echo "Changes detected in public/."
           fi
 
       # ------------------------------------------------------------------ #
-      # 8. Push publishable artifacts to trizel-site-artifacts              #
+      # 8. Open a PR instead of pushing directly to main                     #
+      # ------------------------------------------------------------------ #
+      - name: Create Pull Request for public/ updates
+        if: steps.detect_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_PAT }}
+          commit-message: "pipeline: update public/ observations"
+          title: "pipeline: update public/ observations"
+          body: |
+            Automated update of `public/` observation artifacts generated by the analysis pipeline.
+
+            Source repository:
+            - `AUTO-DZ-ACT-3I-ATLAS-DAILY`
+
+            Generated outputs:
+            - `public/observations/YYYY-MM-DD.json`
+            - `public/latest.json`
+            - `public/summary.json`
+
+            This PR was opened automatically because direct pushes to `main`
+            are blocked by repository rules.
+          branch: automation/update-public-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          delete-branch: true
+
+      # ------------------------------------------------------------------ #
+      # 9. Upload artifacts for CI inspection                                #
+      # ------------------------------------------------------------------ #
+      - name: Upload public/ as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: observations-${{ steps.resolve_date.outputs.date || 'all' }}-${{ github.run_number }}
+          path: public/
+          if-no-files-found: warn
+
+  publish-site-artifacts:
+    name: Publish reviewed artifacts to trizel-site-artifacts
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Checkout this analysis repository at the reviewed main state      #
+      # ------------------------------------------------------------------ #
+      - name: Checkout analysis repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # ------------------------------------------------------------------ #
+      # 2. Verify public/ exists                                             #
+      # ------------------------------------------------------------------ #
+      - name: Verify public/ exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "public" || { echo "ERROR: public/ directory missing"; exit 1; }
+          test -f "public/summary.json" || { echo "ERROR: public/summary.json missing"; exit 1; }
+
+      # ------------------------------------------------------------------ #
+      # 3. Push publishable artifacts to trizel-site-artifacts               #
       # ------------------------------------------------------------------ #
       - name: Push artifacts to trizel-site-artifacts
         shell: bash
@@ -155,15 +233,15 @@ jobs:
             "https://x-access-token:${SITE_TOKEN}@github.com/${SITE_REPO}.git" \
             "${SITE_DIR}"
 
-          # Sync public/ into the site artifacts repository under public/
           mkdir -p "${SITE_DIR}/public"
           rsync -av --delete public/ "${SITE_DIR}/public/"
 
           cd "${SITE_DIR}"
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add public/
+
           if git diff --cached --quiet; then
             echo "No changes to push to trizel-site-artifacts."
           else
@@ -172,13 +250,3 @@ jobs:
             git push
             echo "Site artifacts updated successfully."
           fi
-
-      # ------------------------------------------------------------------ #
-      # 9. Upload artifacts for CI inspection                               #
-      # ------------------------------------------------------------------ #
-      - name: Upload public/ as workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: observations-${{ steps.resolve_date.outputs.date || 'all' }}-${{ github.run_number }}
-          path: public/
-          if-no-files-found: warn
