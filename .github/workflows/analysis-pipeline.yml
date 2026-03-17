@@ -1,0 +1,184 @@
+name: Analysis Pipeline — Build Observations
+
+on:
+  # Triggered by AUTO-DZ-ACT-3I-ATLAS-DAILY when a new raw snapshot is ready.
+  # The payload should contain: {"date": "YYYY-MM-DD"}
+  repository_dispatch:
+    types: [raw-snapshot-available]
+
+  # Manual trigger for backfill or re-processing
+  workflow_dispatch:
+    inputs:
+      date:
+        description: >
+          Process a specific date (YYYY-MM-DD). Leave empty to process all
+          available dates in the raw snapshot repository.
+        required: false
+        default: ""
+      daily_repo_ref:
+        description: >
+          Git ref (branch/tag/SHA) of AUTO-DZ-ACT-3I-ATLAS-DAILY to check out.
+        required: false
+        default: main
+
+permissions:
+  contents: write   # needed to commit public/ outputs back to this repo
+
+concurrency:
+  group: analysis-pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-observations:
+    name: Build observation dataset
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Checkout this analysis repository                                #
+      # ------------------------------------------------------------------ #
+      - name: Checkout analysis repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed to push back
+
+      # ------------------------------------------------------------------ #
+      # 2. Checkout the raw-snapshot repository (read-only)                 #
+      # ------------------------------------------------------------------ #
+      - name: Checkout AUTO-DZ-ACT-3I-ATLAS-DAILY (raw snapshots)
+        uses: actions/checkout@v4
+        with:
+          repository: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
+          ref: ${{ github.event.client_payload.daily_repo_ref || inputs.daily_repo_ref || 'main' }}
+          token: ${{ secrets.GH_PAT }}
+          path: _daily_repo
+
+      # ------------------------------------------------------------------ #
+      # 3. Set up Python                                                     #
+      # ------------------------------------------------------------------ #
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ------------------------------------------------------------------ #
+      # 4. Resolve the date to process                                       #
+      # ------------------------------------------------------------------ #
+      - name: Resolve target date
+        id: resolve_date
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Priority: repository_dispatch payload → workflow_dispatch input → auto-discover
+          DATE="${{ github.event.client_payload.date || inputs.date }}"
+          if [ -n "${DATE}" ]; then
+            echo "date=${DATE}" >> "${GITHUB_OUTPUT}"
+            echo "date_flag=--date ${DATE}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "date=" >> "${GITHUB_OUTPUT}"
+            echo "date_flag=" >> "${GITHUB_OUTPUT}"
+          fi
+          echo "Resolved date: '${DATE}' (empty = process all available)"
+
+      # ------------------------------------------------------------------ #
+      # 5. Run the analysis pipeline                                         #
+      # ------------------------------------------------------------------ #
+      - name: Run build_observations pipeline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python pipeline/build_observations.py \
+            --raw-dir "_daily_repo/data/raw" \
+            --public-dir "public" \
+            ${{ steps.resolve_date.outputs.date_flag }}
+
+      # ------------------------------------------------------------------ #
+      # 6. Verify outputs exist                                              #
+      # ------------------------------------------------------------------ #
+      - name: Verify output files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "public/summary.json"  || { echo "ERROR: public/summary.json missing"; exit 1; }
+          test -f "public/latest.json"   || { echo "ERROR: public/latest.json missing"; exit 1; }
+          python - <<'PYEOF'
+          import json, pathlib
+          summary = json.loads(pathlib.Path("public/summary.json").read_text())
+          total_days = summary.get("total_days", -1)
+          total_records = summary.get("total_records", -1)
+          if not isinstance(total_days, int) or total_days < 0:
+              raise ValueError(f"summary.total_days is invalid: {total_days!r}")
+          if not isinstance(total_records, int) or total_records < 0:
+              raise ValueError(f"summary.total_records is invalid: {total_records!r}")
+          print(f"summary.json: {total_days} days, {total_records} records")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 7. Commit public/ outputs back to this repository                   #
+      # ------------------------------------------------------------------ #
+      - name: Commit and push public/ to analysis repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add public/
+          if git diff --cached --quiet; then
+            echo "No changes to public/ — nothing to commit."
+          else
+            TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "pipeline: update public/ observations [${TIMESTAMP}]"
+            git push
+          fi
+
+      # ------------------------------------------------------------------ #
+      # 8. Push publishable artifacts to trizel-site-artifacts              #
+      # ------------------------------------------------------------------ #
+      - name: Push artifacts to trizel-site-artifacts
+        shell: bash
+        env:
+          SITE_TOKEN: ${{ secrets.TRIZEL_SITE_DEPLOY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${SITE_TOKEN}" ]; then
+            echo "WARNING: TRIZEL_SITE_DEPLOY_TOKEN is not set — skipping site push."
+            exit 0
+          fi
+
+          SITE_REPO="abdelkader-omran/trizel-site-artifacts"
+          SITE_DIR="/tmp/trizel-site-artifacts"
+
+          git clone \
+            "https://x-access-token:${SITE_TOKEN}@github.com/${SITE_REPO}.git" \
+            "${SITE_DIR}"
+
+          # Sync public/ into the site artifacts repository under public/
+          mkdir -p "${SITE_DIR}/public"
+          rsync -av --delete public/ "${SITE_DIR}/public/"
+
+          cd "${SITE_DIR}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add public/
+          if git diff --cached --quiet; then
+            echo "No changes to push to trizel-site-artifacts."
+          else
+            TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            git commit -m "pipeline: sync observations from AUTO-DZ-ACT-ANALYSIS-3I-ATLAS [${TIMESTAMP}]"
+            git push
+            echo "Site artifacts updated successfully."
+          fi
+
+      # ------------------------------------------------------------------ #
+      # 9. Upload artifacts for CI inspection                               #
+      # ------------------------------------------------------------------ #
+      - name: Upload public/ as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: observations-${{ steps.resolve_date.outputs.date || 'all' }}-${{ github.run_number }}
+          path: public/
+          if-no-files-found: warn
