@@ -33,6 +33,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from scripts.epistemic_engine import run_for_date
+
 PIPELINE_VERSION = "1.0.0"
 
 # Canonical source IDs and their primary URLs for traceability
@@ -413,6 +415,13 @@ def process_dates(
 
         out_path = write_day_file(observations, date_str, public_dir, generated_utc)
         print(f"  -> {out_path} ({len(observations)} records)")
+
+        # Run Layer-5 epistemic engine on the per-date observation root
+        obs_root = public_dir / "observations" / date_str
+        try:
+            run_for_date(obs_root)
+        except Exception as exc:  # pylint: disable=broad-except
+            print(f"  WARNING: epistemic engine failed for {date_str}: {exc}", file=sys.stderr)
 
         sources_present = sorted({obs["source_id"] for obs in observations})
         all_day_summaries.append({
