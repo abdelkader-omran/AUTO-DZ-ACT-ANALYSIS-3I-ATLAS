@@ -92,7 +92,13 @@ jobs:
           echo "Resolved date: '${DATE}' (empty = process all available)"
 
       # ------------------------------------------------------------------ #
-      # 5. Run the analysis pipeline                                         #
+      # 5. Set PYTHONPATH so that scripts.* modules are importable           #
+      # ------------------------------------------------------------------ #
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      # ------------------------------------------------------------------ #
+      # 6. Run the analysis pipeline                                         #
       # ------------------------------------------------------------------ #
       - name: Run build_observations pipeline
         shell: bash
@@ -104,7 +110,7 @@ jobs:
             ${{ steps.resolve_date.outputs.date_flag }}
 
       # ------------------------------------------------------------------ #
-      # 6. Verify outputs exist                                              #
+      # 7. Verify outputs exist                                              #
       # ------------------------------------------------------------------ #
       - name: Verify output files
         shell: bash
@@ -132,7 +138,7 @@ jobs:
           PYEOF
 
       # ------------------------------------------------------------------ #
-      # 7. Detect whether public/ changed                                    #
+      # 8. Detect whether public/ changed                                    #
       # ------------------------------------------------------------------ #
       - name: Detect public/ changes
         id: detect_changes
@@ -151,7 +157,7 @@ jobs:
           fi
 
       # ------------------------------------------------------------------ #
-      # 8. Open a PR instead of pushing directly to main                     #
+      # 9. Open a PR instead of pushing directly to main                     #
       # ------------------------------------------------------------------ #
       - name: Create Pull Request for public/ updates
         if: steps.detect_changes.outputs.has_changes == 'true'
@@ -177,7 +183,7 @@ jobs:
           delete-branch: true
 
       # ------------------------------------------------------------------ #
-      # 9. Upload artifacts for CI inspection                                #
+      # 10. Upload artifacts for CI inspection                               #
       # ------------------------------------------------------------------ #
       - name: Upload public/ as workflow artifact
         uses: actions/upload-artifact@v4
