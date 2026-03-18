@@ -1,6 +1,6 @@
 {
   "pipeline_version": "1.0.0",
-  "generated_utc": "2026-03-18T22:26:18Z",
+  "generated_utc": "2026-03-18T23:46:08Z",
   "requested_day_utc": "2026-03-18",
   "record_count": 6,
   "observations": [
@@ -53,6 +53,14 @@
       "source_url": "https://pds.nasa.gov/"
     }
   ],
+  "object_key": "atlas-2025-n1",
+  "designation_snapshot": "3I/ATLAS",
+  "designation_current": "3I/ATLAS",
+  "aliases": [
+    "C/2025 N1 (ATLAS)",
+    "3I/ATLAS"
+  ],
+  "registry_version": "v1.0",
   "epistemic_state": {
     "object": "3I/ATLAS",
     "sources": [
