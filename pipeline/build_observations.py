@@ -392,6 +392,134 @@ def write_summary_file(
 
 
 # ---------------------------------------------------------------------------
+# JPL SBDB normalization helpers
+# ---------------------------------------------------------------------------
+
+def _try_parse_jpl_sbdb_orbital(raw_file: Path) -> Optional[Dict[str, Any]]:
+    """Try to extract orbital parameters from a JPL SBDB raw file.
+
+    The JPL SBDB API returns JSON with an ``orbit.elements`` array whose
+    entries carry ``label`` (e.g. ``"e"``) and ``value`` fields.
+
+    Args:
+        raw_file: Path to the raw JPL SBDB file (JSON or JSON-in-HTML).
+
+    Returns:
+        Dict with keys ``eccentricity``, ``semi_major_axis``, ``inclination``,
+        ``perihelion_distance`` mapping to float values, or ``None`` if the
+        file cannot be parsed or the expected structure is absent.
+    """
+    if not raw_file.exists():
+        return None
+    try:
+        content = raw_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+
+    try:
+        data: Any = json.loads(content)
+    except json.JSONDecodeError:
+        return None
+
+    orbit = data.get("orbit") if isinstance(data, dict) else None
+    elements = orbit.get("elements") if isinstance(orbit, dict) else None
+    if not isinstance(elements, list):
+        return None
+
+    _label_to_field: Dict[str, str] = {
+        "e": "eccentricity",
+        "a": "semi_major_axis",
+        "i": "inclination",
+        "q": "perihelion_distance",
+    }
+
+    orbital: Dict[str, Any] = {}
+    for elem in elements:
+        if not isinstance(elem, dict):
+            continue
+        label = elem.get("label", "")
+        value = elem.get("value")
+        if label in _label_to_field and value is not None:
+            try:
+                orbital[_label_to_field[label]] = float(value)
+            except (TypeError, ValueError):
+                pass
+
+    return orbital if orbital else None
+
+
+def _write_jpl_sbdb_normalized(
+    observations: List[Dict[str, Any]],
+    raw_root: Path,
+    obs_root: Path,
+) -> None:
+    """Create ``normalized_observation.json`` for the ``jpl_sbdb`` epistemic source.
+
+    Locates the ``NASA_JPL_SBDB`` raw observation, parses the JPL SBDB JSON
+    response to extract orbital elements, and writes the normalized payload to
+    ``obs_root/normalized_observation.json``.  Skips silently when the raw
+    file is absent or cannot be parsed.
+
+    Args:
+        observations: Normalized observation list for the day.
+        raw_root: Root directory of the raw snapshot repository.
+        obs_root: Per-date observation directory under ``public/observations/``.
+    """
+    sbdb_obs = next(
+        (obs for obs in observations if obs.get("source_id") == "NASA_JPL_SBDB"),
+        None,
+    )
+    if sbdb_obs is None:
+        return
+
+    raw_path_str = sbdb_obs.get("raw_path", "")
+    if not raw_path_str:
+        return
+
+    raw_file = raw_root / raw_path_str
+    orbital = _try_parse_jpl_sbdb_orbital(raw_file)
+    if not orbital:
+        return
+
+    obs_root.mkdir(parents=True, exist_ok=True)
+    normalized_path = obs_root / "normalized_observation.json"
+    normalized_path.write_text(
+        json.dumps({"orbital": orbital}, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    print(f"  normalized_observation.json -> {normalized_path}")
+
+
+def _embed_epistemic_in_day_file(
+    day_file_path: Path,
+    epistemic_record: Dict[str, Any],
+) -> None:
+    """Embed the epistemic state record into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"epistemic_state"`` field with the given record, and writes it back.
+    Existing fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        epistemic_record: The record returned by :func:`run_for_date`.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["epistemic_state"] = epistemic_record
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Date processing helper
 # ---------------------------------------------------------------------------
 
@@ -416,12 +544,23 @@ def process_dates(
         out_path = write_day_file(observations, date_str, public_dir, generated_utc)
         print(f"  -> {out_path} ({len(observations)} records)")
 
-        # Run Layer-5 epistemic engine on the per-date observation root
+        # Prepare per-date observation root for Layer-5 inputs and outputs.
         obs_root = public_dir / "observations" / date_str
+        obs_root.mkdir(parents=True, exist_ok=True)
+
+        # Create normalized_observation.json from JPL SBDB raw data if available.
+        _write_jpl_sbdb_normalized(observations, raw_root, obs_root)
+
+        # Run Layer-5 epistemic engine on the per-date observation root.
+        epistemic_record: Optional[Dict[str, Any]] = None
         try:
-            run_for_date(obs_root)
+            epistemic_record = run_for_date(obs_root)
         except Exception as exc:  # pylint: disable=broad-except
             print(f"  WARNING: epistemic engine failed for {date_str}: {exc}", file=sys.stderr)
+
+        # Embed epistemic state into the flat daily JSON.
+        if epistemic_record is not None:
+            _embed_epistemic_in_day_file(out_path, epistemic_record)
 
         sources_present = sorted({obs["source_id"] for obs in observations})
         all_day_summaries.append({

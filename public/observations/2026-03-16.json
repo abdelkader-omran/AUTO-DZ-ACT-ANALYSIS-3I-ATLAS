@@ -52,5 +52,22 @@
       "raw_path": "2026-03-16/NASA_PDS_SMALL_BODIES.html",
       "source_url": "https://pds.nasa.gov/"
     }
-  ]
+  ],
+  "epistemic_state": {
+    "object": "3I/ATLAS",
+    "sources": [
+      "jpl_sbdb"
+    ],
+    "parameters": {
+      "jpl_sbdb": {
+        "e": 6.14,
+        "a": -0.264,
+        "i": 175.0,
+        "q": 1.36
+      }
+    },
+    "comparison": null,
+    "epistemic_state": "insufficient_data",
+    "confidence": "single_source_only"
+  }
 }
