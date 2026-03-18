@@ -129,6 +129,25 @@ jobs:
               raise ValueError(f"summary.total_records is invalid: {total_records!r}")
 
           print(f"summary.json: {total_days} days, {total_records} records")
+
+          # Verify epistemic_state.json is present for each published day.
+          obs_dir = pathlib.Path("public/observations")
+          missing = []
+          for day_entry in summary.get("days", []):
+              date = day_entry.get("date", "")
+              if not date:
+                  continue
+              ep_path = obs_dir / date / "epistemic_state.json"
+              if not ep_path.exists():
+                  missing.append(str(ep_path))
+
+          if missing:
+              raise FileNotFoundError(
+                  f"epistemic_state.json missing for {len(missing)} day(s): "
+                  + ", ".join(missing)
+              )
+
+          print(f"epistemic_state.json verified for {total_days} day(s)")
           PYEOF
 
       # ------------------------------------------------------------------ #
@@ -168,6 +187,7 @@ jobs:
 
             Generated outputs:
             - `public/observations/YYYY-MM-DD.json`
+            - `public/observations/YYYY-MM-DD/epistemic_state.json`
             - `public/latest.json`
             - `public/summary.json`
 

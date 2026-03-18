@@ -33,6 +33,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+# Ensure the repository root is on sys.path so that sibling packages
+# (e.g. scripts.epistemic_engine) can be imported regardless of how
+# this script is invoked.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from scripts.epistemic_engine import run_for_date  # noqa: E402  # Layer-5
+
 PIPELINE_VERSION = "1.0.0"
 
 # Canonical source IDs and their primary URLs for traceability
@@ -413,6 +420,12 @@ def process_dates(
 
         out_path = write_day_file(observations, date_str, public_dir, generated_utc)
         print(f"  -> {out_path} ({len(observations)} records)")
+
+        # Layer-5: run epistemic consistency engine after normalization.
+        # Writes epistemic_state.json into public/observations/YYYY-MM-DD/
+        epistemic_root = public_dir / "observations" / date_str
+        run_for_date(epistemic_root)
+        print(f"  -> {epistemic_root / 'epistemic_state.json'}")
 
         sources_present = sorted({obs["source_id"] for obs in observations})
         all_day_summaries.append({
