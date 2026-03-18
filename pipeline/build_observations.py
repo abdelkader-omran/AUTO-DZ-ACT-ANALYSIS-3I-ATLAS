@@ -421,14 +421,8 @@ def _try_parse_jpl_sbdb_orbital(raw_file: Path) -> Optional[Dict[str, Any]]:
     except json.JSONDecodeError:
         return None
 
-    if not isinstance(data, dict):
-        return None
-
-    orbit = data.get("orbit")
-    if not isinstance(orbit, dict):
-        return None
-
-    elements = orbit.get("elements")
+    orbit = data.get("orbit") if isinstance(data, dict) else None
+    elements = orbit.get("elements") if isinstance(orbit, dict) else None
     if not isinstance(elements, list):
         return None
 
