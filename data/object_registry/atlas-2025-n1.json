@@ -1,0 +1,25 @@
+{
+  "object_key": "atlas-2025-n1",
+  "object_type": "small_body",
+  "origin": "interstellar",
+  "aliases": [
+    "C/2025 N1 (ATLAS)",
+    "3I/ATLAS"
+  ],
+  "designation_history": [
+    {
+      "designation": "C/2025 N1 (ATLAS)",
+      "classification": "comet",
+      "context": "coma observed",
+      "timestamp": "2025-07-01"
+    },
+    {
+      "designation": "3I/ATLAS",
+      "classification": "interstellar object",
+      "context": "hyperbolic orbit confirmed",
+      "timestamp": "2025-07-15"
+    }
+  ],
+  "canonical_current": "3I/ATLAS",
+  "registry_version": "v1.0"
+}

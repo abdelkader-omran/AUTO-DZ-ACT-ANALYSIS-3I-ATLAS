@@ -34,8 +34,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from scripts.epistemic_engine import run_for_date
+from pipeline.identity import load_object_registry, resolve_designation_at_time
 
 PIPELINE_VERSION = "1.0.0"
+
+OBJECT_KEY = "atlas-2025-n1"
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_REGISTRY = load_object_registry(OBJECT_KEY, _REPO_ROOT)
 
 # Canonical source IDs and their primary URLs for traceability
 KNOWN_SOURCES: Dict[str, str] = {
@@ -322,6 +327,7 @@ def write_day_file(
     requested_day_utc: str,
     public_dir: Path,
     generated_utc: str,
+    identity_meta: Optional[Dict[str, Any]] = None,
 ) -> Path:
     """Write public/observations/YYYY-MM-DD.json."""
     obs_dir = public_dir / "observations"
@@ -335,6 +341,9 @@ def write_day_file(
         "record_count": len(observations),
         "observations": observations,
     }
+
+    if identity_meta:
+        payload.update(identity_meta)
 
     out_path.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
@@ -541,7 +550,16 @@ def process_dates(
 
         observations = build_observations_for_day(day_dir, date_str, raw_root)
 
-        out_path = write_day_file(observations, date_str, public_dir, generated_utc)
+        designation_snapshot = resolve_designation_at_time(_REGISTRY, date_str)
+        identity_meta: Dict[str, Any] = {
+            "object_key": OBJECT_KEY,
+            "designation_snapshot": designation_snapshot,
+            "designation_current": _REGISTRY.get("canonical_current"),
+            "aliases": _REGISTRY.get("aliases", []),
+            "registry_version": _REGISTRY.get("registry_version"),
+        }
+
+        out_path = write_day_file(observations, date_str, public_dir, generated_utc, identity_meta)
         print(f"  -> {out_path} ({len(observations)} records)")
 
         # Prepare per-date observation root for Layer-5 inputs and outputs.
