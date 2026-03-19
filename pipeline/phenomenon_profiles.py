@@ -173,6 +173,73 @@ def classify_missing_optional_fields(
     }
 
 
+def extract_field_capabilities(profile: dict) -> dict:
+    """Return a flat mapping of field name to its capability metadata.
+
+    Reads ``field_capabilities`` from each family in the profile's
+    ``expected_schema`` and merges them into a single dict keyed by field name.
+    Families that do not carry a ``field_capabilities`` block are silently
+    skipped.
+
+    Args:
+        profile: A loaded phenomenon profile dict.
+
+    Returns:
+        Dict of the form::
+
+            {
+              "field_name": {
+                "capability_type": "...",
+                "possible_source_families": [...]
+              }
+            }
+    """
+    capability_map: dict = {}
+    for family_def in profile.get("expected_schema", {}).values():
+        if not isinstance(family_def, dict):
+            continue
+        field_caps = family_def.get("field_capabilities")
+        if not isinstance(field_caps, dict):
+            continue
+        for field, cap_info in field_caps.items():
+            if isinstance(cap_info, dict):
+                capability_map[field] = cap_info
+    return capability_map
+
+
+def build_missing_field_attribution(field_names: list, capability_map: dict) -> dict:
+    """Return capability attribution for a list of missing field names.
+
+    For each field in *field_names* that has an entry in *capability_map*,
+    copies the attribution metadata (``capability_type`` and
+    ``possible_source_families``) into the result.  Fields absent from
+    *capability_map* are omitted without error.
+
+    This function is strictly attribution-only: it does not infer source
+    activity, observing windows, or date-specific availability.
+
+    Args:
+        field_names: List of missing field names to attribute.
+        capability_map: Flat capability map as returned by
+            :func:`extract_field_capabilities`.
+
+    Returns:
+        Dict of the form::
+
+            {
+              "field_name": {
+                "capability_type": "...",
+                "possible_source_families": [...]
+              }
+            }
+    """
+    return {
+        field: capability_map[field]
+        for field in field_names
+        if field in capability_map
+    }
+
+
 def build_profile_completeness(profile: dict, available_data: dict) -> dict:
     """Compute a capability-aware profile completeness summary for a given observation.
 
@@ -180,6 +247,13 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
     optional fields (broader observational richness).  Missing optional fields
     do not downgrade core completeness and are further classified by capability
     mode into ``missing_not_ingested`` and ``missing_potentially_observable``.
+
+    Attribution metadata is attached to each classified bucket via
+    ``missing_not_ingested_attribution`` and
+    ``missing_potentially_observable_attribution`` when ``field_capabilities``
+    are defined in the profile.  Attribution is deterministic and purely
+    profile-driven; it does not infer source activity, observing windows, or
+    date-specific availability.
 
     Args:
         profile: A loaded phenomenon profile dict.
@@ -189,7 +263,10 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
         Dict with keys ``phenomenon_type``, ``required_fields``,
         ``missing_required_fields``, ``optional_fields``,
         ``missing_optional_fields``, ``missing_not_ingested``,
-        ``missing_potentially_observable``, ``currently_ingested_fields``,
+        ``missing_potentially_observable``,
+        ``missing_not_ingested_attribution``,
+        ``missing_potentially_observable_attribution``,
+        ``currently_ingested_fields``,
         ``completeness_state`` (``"core_complete"`` or ``"core_incomplete"``),
         and ``profile_version``.
     """
@@ -203,6 +280,14 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
 
     capability_gaps = classify_missing_optional_fields(profile, missing_optional_fields)
 
+    capability_map = extract_field_capabilities(profile)
+    missing_not_ingested_attribution = build_missing_field_attribution(
+        capability_gaps["missing_not_ingested"], capability_map
+    )
+    missing_potentially_observable_attribution = build_missing_field_attribution(
+        capability_gaps["missing_potentially_observable"], capability_map
+    )
+
     completeness_state = (
         "core_complete" if not missing_required_fields else "core_incomplete"
     )
@@ -215,6 +300,8 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
         "missing_optional_fields": missing_optional_fields,
         "missing_not_ingested": capability_gaps["missing_not_ingested"],
         "missing_potentially_observable": capability_gaps["missing_potentially_observable"],
+        "missing_not_ingested_attribution": missing_not_ingested_attribution,
+        "missing_potentially_observable_attribution": missing_potentially_observable_attribution,
         "currently_ingested_fields": currently_ingested_fields,
         "completeness_state": completeness_state,
         "profile_version": profile.get("profile_version"),

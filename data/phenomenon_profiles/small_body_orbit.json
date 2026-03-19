@@ -11,25 +11,77 @@
       "required": ["e", "a", "i", "q"],
       "optional": [],
       "currently_ingested": ["e", "a", "i", "q"],
-      "capability_mode": "core"
+      "capability_mode": "core",
+      "field_capabilities": {
+        "e": {
+          "capability_type": "orbital_solution",
+          "possible_source_families": ["jpl_sbdb", "mpc", "esa", "imcce"]
+        },
+        "a": {
+          "capability_type": "orbital_solution",
+          "possible_source_families": ["jpl_sbdb", "mpc", "esa", "imcce"]
+        },
+        "i": {
+          "capability_type": "orbital_solution",
+          "possible_source_families": ["jpl_sbdb", "mpc", "esa", "imcce"]
+        },
+        "q": {
+          "capability_type": "orbital_solution",
+          "possible_source_families": ["jpl_sbdb", "mpc", "esa", "imcce"]
+        }
+      }
     },
     "activity": {
       "required": [],
       "optional": ["coma", "tail", "jet"],
       "currently_ingested": [],
-      "capability_mode": "contextual_optional"
+      "capability_mode": "contextual_optional",
+      "field_capabilities": {
+        "coma": {
+          "capability_type": "activity_imaging",
+          "possible_source_families": ["ground_optical", "space_optical"]
+        },
+        "tail": {
+          "capability_type": "activity_imaging",
+          "possible_source_families": ["ground_optical", "space_optical"]
+        },
+        "jet": {
+          "capability_type": "activity_imaging",
+          "possible_source_families": ["ground_optical", "space_optical", "high_resolution_imaging"]
+        }
+      }
     },
     "photometry": {
       "required": [],
       "optional": ["magnitude", "light_curve"],
       "currently_ingested": [],
-      "capability_mode": "measurement_optional"
+      "capability_mode": "measurement_optional",
+      "field_capabilities": {
+        "magnitude": {
+          "capability_type": "photometry",
+          "possible_source_families": ["ground_optical", "survey_optical", "space_optical"]
+        },
+        "light_curve": {
+          "capability_type": "time_series_photometry",
+          "possible_source_families": ["ground_optical", "survey_optical", "space_optical"]
+        }
+      }
     },
     "spectroscopy": {
       "required": [],
       "optional": ["gas_species", "dust_signature"],
       "currently_ingested": [],
-      "capability_mode": "instrument_optional"
+      "capability_mode": "instrument_optional",
+      "field_capabilities": {
+        "gas_species": {
+          "capability_type": "spectroscopy",
+          "possible_source_families": ["jwst", "alma", "vlt", "ground_spectroscopy"]
+        },
+        "dust_signature": {
+          "capability_type": "spectroscopy",
+          "possible_source_families": ["jwst", "alma", "vlt", "ground_spectroscopy"]
+        }
+      }
     }
   },
   "source_families": [
@@ -38,5 +90,5 @@
     "esa",
     "imcce"
   ],
-  "profile_version": "v1.2"
+  "profile_version": "v1.3"
 }
