@@ -10,22 +10,26 @@
     "orbital_elements": {
       "required": ["e", "a", "i", "q"],
       "optional": [],
-      "currently_ingested": ["e", "a", "i", "q"]
+      "currently_ingested": ["e", "a", "i", "q"],
+      "capability_mode": "core"
     },
     "activity": {
       "required": [],
       "optional": ["coma", "tail", "jet"],
-      "currently_ingested": []
+      "currently_ingested": [],
+      "capability_mode": "contextual_optional"
     },
     "photometry": {
       "required": [],
       "optional": ["magnitude", "light_curve"],
-      "currently_ingested": []
+      "currently_ingested": [],
+      "capability_mode": "measurement_optional"
     },
     "spectroscopy": {
       "required": [],
       "optional": ["gas_species", "dust_signature"],
-      "currently_ingested": []
+      "currently_ingested": [],
+      "capability_mode": "instrument_optional"
     }
   },
   "source_families": [
@@ -34,5 +38,5 @@
     "esa",
     "imcce"
   ],
-  "profile_version": "v1.1"
+  "profile_version": "v1.2"
 }

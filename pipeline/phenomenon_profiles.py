@@ -91,12 +91,95 @@ def detect_missing_expected_fields(expected_fields: list, available_data: dict) 
     return detect_missing_fields(expected_fields, available_data)
 
 
+def extract_profile_structure(profile: dict) -> dict:
+    """Extract per-family structure including capability_mode from a profile.
+
+    Reads the family-aware ``expected_schema`` and returns a mapping from
+    family name to its full definition dict (including ``capability_mode`` when
+    present).
+
+    Args:
+        profile: A loaded phenomenon profile dict.
+
+    Returns:
+        Dict mapping family name to its definition dict.
+    """
+    return {
+        family: definition
+        for family, definition in profile.get("expected_schema", {}).items()
+        if isinstance(definition, dict)
+    }
+
+
+# Capability modes that classify a missing optional field as "not ingested by
+# the current pipeline" rather than "potentially observable but unmeasured".
+_NOT_INGESTED_MODES = {"instrument_optional"}
+
+# Capability modes that classify a missing optional field as "observable in
+# principle but absent from current available_data".
+_POTENTIALLY_OBSERVABLE_MODES = {"contextual_optional", "measurement_optional"}
+
+
+def classify_missing_optional_fields(
+    profile: dict,
+    missing_optional_fields: list,
+) -> dict:
+    """Classify missing optional fields by capability mode.
+
+    For each field in *missing_optional_fields*, look up the ``capability_mode``
+    of its parent family and sort it into one of two buckets:
+
+    * ``missing_not_ingested`` — the current ingestion pipeline does not
+      support this observable (``capability_mode == "instrument_optional"``).
+    * ``missing_potentially_observable`` — the field is observable in principle
+      but was not present in the available data (``capability_mode`` is
+      ``"contextual_optional"`` or ``"measurement_optional"``).
+
+    Fields whose family carries ``capability_mode == "core"`` or an unrecognised
+    mode are silently omitted from both buckets (they should not appear in the
+    optional list in the first place).
+
+    Args:
+        profile: A loaded phenomenon profile dict.
+        missing_optional_fields: List of optional field names that are absent
+            from available_data.
+
+    Returns:
+        Dict with keys ``missing_not_ingested`` and
+        ``missing_potentially_observable``, each holding a list of field names.
+    """
+    # Build a reverse map: field_name -> capability_mode
+    field_to_mode: dict = {}
+    for family_def in profile.get("expected_schema", {}).values():
+        if not isinstance(family_def, dict):
+            continue
+        mode = family_def.get("capability_mode", "")
+        for field in family_def.get("optional") or []:
+            field_to_mode[field] = mode
+
+    missing_not_ingested: list = []
+    missing_potentially_observable: list = []
+
+    for field in missing_optional_fields:
+        mode = field_to_mode.get(field, "")
+        if mode in _NOT_INGESTED_MODES:
+            missing_not_ingested.append(field)
+        elif mode in _POTENTIALLY_OBSERVABLE_MODES:
+            missing_potentially_observable.append(field)
+
+    return {
+        "missing_not_ingested": missing_not_ingested,
+        "missing_potentially_observable": missing_potentially_observable,
+    }
+
+
 def build_profile_completeness(profile: dict, available_data: dict) -> dict:
-    """Compute a family-aware profile completeness summary for a given observation.
+    """Compute a capability-aware profile completeness summary for a given observation.
 
     Distinguishes between required fields (core orbital completeness) and
     optional fields (broader observational richness).  Missing optional fields
-    do not downgrade core completeness.
+    do not downgrade core completeness and are further classified by capability
+    mode into ``missing_not_ingested`` and ``missing_potentially_observable``.
 
     Args:
         profile: A loaded phenomenon profile dict.
@@ -105,7 +188,8 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
     Returns:
         Dict with keys ``phenomenon_type``, ``required_fields``,
         ``missing_required_fields``, ``optional_fields``,
-        ``missing_optional_fields``, ``currently_ingested_fields``,
+        ``missing_optional_fields``, ``missing_not_ingested``,
+        ``missing_potentially_observable``, ``currently_ingested_fields``,
         ``completeness_state`` (``"core_complete"`` or ``"core_incomplete"``),
         and ``profile_version``.
     """
@@ -117,6 +201,8 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
     missing_required_fields = detect_missing_fields(required_fields, available_data)
     missing_optional_fields = detect_missing_fields(optional_fields, available_data)
 
+    capability_gaps = classify_missing_optional_fields(profile, missing_optional_fields)
+
     completeness_state = (
         "core_complete" if not missing_required_fields else "core_incomplete"
     )
@@ -127,6 +213,8 @@ def build_profile_completeness(profile: dict, available_data: dict) -> dict:
         "missing_required_fields": missing_required_fields,
         "optional_fields": optional_fields,
         "missing_optional_fields": missing_optional_fields,
+        "missing_not_ingested": capability_gaps["missing_not_ingested"],
+        "missing_potentially_observable": capability_gaps["missing_potentially_observable"],
         "currently_ingested_fields": currently_ingested_fields,
         "completeness_state": completeness_state,
         "profile_version": profile.get("profile_version"),
