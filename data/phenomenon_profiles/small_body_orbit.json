@@ -1,15 +1,32 @@
 {
   "phenomenon_type": "small_body_orbit",
   "observable_families": [
-    "orbital_elements"
+    "orbital_elements",
+    "activity",
+    "photometry",
+    "spectroscopy"
   ],
   "expected_schema": {
-    "orbital_elements": [
-      "e",
-      "a",
-      "i",
-      "q"
-    ]
+    "orbital_elements": {
+      "required": ["e", "a", "i", "q"],
+      "optional": [],
+      "currently_ingested": ["e", "a", "i", "q"]
+    },
+    "activity": {
+      "required": [],
+      "optional": ["coma", "tail", "jet"],
+      "currently_ingested": []
+    },
+    "photometry": {
+      "required": [],
+      "optional": ["magnitude", "light_curve"],
+      "currently_ingested": []
+    },
+    "spectroscopy": {
+      "required": [],
+      "optional": ["gas_species", "dust_signature"],
+      "currently_ingested": []
+    }
   },
   "source_families": [
     "jpl_sbdb",
@@ -17,5 +34,5 @@
     "esa",
     "imcce"
   ],
-  "profile_version": "v1.0"
+  "profile_version": "v1.1"
 }
