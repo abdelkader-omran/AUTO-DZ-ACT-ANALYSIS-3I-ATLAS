@@ -51,6 +51,17 @@ from pipeline.multi_source_consistency import build_multi_source_consistency
 
 PIPELINE_VERSION = "1.0.0"
 
+TRIZEL_METADATA: Dict[str, Any] = {
+    "project": "TRIZEL",
+    "artifact_type": "epistemic_output",
+    "generated_by": "TRIZEL epistemic pipeline",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "publication",
+    "citation_required": True,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE",
+}
+
 OBJECT_KEY = "atlas-2025-n1"
 # Phenomenon type for the current first implementation.
 # This mapping will later be replaced by a registry-driven object → phenomenon_type
@@ -353,6 +364,7 @@ def write_day_file(
     out_path = obs_dir / f"{requested_day_utc}.json"
 
     payload: Dict[str, Any] = {
+        "trizel_metadata": TRIZEL_METADATA,
         "pipeline_version": PIPELINE_VERSION,
         "generated_utc": generated_utc,
         "requested_day_utc": requested_day_utc,
@@ -380,6 +392,7 @@ def write_latest_file(
     out_path = public_dir / "latest.json"
 
     payload: Dict[str, Any] = {
+        "trizel_metadata": TRIZEL_METADATA,
         "pipeline_version": PIPELINE_VERSION,
         "generated_utc": generated_utc,
         "latest_day": latest_day,
@@ -404,6 +417,7 @@ def write_summary_file(
     out_path = public_dir / "summary.json"
 
     payload: Dict[str, Any] = {
+        "trizel_metadata": TRIZEL_METADATA,
         "pipeline_version": PIPELINE_VERSION,
         "generated_utc": generated_utc,
         "total_days": len(all_day_summaries),
@@ -576,6 +590,33 @@ def _embed_epistemic_in_day_file(
     payload["epistemic_state"] = epistemic_record
 
     day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_trizel_metadata_in_epistemic_file(obs_root: Path) -> None:
+    """Inject ``trizel_metadata`` into the per-date ``epistemic_state.json``.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["trizel_metadata"] = TRIZEL_METADATA
+
+    epistemic_path.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
@@ -1263,6 +1304,8 @@ def _process_single_date(
                 obs_root,
                 date_str=date_str,
             )
+
+    _embed_trizel_metadata_in_epistemic_file(obs_root)
 
     return {
         "date": date_str,

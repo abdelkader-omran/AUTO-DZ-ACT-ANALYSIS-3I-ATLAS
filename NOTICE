@@ -1,0 +1,19 @@
+NOTICE — AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
+
+Generated outputs produced by this repository are TRIZEL-governed scientific
+artifacts. Reuse of any generated output requires attribution according to:
+
+  - Repository citation metadata: see CITATION.cff
+  - Repository notice metadata: see this NOTICE file
+
+All generated artifacts (including but not limited to files under public/) are
+produced by the TRIZEL epistemic analysis pipeline and carry the governance
+layer described in pipeline/build_observations.py.
+
+Repository:
+  https://github.com/abdelkader-omran/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
+
+No additional licensing terms are asserted beyond what is visible in the
+repository. If a LICENSE file is present in the repository root, its terms
+apply to the repository source code. Generated scientific artifacts are
+governed separately under this NOTICE.
