@@ -42,6 +42,17 @@
       "gas_species",
       "dust_signature"
     ],
+    "missing_not_ingested": [
+      "gas_species",
+      "dust_signature"
+    ],
+    "missing_potentially_observable": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve"
+    ],
     "currently_ingested_fields": [
       "e",
       "a",
@@ -49,6 +60,6 @@
       "q"
     ],
     "completeness_state": "core_complete",
-    "profile_version": "v1.1"
+    "profile_version": "v1.2"
   }
 }
