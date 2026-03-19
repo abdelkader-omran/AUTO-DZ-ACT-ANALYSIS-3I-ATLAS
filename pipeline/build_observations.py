@@ -36,9 +36,16 @@ from typing import Any, Dict, List, Optional
 
 from scripts.epistemic_engine import run_for_date
 from pipeline.identity import load_object_registry, resolve_designation_at_time
-from pipeline.phenomenon_profiles import build_profile_completeness, load_phenomenon_profile
+from pipeline.phenomenon_profiles import (
+    build_profile_completeness,
+    extract_field_capabilities,
+    load_phenomenon_profile,
+)
 from pipeline.temporal_availability import build_temporal_availability_block
-from pipeline.outcome_classification import build_outcome_classification_block
+from pipeline.outcome_classification import (
+    build_outcome_classification_block,
+    build_source_outcome_block,
+)
 
 PIPELINE_VERSION = "1.0.0"
 
@@ -825,6 +832,70 @@ def _embed_observational_outcome_in_epistemic_file(
     )
 
 
+# ---------------------------------------------------------------------------
+# Source-aware outcome attribution helpers (Layer 5B)
+# ---------------------------------------------------------------------------
+
+def _embed_source_outcome_attribution_in_day_file(
+    day_file_path: Path,
+    source_outcome_attribution: Dict[str, Any],
+) -> None:
+    """Inject ``source_outcome_attribution`` into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"source_outcome_attribution"`` field, and writes it back.  All other
+    existing fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        source_outcome_attribution: Source outcome attribution block to inject.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["source_outcome_attribution"] = source_outcome_attribution
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_source_outcome_attribution_in_epistemic_file(
+    obs_root: Path,
+    source_outcome_attribution: Dict[str, Any],
+) -> None:
+    """Inject ``source_outcome_attribution`` into the per-date epistemic_state.json.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+        source_outcome_attribution: Source outcome attribution block to inject.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["source_outcome_attribution"] = source_outcome_attribution
+
+    epistemic_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _compute_observational_outcome_for_day(
     orbital: Optional[Dict[str, Any]],
     profile_completeness: Dict[str, Any],
@@ -872,6 +943,9 @@ def _apply_outcome_layer(  # pylint: disable=too-many-arguments
 ) -> None:
     """Compute and embed the observational outcome block for a single day.
 
+    Also computes and embeds the source-aware outcome attribution block
+    (Layer 5B) immediately after the outcome classification.
+
     Combines the compute and embed steps so that the calling function does not
     need to hold the outcome block as a local variable.
 
@@ -889,6 +963,21 @@ def _apply_outcome_layer(  # pylint: disable=too-many-arguments
     if outcome is not None:
         _embed_observational_outcome_in_day_file(out_path, outcome)
         _embed_observational_outcome_in_epistemic_file(obs_root, outcome)
+
+        # Layer 5B: source-aware outcome attribution
+        try:
+            capability_attribution = extract_field_capabilities(_PHENOMENON_PROFILE)
+            source_outcome = build_source_outcome_block(
+                outcome, capability_attribution, temporal_availability
+            )
+            _embed_source_outcome_attribution_in_day_file(out_path, source_outcome)
+            _embed_source_outcome_attribution_in_epistemic_file(obs_root, source_outcome)
+        except Exception as exc:  # pylint: disable=broad-except
+            print(
+                f"  WARNING: source outcome attribution failed for {date_str}: "
+                f"{type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
 
 
 # ---------------------------------------------------------------------------

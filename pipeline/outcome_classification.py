@@ -1,13 +1,14 @@
 """
 AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
-Observational Outcome Classification — Layer 5
+Observational Outcome Classification — Layer 5 / Layer 5B
 
 Deterministic, profile-driven helper for classifying per-field observational
-outcome states.
+outcome states and per-source-family outcome attribution.
 
 This module answers only:
   given the current epistemic stack, what is the correct deterministic outcome
-  state for each observable field at this layer?
+  state for each observable field at this layer, and what is the per-source-family
+  attribution of that outcome?
 
 It does NOT infer scheduling, proposal history, mission activity, source-specific
 operational facts, missed opportunities, source blame, or performance judgments.
@@ -196,3 +197,139 @@ def build_outcome_classification_block(
         "field_outcomes": field_outcomes,
         "outcome_summary": outcome_summary,
     }
+
+
+def build_source_outcome_for_field(
+    field: str,
+    field_state: str,
+    capability_info: Dict,
+    temporal_info: Dict,
+) -> Dict:
+    """Build per-source-family outcome attribution for a single observable field.
+
+    Applies deterministic rules to assign an outcome state to every source
+    family listed in *capability_info* given the field-level *field_state* and
+    per-source temporal availability from *temporal_info*.
+
+    Deterministic rules (applied per source family):
+
+    - ``"not_ingested"``  → source state = ``"not_ingested"``
+    - ``"not_available"`` → source state = ``"not_available"``
+    - ``"observed"``      → source state = ``"observed"``
+    - ``"not_observed"``  →
+        - source temporal availability ``"possible"``      → ``"not_observed"``
+        - source temporal availability ``"not_possible"``  → ``"not_available"``
+        - otherwise                                        → ``"unknown"``
+    - any other state     → source state = ``"unknown"``
+
+    Source families not present in *capability_info* are never invented.
+
+    Args:
+        field: Name of the observable field (part of the public interface;
+            not used in dispatch logic).
+        field_state: The overall outcome state for this field, as returned by
+            :func:`classify_field_outcome`.
+        capability_info: Capability dict for this field, containing at minimum
+            a ``"possible_source_families"`` key listing known source families.
+        temporal_info: Temporal availability dict for this field (as stored
+            inside a temporal availability sub-block), containing a
+            ``"source_temporal_availability"`` key.  May be empty.
+
+    Returns:
+        Dict with ``"state"`` (mirroring *field_state*) and ``"sources"``
+        (mapping each source family to its deterministic outcome state).
+    """
+    # field is part of the public interface for future dispatch; suppress lint.
+    _ = field
+
+    families = list(capability_info.get("possible_source_families") or [])
+    source_temporal: Dict[str, str] = {}
+    if temporal_info:
+        source_temporal = temporal_info.get("source_temporal_availability") or {}
+
+    sources: Dict[str, str] = {}
+    for fam in families:
+        if field_state == "not_ingested":
+            sources[fam] = "not_ingested"
+        elif field_state == "not_available":
+            sources[fam] = "not_available"
+        elif field_state == "observed":
+            sources[fam] = "observed"
+        elif field_state == "not_observed":
+            avail = source_temporal.get(fam)
+            if avail == "possible":
+                sources[fam] = "not_observed"
+            elif avail == "not_possible":
+                sources[fam] = "not_available"
+            else:
+                sources[fam] = "unknown"
+        else:
+            sources[fam] = "unknown"
+
+    return {"state": field_state, "sources": sources}
+
+
+def build_source_outcome_block(
+    outcome_block: Dict,
+    capability_attribution: Dict,
+    temporal_availability: Dict,
+) -> Dict:
+    """Build the full source-aware observational outcome attribution block.
+
+    Iterates over every field in *outcome_block["field_outcomes"]* and calls
+    :func:`build_source_outcome_for_field` for fields that have an entry in
+    *capability_attribution*.  Fields with no capability entry are silently
+    omitted (no source state is invented).
+
+    Example output::
+
+        {
+          "gas_species": {
+            "state": "not_ingested",
+            "sources": {
+              "jwst": "not_ingested",
+              "alma": "not_ingested",
+              "vlt": "not_ingested"
+            }
+          },
+          "e": {
+            "state": "observed",
+            "sources": {
+              "jpl_sbdb": "observed",
+              "mpc": "unknown"
+            }
+          }
+        }
+
+    This function is strictly deterministic and profile-driven.  It does NOT
+    infer source responsibility, missed opportunity, or actual instrument usage.
+
+    Args:
+        outcome_block: Outcome classification block as returned by
+            :func:`build_outcome_classification_block`.
+        capability_attribution: Flat dict mapping field names to capability
+            info dicts (each containing ``"possible_source_families"``).
+        temporal_availability: Temporal availability block as returned by
+            :func:`pipeline.build_observations._compute_temporal_availability_for_day`.
+
+    Returns:
+        Dict mapping each attributed field name to its source-outcome dict
+        (with ``"state"`` and ``"sources"`` keys).
+    """
+    field_outcomes: Dict[str, str] = outcome_block.get("field_outcomes") or {}
+
+    result: Dict[str, Any] = {}
+    for field, field_state in field_outcomes.items():
+        capability_info = capability_attribution.get(field)
+        if not capability_info:
+            continue
+
+        temporal_info = _find_field_in_temporal_block(field, temporal_availability)
+        result[field] = build_source_outcome_for_field(
+            field,
+            field_state,
+            capability_info,
+            temporal_info or {},
+        )
+
+    return result
