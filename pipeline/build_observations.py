@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylint: disable=too-many-lines
 """
 AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
 Analysis Pipeline — Build Observation Dataset
@@ -37,6 +38,7 @@ from scripts.epistemic_engine import run_for_date
 from pipeline.identity import load_object_registry, resolve_designation_at_time
 from pipeline.phenomenon_profiles import build_profile_completeness, load_phenomenon_profile
 from pipeline.temporal_availability import build_temporal_availability_block
+from pipeline.outcome_classification import build_outcome_classification_block
 
 PIPELINE_VERSION = "1.0.0"
 
@@ -760,6 +762,136 @@ def _compute_temporal_availability_for_day(
 
 
 # ---------------------------------------------------------------------------
+# Observational outcome classification helpers
+# ---------------------------------------------------------------------------
+
+def _embed_observational_outcome_in_day_file(
+    day_file_path: Path,
+    observational_outcome: Dict[str, Any],
+) -> None:
+    """Inject ``observational_outcome`` into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"observational_outcome"`` field, and writes it back.  All other existing
+    fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        observational_outcome: Outcome classification block to inject.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["observational_outcome"] = observational_outcome
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_observational_outcome_in_epistemic_file(
+    obs_root: Path,
+    observational_outcome: Dict[str, Any],
+) -> None:
+    """Inject ``observational_outcome`` into the per-date ``epistemic_state.json``.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+        observational_outcome: Outcome classification block to inject.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["observational_outcome"] = observational_outcome
+
+    epistemic_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _compute_observational_outcome_for_day(
+    orbital: Optional[Dict[str, Any]],
+    profile_completeness: Dict[str, Any],
+    temporal_availability: Dict[str, Any],
+    date_str: str,
+) -> Optional[Dict[str, Any]]:
+    """Compute the observational outcome classification block for a single day.
+
+    Args:
+        orbital: Parsed orbital dict, or ``None`` if unavailable.
+        profile_completeness: Profile completeness dict as returned by
+            :func:`build_profile_completeness`.
+        temporal_availability: Temporal availability block as returned by
+            :func:`_compute_temporal_availability_for_day`.
+        date_str: Date string used for warning messages only.
+
+    Returns:
+        Observational outcome block, or ``None`` on failure.
+    """
+    available_data: Dict[str, Any] = _orbital_to_available_data(orbital) if orbital else {}
+    try:
+        result = build_outcome_classification_block(
+            available_data=available_data,
+            profile_completeness=profile_completeness,
+            profile_temporal_availability=temporal_availability,
+        )
+        return result
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            f"  WARNING: outcome classification failed for {date_str}: "
+            f"{type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        return None
+
+
+def _apply_outcome_layer(  # pylint: disable=too-many-arguments
+    orbital: Optional[Dict[str, Any]],
+    profile_completeness: Dict[str, Any],
+    temporal_availability: Dict[str, Any],
+    out_path: Path,
+    obs_root: Path,
+    *,
+    date_str: str,
+) -> None:
+    """Compute and embed the observational outcome block for a single day.
+
+    Combines the compute and embed steps so that the calling function does not
+    need to hold the outcome block as a local variable.
+
+    Args:
+        orbital: Parsed orbital dict, or ``None`` if unavailable.
+        profile_completeness: Profile completeness dict.
+        temporal_availability: Temporal availability block.
+        out_path: Path to the flat daily JSON file.
+        obs_root: Per-date observation directory.
+        date_str: Date string used for warning messages only.
+    """
+    outcome = _compute_observational_outcome_for_day(
+        orbital, profile_completeness, temporal_availability, date_str
+    )
+    if outcome is not None:
+        _embed_observational_outcome_in_day_file(out_path, outcome)
+        _embed_observational_outcome_in_epistemic_file(obs_root, outcome)
+
+
+# ---------------------------------------------------------------------------
 # Date processing helper
 # ---------------------------------------------------------------------------
 
@@ -855,6 +987,15 @@ def _process_single_date(
         if temporal_availability is not None:
             _embed_temporal_availability_in_day_file(out_path, temporal_availability)
             _embed_temporal_availability_in_epistemic_file(obs_root, temporal_availability)
+
+            _apply_outcome_layer(
+                orbital,
+                profile_completeness,
+                temporal_availability,
+                out_path,
+                obs_root,
+                date_str=date_str,
+            )
 
     return {
         "date": date_str,
