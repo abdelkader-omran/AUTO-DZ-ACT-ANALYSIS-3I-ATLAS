@@ -861,7 +861,7 @@ def _compute_observational_outcome_for_day(
         return None
 
 
-def _apply_outcome_layer(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def _apply_outcome_layer(  # pylint: disable=too-many-arguments
     orbital: Optional[Dict[str, Any]],
     profile_completeness: Dict[str, Any],
     temporal_availability: Dict[str, Any],
