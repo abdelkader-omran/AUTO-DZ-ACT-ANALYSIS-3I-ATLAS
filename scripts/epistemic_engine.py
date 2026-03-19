@@ -44,12 +44,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from itertools import combinations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 OBJECT_NAME = "3I/ATLAS"
+
+# Matches a YYYY-MM-DD date string used as observation directory names.
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 # Maps each source key to the corresponding normalized filename in the observation root.
 SOURCE_FILES: Dict[str, str] = {
@@ -263,6 +267,81 @@ def classify_state(
 
 
 # ---------------------------------------------------------------------------
+# Step 5b — Temporal consistency helpers
+# ---------------------------------------------------------------------------
+
+def load_previous_epistemic(observation_root: Path) -> Optional[Dict[str, Any]]:
+    """Load the nearest previous day's epistemic state record.
+
+    Searches sibling directories of *observation_root* for the most recent
+    date directory that precedes the current date and contains an
+    ``epistemic_state.json`` file.
+
+    Args:
+        observation_root: Path to the current per-date observation directory.
+
+    Returns:
+        Parsed ``epistemic_state.json`` from the nearest previous day,
+        or ``None`` if no previous day with a readable record exists.
+    """
+    current_date = observation_root.name
+    if not _DATE_RE.match(current_date):
+        return None
+
+    obs_parent = observation_root.parent
+    if not obs_parent.is_dir():
+        return None
+
+    previous_dates = sorted(
+        d.name
+        for d in obs_parent.iterdir()
+        if d.is_dir() and _DATE_RE.match(d.name) and d.name < current_date
+    )
+
+    for prev_date in reversed(previous_dates):
+        prev_path = obs_parent / prev_date / "epistemic_state.json"
+        if prev_path.exists():
+            try:
+                return json.loads(prev_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                pass
+
+    return None
+
+
+def evaluate_temporal_consistency(
+    current_params: Dict[str, Optional[float]],
+    previous_params: Optional[Dict[str, Optional[float]]],
+) -> str:
+    """Evaluate temporal consistency between current and previous parameters.
+
+    Performs an exact comparison with no tolerance thresholds, no interpolation,
+    and no statistical smoothing.
+
+    Args:
+        current_params: Current day's extracted parameter dict
+                        (keys: ``e``, ``a``, ``i``, ``q``).
+        previous_params: Previous day's extracted parameter dict, or ``None``
+                         when no prior observation day is available.
+
+    Returns:
+        One of:
+
+        * ``"no_history"``  — no previous observation day exists
+        * ``"stable"``      — all four parameters are exactly equal
+        * ``"evolved"``     — at least one parameter differs
+    """
+    if previous_params is None:
+        return "no_history"
+
+    for key in ("e", "a", "i", "q"):
+        if current_params.get(key) != previous_params.get(key):
+            return "evolved"
+
+    return "stable"
+
+
+# ---------------------------------------------------------------------------
 # Step 6 — Build output record
 # ---------------------------------------------------------------------------
 
@@ -273,8 +352,14 @@ def build_epistemic_record(observation_root: Path) -> Dict[str, Any]:
       1. Load sources
       2. Build parameter table
       3. Compute pairwise deltas
-      4. Classify epistemic state
+      4. Classify epistemic state (with temporal enrichment for single-source)
       5. Assemble and return the output record
+
+    For single-source observations the engine evaluates temporal consistency
+    against the nearest previous day and returns one of the temporal states
+    (``"single_source_no_history"``, ``"single_source_temporally_stable"``,
+    ``"single_source_temporally_evolved"``).  Multi-source classification
+    (``"consensus"``, ``"divergence"``, ``"insufficient_data"``) is unchanged.
 
     No estimation, interpolation, or statistical inference is performed.
     Null values are preserved exactly as received from the source files.
@@ -288,16 +373,53 @@ def build_epistemic_record(observation_root: Path) -> Dict[str, Any]:
     sources = load_sources(observation_root)
     table = build_table(sources)
     deltas = compute_deltas(table)
-    state = classify_state(deltas, len(sources))
-    confidence = (
-        "single_source_only" if len(sources) < 2 else "multi_source_comparison"
-    )
+    source_count = len(sources)
+
+    if source_count < 2:
+        # Single-source path: enrich with temporal consistency evaluation.
+        prev_record = load_previous_epistemic(observation_root)
+
+        prev_params: Optional[Dict[str, Optional[float]]] = None
+        if prev_record is not None:
+            prev_params_raw = prev_record.get("parameters", {})
+            for _src_params in prev_params_raw.values():
+                if isinstance(_src_params, dict):
+                    prev_params = {
+                        k: (float(v) if v is not None else None)
+                        for k, v in _src_params.items()
+                        if k in ("e", "a", "i", "q")
+                    }
+                    break
+
+        current_params: Dict[str, Optional[float]] = (
+            next(iter(table.values())) if table else {}
+        )
+
+        temporal_consistency = evaluate_temporal_consistency(
+            current_params, prev_params
+        )
+
+        _temporal_to_state: Dict[str, str] = {
+            "no_history": "single_source_no_history",
+            "stable": "single_source_temporally_stable",
+            "evolved": "single_source_temporally_evolved",
+        }
+        state = _temporal_to_state[temporal_consistency]
+        confidence = "limited"
+    else:
+        # Multi-source path: cross-source comparison (unchanged logic).
+        # temporal_consistency is null — not applicable when multiple sources
+        # are available for direct cross-source comparison.
+        state = classify_state(deltas, source_count)
+        confidence = "multi_source_comparison"
+        temporal_consistency = None
 
     return {
         "object": OBJECT_NAME,
         "sources": list(sources.keys()),
         "parameters": table,
         "comparison": deltas,
+        "temporal_consistency": temporal_consistency,  # null for multi-source
         "epistemic_state": state,
         "confidence": confidence,
     }

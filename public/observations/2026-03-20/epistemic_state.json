@@ -12,6 +12,7 @@
     }
   },
   "comparison": null,
-  "epistemic_state": "insufficient_data",
-  "confidence": "single_source_only"
+  "temporal_consistency": "stable",
+  "epistemic_state": "single_source_temporally_stable",
+  "confidence": "limited"
 }
