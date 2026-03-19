@@ -543,18 +543,16 @@ def _orbital_to_available_data(orbital: Dict[str, Any]) -> Dict[str, Any]:
 def _embed_epistemic_in_day_file(
     day_file_path: Path,
     epistemic_record: Dict[str, Any],
-    profile_completeness: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Embed the epistemic state record into the flat daily JSON file.
 
     Reads the existing flat daily JSON, adds (or replaces) a top-level
-    ``"epistemic_state"`` field with the given record, and optionally adds a
-    ``"profile_completeness"`` field.  Existing fields are preserved unchanged.
+    ``"epistemic_state"`` field with the given record, and writes it back.
+    Existing fields are preserved unchanged.
 
     Args:
         day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
         epistemic_record: The record returned by :func:`run_for_date`.
-        profile_completeness: Optional profile completeness summary to inject.
     """
     try:
         payload: Dict[str, Any] = json.loads(
@@ -564,8 +562,6 @@ def _embed_epistemic_in_day_file(
         return
 
     payload["epistemic_state"] = epistemic_record
-    if profile_completeness is not None:
-        payload["profile_completeness"] = profile_completeness
 
     day_file_path.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
