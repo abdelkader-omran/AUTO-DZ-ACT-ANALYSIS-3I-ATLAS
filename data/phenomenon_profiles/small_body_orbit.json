@@ -1,0 +1,21 @@
+{
+  "phenomenon_type": "small_body_orbit",
+  "observable_families": [
+    "orbital_elements"
+  ],
+  "expected_schema": {
+    "orbital_elements": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ]
+  },
+  "source_families": [
+    "jpl_sbdb",
+    "mpc",
+    "esa",
+    "imcce"
+  ],
+  "profile_version": "v1.0"
+}
