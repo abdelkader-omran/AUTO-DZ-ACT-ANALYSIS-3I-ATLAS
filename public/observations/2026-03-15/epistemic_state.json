@@ -17,15 +17,38 @@
   "confidence": "limited",
   "profile_completeness": {
     "phenomenon_type": "small_body_orbit",
-    "expected_fields": [
+    "required_fields": [
       "e",
       "a",
       "i",
       "q"
     ],
-    "missing_fields": [],
-    "missing_count": 0,
-    "completeness_state": "complete",
-    "profile_version": "v1.0"
+    "missing_required_fields": [],
+    "optional_fields": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve",
+      "gas_species",
+      "dust_signature"
+    ],
+    "missing_optional_fields": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve",
+      "gas_species",
+      "dust_signature"
+    ],
+    "currently_ingested_fields": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ],
+    "completeness_state": "core_complete",
+    "profile_version": "v1.1"
   }
 }
