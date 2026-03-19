@@ -78,5 +78,18 @@
     "temporal_consistency": "stable",
     "epistemic_state": "single_source_temporally_stable",
     "confidence": "limited"
+  },
+  "profile_completeness": {
+    "phenomenon_type": "small_body_orbit",
+    "expected_fields": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ],
+    "missing_fields": [],
+    "missing_count": 0,
+    "completeness_state": "complete",
+    "profile_version": "v1.0"
   }
 }

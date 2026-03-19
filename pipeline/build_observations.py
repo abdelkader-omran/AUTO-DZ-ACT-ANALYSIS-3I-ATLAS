@@ -35,12 +35,18 @@ from typing import Any, Dict, List, Optional
 
 from scripts.epistemic_engine import run_for_date
 from pipeline.identity import load_object_registry, resolve_designation_at_time
+from pipeline.phenomenon_profiles import build_profile_completeness, load_phenomenon_profile
 
 PIPELINE_VERSION = "1.0.0"
 
 OBJECT_KEY = "atlas-2025-n1"
+# Phenomenon type for the current first implementation.
+# This mapping will later be replaced by a registry-driven object → phenomenon_type
+# resolution without redesigning the module.
+_PHENOMENON_TYPE = "small_body_orbit"
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _REGISTRY = load_object_registry(OBJECT_KEY, _REPO_ROOT)
+_PHENOMENON_PROFILE = load_phenomenon_profile(_PHENOMENON_TYPE, _REPO_ROOT)
 
 # Canonical source IDs and their primary URLs for traceability
 KNOWN_SOURCES: Dict[str, str] = {
@@ -461,7 +467,7 @@ def _write_jpl_sbdb_normalized(
     observations: List[Dict[str, Any]],
     raw_root: Path,
     obs_root: Path,
-) -> None:
+) -> Optional[Dict[str, Any]]:
     """Create ``normalized_observation.json`` for the ``jpl_sbdb`` epistemic source.
 
     Locates the ``NASA_JPL_SBDB`` raw observation, parses the JPL SBDB JSON
@@ -473,22 +479,26 @@ def _write_jpl_sbdb_normalized(
         observations: Normalized observation list for the day.
         raw_root: Root directory of the raw snapshot repository.
         obs_root: Per-date observation directory under ``public/observations/``.
+
+    Returns:
+        The parsed orbital dict (e.g. ``{"eccentricity": ..., ...}``), or
+        ``None`` if no data could be extracted.
     """
     sbdb_obs = next(
         (obs for obs in observations if obs.get("source_id") == "NASA_JPL_SBDB"),
         None,
     )
     if sbdb_obs is None:
-        return
+        return None
 
     raw_path_str = sbdb_obs.get("raw_path", "")
     if not raw_path_str:
-        return
+        return None
 
     raw_file = raw_root / raw_path_str
     orbital = _try_parse_jpl_sbdb_orbital(raw_file)
     if not orbital:
-        return
+        return None
 
     obs_root.mkdir(parents=True, exist_ok=True)
     normalized_path = obs_root / "normalized_observation.json"
@@ -497,6 +507,37 @@ def _write_jpl_sbdb_normalized(
         encoding="utf-8",
     )
     print(f"  normalized_observation.json -> {normalized_path}")
+    return orbital
+
+
+# Mapping from normalized orbital field names to the profile's short-form field names.
+# Only build_observations.py adapts the current normalized structure; the core
+# phenomenon_profiles module remains schema-agnostic.
+_ORBITAL_NORM_TO_PROFILE_FIELD: Dict[str, str] = {
+    "eccentricity": "e",
+    "semi_major_axis": "a",
+    "inclination": "i",
+    "perihelion_distance": "q",
+}
+
+
+def _orbital_to_available_data(orbital: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert a normalized orbital dict to the flat available_data mapping.
+
+    Translates long-form keys (e.g. ``"eccentricity"``) to the profile
+    short-form keys (e.g. ``"e"``) expected by the generic profile completeness
+    engine.
+
+    Args:
+        orbital: Dict as produced by :func:`_try_parse_jpl_sbdb_orbital`.
+
+    Returns:
+        Flat dict keyed by profile field names.
+    """
+    return {
+        short: orbital.get(long)
+        for long, short in _ORBITAL_NORM_TO_PROFILE_FIELD.items()
+    }
 
 
 def _embed_epistemic_in_day_file(
@@ -528,9 +569,161 @@ def _embed_epistemic_in_day_file(
     )
 
 
+def _embed_profile_completeness_in_day_file(
+    day_file_path: Path,
+    profile_completeness: Dict[str, Any],
+) -> None:
+    """Inject ``profile_completeness`` into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"profile_completeness"`` field, and writes it back.  All other existing
+    fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        profile_completeness: Profile completeness summary dict.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["profile_completeness"] = profile_completeness
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_profile_completeness_in_epistemic_file(
+    obs_root: Path,
+    profile_completeness: Dict[str, Any],
+) -> None:
+    """Inject ``profile_completeness`` into the per-date ``epistemic_state.json``.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+        profile_completeness: Profile completeness summary dict.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["profile_completeness"] = profile_completeness
+
+    epistemic_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Date processing helper
 # ---------------------------------------------------------------------------
+
+def _compute_profile_completeness_for_day(
+    orbital: Optional[Dict[str, Any]],
+    date_str: str,
+) -> Optional[Dict[str, Any]]:
+    """Compute profile completeness for a single day from normalized orbital data.
+
+    Args:
+        orbital: Parsed orbital dict, or ``None`` if unavailable.
+        date_str: Date string used for warning messages only.
+
+    Returns:
+        Profile completeness dict, or ``None`` on failure.
+    """
+    available_data: Dict[str, Any] = _orbital_to_available_data(orbital) if orbital else {}
+    try:
+        result = build_profile_completeness(_PHENOMENON_PROFILE, available_data)
+        print(f"  profile_completeness: {result['completeness_state']}")
+        return result
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            f"  WARNING: profile completeness failed for {date_str}: "
+            f"{type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        return None
+
+
+def _process_single_date(
+    date_str: str,
+    raw_root: Path,
+    public_dir: Path,
+    generated_utc: str,
+) -> Dict[str, Any]:
+    """Process one date and return its day-summary dict.
+
+    Writes the per-day observation file, normalized orbital data, epistemic
+    state, and profile completeness outputs for *date_str*.
+
+    Args:
+        date_str: Date in ``YYYY-MM-DD`` format.
+        raw_root: Root of the raw snapshot repository.
+        public_dir: Output directory for publishable JSON files.
+        generated_utc: ISO-8601 UTC timestamp string for this pipeline run.
+
+    Returns:
+        Day-summary dict with ``date``, ``record_count``, ``sources``, and
+        ``path`` keys.
+    """
+    day_dir = raw_root / date_str
+    print(f"Processing {date_str} from {day_dir} …")
+
+    observations = build_observations_for_day(day_dir, date_str, raw_root)
+
+    designation_snapshot = resolve_designation_at_time(_REGISTRY, date_str)
+    identity_meta: Dict[str, Any] = {
+        "object_key": OBJECT_KEY,
+        "designation_snapshot": designation_snapshot,
+        "designation_current": _REGISTRY.get("canonical_current"),
+        "aliases": _REGISTRY.get("aliases", []),
+        "registry_version": _REGISTRY.get("registry_version"),
+    }
+
+    out_path = write_day_file(observations, date_str, public_dir, generated_utc, identity_meta)
+    print(f"  -> {out_path} ({len(observations)} records)")
+
+    obs_root = public_dir / "observations" / date_str
+    obs_root.mkdir(parents=True, exist_ok=True)
+
+    orbital = _write_jpl_sbdb_normalized(observations, raw_root, obs_root)
+    profile_completeness = _compute_profile_completeness_for_day(orbital, date_str)
+
+    epistemic_record: Optional[Dict[str, Any]] = None
+    try:
+        epistemic_record = run_for_date(obs_root)
+    except Exception as exc:  # pylint: disable=broad-except
+        print(f"  WARNING: epistemic engine failed for {date_str}: {exc}", file=sys.stderr)
+
+    if epistemic_record is not None:
+        _embed_epistemic_in_day_file(out_path, epistemic_record)
+
+    if profile_completeness is not None:
+        _embed_profile_completeness_in_day_file(out_path, profile_completeness)
+        _embed_profile_completeness_in_epistemic_file(obs_root, profile_completeness)
+
+    return {
+        "date": date_str,
+        "record_count": len(observations),
+        "sources": sorted({obs["source_id"] for obs in observations}),
+        "path": f"observations/{date_str}.json",
+    }
+
 
 def process_dates(
     dates_to_process: List[str],
@@ -542,53 +735,10 @@ def process_dates(
     Process each date, write per-day observation files, and return a list of
     day-summary dicts suitable for inclusion in summary.json.
     """
-    all_day_summaries: List[Dict[str, Any]] = []
-
-    for date_str in dates_to_process:
-        day_dir = raw_root / date_str
-        print(f"Processing {date_str} from {day_dir} …")
-
-        observations = build_observations_for_day(day_dir, date_str, raw_root)
-
-        designation_snapshot = resolve_designation_at_time(_REGISTRY, date_str)
-        identity_meta: Dict[str, Any] = {
-            "object_key": OBJECT_KEY,
-            "designation_snapshot": designation_snapshot,
-            "designation_current": _REGISTRY.get("canonical_current"),
-            "aliases": _REGISTRY.get("aliases", []),
-            "registry_version": _REGISTRY.get("registry_version"),
-        }
-
-        out_path = write_day_file(observations, date_str, public_dir, generated_utc, identity_meta)
-        print(f"  -> {out_path} ({len(observations)} records)")
-
-        # Prepare per-date observation root for Layer-5 inputs and outputs.
-        obs_root = public_dir / "observations" / date_str
-        obs_root.mkdir(parents=True, exist_ok=True)
-
-        # Create normalized_observation.json from JPL SBDB raw data if available.
-        _write_jpl_sbdb_normalized(observations, raw_root, obs_root)
-
-        # Run Layer-5 epistemic engine on the per-date observation root.
-        epistemic_record: Optional[Dict[str, Any]] = None
-        try:
-            epistemic_record = run_for_date(obs_root)
-        except Exception as exc:  # pylint: disable=broad-except
-            print(f"  WARNING: epistemic engine failed for {date_str}: {exc}", file=sys.stderr)
-
-        # Embed epistemic state into the flat daily JSON.
-        if epistemic_record is not None:
-            _embed_epistemic_in_day_file(out_path, epistemic_record)
-
-        sources_present = sorted({obs["source_id"] for obs in observations})
-        all_day_summaries.append({
-            "date": date_str,
-            "record_count": len(observations),
-            "sources": sources_present,
-            "path": f"observations/{date_str}.json",
-        })
-
-    return all_day_summaries
+    return [
+        _process_single_date(date_str, raw_root, public_dir, generated_utc)
+        for date_str in dates_to_process
+    ]
 
 
 # ---------------------------------------------------------------------------
