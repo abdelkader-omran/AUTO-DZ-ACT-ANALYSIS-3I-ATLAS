@@ -867,6 +867,7 @@ def _apply_outcome_layer(  # pylint: disable=too-many-arguments
     temporal_availability: Dict[str, Any],
     out_path: Path,
     obs_root: Path,
+    *,
     date_str: str,
 ) -> None:
     """Compute and embed the observational outcome block for a single day.
@@ -993,7 +994,7 @@ def _process_single_date(
                 temporal_availability,
                 out_path,
                 obs_root,
-                date_str,
+                date_str=date_str,
             )
 
     return {
