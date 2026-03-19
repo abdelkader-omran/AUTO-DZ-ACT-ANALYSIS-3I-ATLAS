@@ -47,6 +47,7 @@ from pipeline.outcome_classification import (
     build_source_outcome_block,
 )
 from pipeline.source_evidence import build_source_evidence_block
+from pipeline.multi_source_consistency import build_multi_source_consistency
 
 PIPELINE_VERSION = "1.0.0"
 
@@ -957,6 +958,66 @@ def _embed_source_evidence_in_epistemic_file(
     )
 
 
+def _embed_multi_source_consistency_in_day_file(
+    day_file_path: Path,
+    multi_source_consistency: Dict[str, Any],
+) -> None:
+    """Inject ``multi_source_consistency`` into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"multi_source_consistency"`` field, and writes it back.  All other
+    existing fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        multi_source_consistency: Consistency block to inject.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["multi_source_consistency"] = multi_source_consistency
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_multi_source_consistency_in_epistemic_file(
+    obs_root: Path,
+    multi_source_consistency: Dict[str, Any],
+) -> None:
+    """Inject ``multi_source_consistency`` into the per-date epistemic_state.json.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+        multi_source_consistency: Consistency block to inject.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["multi_source_consistency"] = multi_source_consistency
+
+    epistemic_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 def _compute_observational_outcome_for_day(
     orbital: Optional[Dict[str, Any]],
     profile_completeness: Dict[str, Any],
@@ -991,6 +1052,45 @@ def _compute_observational_outcome_for_day(
             file=sys.stderr,
         )
         return None
+
+
+def _apply_consistency_layer(
+    orbital: Optional[Dict[str, Any]],
+    source_evidence: Dict[str, Any],
+    out_path: Path,
+    obs_root: Path,
+    *,
+    date_str: str,
+) -> None:
+    """Compute and embed the multi-source consistency block for a single day.
+
+    Args:
+        orbital: Parsed orbital dict, or ``None`` if unavailable.
+        source_evidence: Source evidence block as returned by
+            :func:`build_source_evidence_block`.
+        out_path: Path to the flat daily JSON file.
+        obs_root: Per-date observation directory.
+        date_str: Date string used for warning messages only.
+    """
+    try:
+        source_values_by_field: Dict[str, Any] = {}
+        if orbital:
+            for long_name, short_name in _ORBITAL_NORM_TO_PROFILE_FIELD.items():
+                value = orbital.get(long_name)
+                if value is not None:
+                    source_values_by_field[short_name] = {"jpl_sbdb": value}
+        multi_source_consistency = build_multi_source_consistency(
+            source_evidence=source_evidence,
+            source_values_by_field=source_values_by_field,
+        )
+        _embed_multi_source_consistency_in_day_file(out_path, multi_source_consistency)
+        _embed_multi_source_consistency_in_epistemic_file(obs_root, multi_source_consistency)
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            f"  WARNING: multi-source consistency failed for {date_str}: "
+            f"{type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
 
 
 def _apply_outcome_layer(  # pylint: disable=too-many-arguments
@@ -1039,6 +1139,11 @@ def _apply_outcome_layer(  # pylint: disable=too-many-arguments
                 source_evidence = build_source_evidence_block(source_outcome)
                 _embed_source_evidence_in_day_file(out_path, source_evidence)
                 _embed_source_evidence_in_epistemic_file(obs_root, source_evidence)
+
+                # Layer 7: deterministic multi-source epistemic consistency
+                _apply_consistency_layer(
+                    orbital, source_evidence, out_path, obs_root, date_str=date_str
+                )
             except Exception as exc:  # pylint: disable=broad-except
                 print(
                     f"  WARNING: source evidence grounding failed for {date_str}: "
