@@ -36,6 +36,7 @@ from typing import Any, Dict, List, Optional
 from scripts.epistemic_engine import run_for_date
 from pipeline.identity import load_object_registry, resolve_designation_at_time
 from pipeline.phenomenon_profiles import build_profile_completeness, load_phenomenon_profile
+from pipeline.temporal_availability import build_temporal_availability_block
 
 PIPELINE_VERSION = "1.0.0"
 
@@ -630,6 +631,135 @@ def _embed_profile_completeness_in_epistemic_file(
 
 
 # ---------------------------------------------------------------------------
+# Temporal availability helpers
+# ---------------------------------------------------------------------------
+
+def _embed_temporal_availability_in_day_file(
+    day_file_path: Path,
+    temporal_availability: Dict[str, Any],
+) -> None:
+    """Inject ``profile_temporal_availability`` into the flat daily JSON file.
+
+    Reads the existing flat daily JSON, adds (or replaces) a top-level
+    ``"profile_temporal_availability"`` field, and writes it back.  All other
+    existing fields are preserved unchanged.
+
+    Args:
+        day_file_path: Path to the ``public/observations/YYYY-MM-DD.json`` file.
+        temporal_availability: Temporal availability block to inject.
+    """
+    try:
+        payload: Dict[str, Any] = json.loads(
+            day_file_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["profile_temporal_availability"] = temporal_availability
+
+    day_file_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _embed_temporal_availability_in_epistemic_file(
+    obs_root: Path,
+    temporal_availability: Dict[str, Any],
+) -> None:
+    """Inject ``profile_temporal_availability`` into the per-date epistemic_state.json.
+
+    If the file does not exist the call is a no-op.
+
+    Args:
+        obs_root: Per-date observation directory under ``public/observations/``.
+        temporal_availability: Temporal availability block to inject.
+    """
+    epistemic_path = obs_root / "epistemic_state.json"
+    if not epistemic_path.exists():
+        return
+
+    try:
+        payload: Dict[str, Any] = json.loads(
+            epistemic_path.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return
+
+    payload["profile_temporal_availability"] = temporal_availability
+
+    epistemic_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _compute_temporal_availability_for_day(
+    profile_completeness: Dict[str, Any],
+    date_str: str,
+    reference_date_str: str,
+) -> Optional[Dict[str, Any]]:
+    """Compute the temporal availability block for a single day.
+
+    Uses the capability attribution blocks already produced by the profile
+    completeness layer.
+
+    Args:
+        profile_completeness: Profile completeness dict as returned by
+            :func:`build_profile_completeness`.
+        date_str: Snapshot date in ``YYYY-MM-DD`` format.
+        reference_date_str: Reference date in ``YYYY-MM-DD`` format (UTC today).
+
+    Returns:
+        Dict with ``missing_not_ingested_temporal``,
+        ``missing_potentially_observable_temporal``, and ``reference_date``
+        keys, or ``None`` on failure.
+    """
+    temporal_context: Dict[str, Any] = {
+        # Intentional placeholder for layer-4b: no geometry engine or telescope
+        # scheduling is available yet.  All evaluations resolve to "unknown" at
+        # this layer, which is the correct baseline state.  Future PRs will
+        # supply a richer context (e.g. geometric visibility) to unlock
+        # "possible" / "not_possible" states.
+        "visibility": "unknown",
+    }
+
+    not_ingested_attribution: Dict[str, Any] = profile_completeness.get(
+        "missing_not_ingested_attribution", {}
+    ) or {}
+    potentially_observable_attribution: Dict[str, Any] = profile_completeness.get(
+        "missing_potentially_observable_attribution", {}
+    ) or {}
+
+    try:
+        missing_not_ingested_temporal = build_temporal_availability_block(
+            not_ingested_attribution,
+            date_str,
+            reference_date_str,
+            temporal_context,
+        )
+        missing_potentially_observable_temporal = build_temporal_availability_block(
+            potentially_observable_attribution,
+            date_str,
+            reference_date_str,
+            temporal_context,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        print(
+            f"  WARNING: temporal availability failed for {date_str}: "
+            f"{type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        return None
+
+    return {
+        "missing_not_ingested_temporal": missing_not_ingested_temporal,
+        "missing_potentially_observable_temporal": missing_potentially_observable_temporal,
+        "reference_date": reference_date_str,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Date processing helper
 # ---------------------------------------------------------------------------
 
@@ -716,6 +846,15 @@ def _process_single_date(
     if profile_completeness is not None:
         _embed_profile_completeness_in_day_file(out_path, profile_completeness)
         _embed_profile_completeness_in_epistemic_file(obs_root, profile_completeness)
+
+        temporal_availability = _compute_temporal_availability_for_day(
+            profile_completeness,
+            date_str,
+            dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d"),
+        )
+        if temporal_availability is not None:
+            _embed_temporal_availability_in_day_file(out_path, temporal_availability)
+            _embed_temporal_availability_in_epistemic_file(obs_root, temporal_availability)
 
     return {
         "date": date_str,
