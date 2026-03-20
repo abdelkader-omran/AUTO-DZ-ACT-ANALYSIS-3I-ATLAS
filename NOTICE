@@ -10,6 +10,14 @@ All generated artifacts (including but not limited to files under public/) are
 produced by the TRIZEL epistemic analysis pipeline and carry the governance
 layer described in pipeline/build_observations.py.
 
+TRIZEL Scientific Kernel: V1 (Canonical) — Frozen
+Kernel milestone declaration: see TRIZEL_KERNEL_V1.md
+
+Stability policy: No breaking changes to core epistemic layers are permitted.
+All post-V1 modifications to epistemic state definitions, attribution logic,
+temporal logic, outcome classification, evidence grounding, or consistency rules
+must be treated as controlled evolution and introduced explicitly.
+
 Repository:
   https://github.com/abdelkader-omran/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS
 
