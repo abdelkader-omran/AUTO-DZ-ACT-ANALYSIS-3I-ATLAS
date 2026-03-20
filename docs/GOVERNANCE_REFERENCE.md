@@ -9,4 +9,7 @@ Canonical source:
 - trizel-ai/trizel-core/docs/governance/CROSS_REPO_GOVERNANCE.md
 
 Current state:
-Execution remains intentionally locked pending verifiable governance enforcement checks.
+TRIZEL Scientific Kernel V1 is frozen. Governance layer is active.
+All generated outputs are TRIZEL-governed scientific artifacts as declared in
+TRIZEL_KERNEL_V1.md. Post-V1 controlled evolution rules apply to any future
+modification of core epistemic layers.

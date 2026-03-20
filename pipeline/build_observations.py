@@ -53,6 +53,8 @@ PIPELINE_VERSION = "1.0.0"
 
 TRIZEL_METADATA: Dict[str, Any] = {
     "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
     "artifact_type": "epistemic_output",
     "generated_by": "TRIZEL epistemic pipeline",
     "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
