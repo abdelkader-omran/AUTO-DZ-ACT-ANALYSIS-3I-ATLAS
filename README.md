@@ -24,6 +24,31 @@ Its purpose is to transform structured observational inputs into traceable, repr
 
 ---
 
+## Epistemic Positioning
+
+TRIZEL does not compete with data providers.
+
+TRIZEL operates as an epistemic standard layer  
+that structures, normalizes, and governs knowledge  
+derived from heterogeneous observational sources.
+
+TRIZEL does not replace:
+
+- observational infrastructures  
+- institutional data pipelines  
+- scientific interpretation  
+
+TRIZEL does not modify, override, or reinterpret source data.
+
+Instead, it operates strictly between observation and interpretation:
+
+Data Providers → TRIZEL → Interpretation
+
+TRIZEL deterministically transforms structured observational inputs  
+into traceable, reproducible, and governed epistemic artifacts.
+
+---
+
 ## Canonical Status
 
 **Kernel Version:** V1  

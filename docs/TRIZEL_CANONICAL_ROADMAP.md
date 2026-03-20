@@ -164,7 +164,57 @@ Unclassified work is not permitted.
 
 ---
 
-## 10. Strategic Position
+## 10. Epistemic Positioning (Standard Layer)
+
+TRIZEL is positioned as:
+
+an epistemic structuring standard layer between data and interpretation
+
+It does not compete with:
+
+- data providers (NASA, ESA, MPC, etc.)  
+- institutional pipelines  
+- scientific interpretation  
+
+TRIZEL does not modify, override, or reinterpret source data.
+
+Instead, it operates as:
+
+Data Providers → TRIZEL → Interpretation
+
+Core properties of this positioning:
+
+- deterministic transformation of observational inputs  
+- standardization of epistemic states  
+- normalization across heterogeneous sources  
+- governance of knowledge representation  
+- independence from data access privilege  
+
+---
+
+### Future Epistemic Extensions
+
+The following extensions are defined as controlled post-V1 evolution:
+
+1. Epistemic Time Modeling  
+- representation of epistemic validity across time  
+- modeling of state evolution (observation → contradiction → reconciliation)  
+
+2. Access Level Awareness  
+- modeling knowledge under unequal data access conditions  
+- distinction between public, institutional, and restricted contexts  
+
+3. External Interpretation Linking  
+- linking governed artifacts to external scientific interpretations  
+- without integrating interpretation into the epistemic core  
+
+4. Standardization Layer Evolution  
+- positioning TRIZEL as an epistemic protocol layer  
+- enabling cross-institutional interoperability  
+
+---
+
+## 11. Strategic Position
 
 TRIZEL is a governance-first epistemic system.
 
