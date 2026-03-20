@@ -164,24 +164,7 @@ Unclassified work is not permitted.
 
 ---
 
-## 10. Strategic Position
-
-TRIZEL is a governance-first epistemic system.
-
-This repository:
-- does not define scientific truth
-- does not interpret results
-- does not assign probability
-
-It performs:
-
-deterministic epistemic structuring of observational data
-
-strictly within the Analysis layer.
-
----
-
-## 11. Epistemic Positioning (Standard Layer)
+## 10. Epistemic Positioning (Standard Layer)
 
 TRIZEL is positioned as:
 
@@ -228,6 +211,23 @@ The following extensions are defined as controlled post-V1 evolution:
 4. Standardization Layer Evolution  
 - positioning TRIZEL as an epistemic protocol layer  
 - enabling cross-institutional interoperability  
+
+---
+
+## 11. Strategic Position
+
+TRIZEL is a governance-first epistemic system.
+
+This repository:
+- does not define scientific truth
+- does not interpret results
+- does not assign probability
+
+It performs:
+
+deterministic epistemic structuring of observational data
+
+strictly within the Analysis layer.
 
 ---
 
