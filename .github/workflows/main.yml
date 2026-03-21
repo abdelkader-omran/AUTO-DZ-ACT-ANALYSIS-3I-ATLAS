@@ -22,7 +22,7 @@ jobs:
 
       - name: Run epistemic engine
         run: |
-          python scripts/epistemic_engine.py \
+          python -m scripts.epistemic_engine \
           --observation-root data/observations/2026-03-21
 
       - name: Upload artifact
