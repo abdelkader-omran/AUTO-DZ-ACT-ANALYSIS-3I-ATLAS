@@ -1,0 +1,73 @@
+{
+  "object": "3I/ATLAS",
+  "source_inputs": {
+    "raw_sources": {
+      "horizons": "available",
+      "jpl_sbdb": "available",
+      "mpc": "not_available"
+    },
+    "normalized_parameters": {
+      "jpl_sbdb": {
+        "eccentricity": 6.14,
+        "inclination": 175.0,
+        "perihelion_distance": 1.36,
+        "semi_major_axis": -0.264
+      }
+    },
+    "ingestion_statuses": {
+      "mpc": "not_ingested"
+    }
+  },
+  "inconsistency_count": 3,
+  "inconsistencies": [
+    {
+      "type": "existence_mismatch",
+      "involved_sources": [
+        "horizons",
+        "jpl_sbdb",
+        "mpc"
+      ],
+      "observed_states": {
+        "horizons": "data_absent",
+        "jpl_sbdb": "data_present",
+        "mpc": "data_absent"
+      }
+    },
+    {
+      "type": "availability_mismatch",
+      "involved_sources": [
+        "horizons",
+        "jpl_sbdb",
+        "mpc"
+      ],
+      "observed_states": {
+        "horizons": "available",
+        "jpl_sbdb": "available",
+        "mpc": "not_available"
+      }
+    },
+    {
+      "type": "temporal_inconsistency",
+      "involved_sources": [
+        "jpl_sbdb",
+        "mpc"
+      ],
+      "observed_states": {
+        "jpl_sbdb": "data_present",
+        "mpc": "not_ingested"
+      }
+    }
+  ],
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "artifact_type": "inconsistency_report",
+    "generated_by": "scripts/detect_inconsistencies.py",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "analysis",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE"
+  }
+}
