@@ -62,6 +62,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
+from scripts import add_observation_root_arg, parse_and_resolve_observation_root
+
 OBJECT_NAME = "3I/ATLAS"
 
 # Maps canonical source key (lowercase) to its normalized parameter file.
@@ -513,26 +515,14 @@ def main() -> int:
             "Compliant with docs/COMPARISON_SEMANTICS.md."
         )
     )
-    ap.add_argument(
-        "--observation-root",
-        required=True,
-        help=(
-            "Path to the per-date observation directory "
-            "(e.g. data/observations/2026-03-21). "
-            "Must contain raw_sources.json."
-        ),
+    add_observation_root_arg(
+        ap,
+        "(e.g. data/observations/2026-03-21). "
+        "Must contain raw_sources.json.",
     )
-    args = ap.parse_args()
-
-    observation_root = Path(args.observation_root).resolve()
-
-    if not observation_root.is_dir():
-        print(
-            f"ERROR: --observation-root not found or not a directory: "
-            f"{observation_root}",
-            file=sys.stderr,
-        )
-        return 2
+    observation_root, err = parse_and_resolve_observation_root(ap)
+    if err:
+        return err
 
     report = run_for_date(observation_root)
     out_path = observation_root / "inconsistencies.json"

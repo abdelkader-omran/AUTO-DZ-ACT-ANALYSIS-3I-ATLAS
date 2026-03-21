@@ -50,6 +50,8 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from scripts import add_observation_root_arg, parse_and_resolve_observation_root
+
 OBJECT_NAME = "3I/ATLAS"
 
 # Matches a YYYY-MM-DD date string used as observation directory names.
@@ -467,26 +469,14 @@ def main() -> int:
             "Writes epistemic_state.json to the observation root directory."
         )
     )
-    ap.add_argument(
-        "--observation-root",
-        required=True,
-        help=(
-            "Path to the per-date observation directory "
-            "(e.g. observations/2026-03-18). "
-            "Must contain normalized_observation.json and/or mpc_normalized.json."
-        ),
+    add_observation_root_arg(
+        ap,
+        "(e.g. observations/2026-03-18). "
+        "Must contain normalized_observation.json and/or mpc_normalized.json.",
     )
-    args = ap.parse_args()
-
-    observation_root = Path(args.observation_root).resolve()
-
-    if not observation_root.is_dir():
-        print(
-            f"ERROR: --observation-root not found or not a directory: "
-            f"{observation_root}",
-            file=sys.stderr,
-        )
-        return 2
+    observation_root, err = parse_and_resolve_observation_root(ap)
+    if err:
+        return err
 
     record = run_for_date(observation_root)
     out_path = observation_root / "epistemic_state.json"
