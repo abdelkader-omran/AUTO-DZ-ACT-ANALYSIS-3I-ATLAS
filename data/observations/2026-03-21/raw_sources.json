@@ -1,0 +1,16 @@
+{
+  "sources": [
+    {
+      "source": "JPL_SBDB",
+      "status": "available"
+    },
+    {
+      "source": "MPC",
+      "status": "not_available"
+    },
+    {
+      "source": "HORIZONS",
+      "status": "available"
+    }
+  ]
+}
