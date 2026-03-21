@@ -23,17 +23,33 @@ modifications are introduced by this document.
 **Verified canonical entry mode:**
 
 ```
-python scripts/epistemic_engine.py --observation-root <path>
+python -m scripts.epistemic_engine --observation-root <path>
 ```
 
-Executed from the repository root so that the `scripts` package is importable.
+Executed from the repository root.  Module mode (`-m`) places the current
+working directory on `sys.path`, making the `scripts` package importable.
 
 The `if __name__ == "__main__": sys.exit(main())` guard at the bottom of
-`scripts/epistemic_engine.py` is the only verified execution entry point.
+`scripts/epistemic_engine.py` is activated by module mode invocation.
 
-**Module mode** (`python -m scripts.epistemic_engine`) is **not canonically
-verified**.  No `scripts/__main__.py` exists.  Direct file execution remains
-the only confirmed execution mode.
+**Direct file execution** (`python scripts/epistemic_engine.py`) is **not a
+functional execution mode**.  When Python runs a file directly it adds the
+script's own directory (`scripts/`) to `sys.path[0]`, not the repository root.
+The top-level import `from scripts import ...` then fails with:
+
+```
+ModuleNotFoundError: No module named 'scripts'
+```
+
+This is confirmed by the CI run log (workflow `main.yml`, run on `main`).
+
+Direct file execution can be made functional by setting `PYTHONPATH` to the
+repository root (e.g. `PYTHONPATH=. python scripts/epistemic_engine.py`), but
+this is not the canonical verified mode.
+
+**`python -m scripts`** (package mode) is also **not supported**: no
+`scripts/__main__.py` exists.  Only `python -m scripts.epistemic_engine`
+(targeting the module directly) is functional.
 
 ---
 
@@ -69,13 +85,13 @@ path = Path(args.observation_root).resolve()
 
 - **Absolute or relative**: both accepted; relative paths are resolved against
   the process current working directory at invocation time.
-- **Symlink behaviour**: `Path.resolve()` follows symlinks to the real path.
+- **Symlink behavior**: `Path.resolve()` follows symlinks to the real path.
 - **Existence requirement**: the resolved path must exist and must be a
   directory.  Plain files are rejected (see §5).
 
 ### Source files read from the observation root
 
-| Source key  | Filename                   | Behaviour when absent |
+| Source key  | Filename                   | Behavior when absent |
 |-------------|----------------------------|-----------------------|
 | `jpl_sbdb`  | `normalized_observation.json` | silently skipped   |
 | `mpc`       | `mpc_normalized.json`      | silently skipped       |
@@ -114,12 +130,17 @@ Possible `epistemic_state` values:
 
 | Value | Condition |
 |-------|-----------|
-| `insufficient_data` | Fewer than 2 sources, or no comparable parameters |
+| `insufficient_data` | Multi-source path: fewer than 2 comparable parameter values available |
 | `consensus` | All non-null cross-source deltas are exactly 0 |
 | `divergence` | At least one non-null cross-source delta > 0 |
-| `single_source_no_history` | Single source, no previous day record |
-| `single_source_temporally_stable` | Single source, all four parameters unchanged |
-| `single_source_temporally_evolved` | Single source, at least one parameter changed |
+| `single_source_no_history` | `source_count < 2` (including zero), no previous day record |
+| `single_source_temporally_stable` | `source_count < 2`, all four parameters unchanged vs previous day |
+| `single_source_temporally_evolved` | `source_count < 2`, at least one parameter changed vs previous day |
+
+**Note on zero-source behavior:** when no source files are present
+(`sources: []`), `source_count = 0 < 2`, so the engine takes the
+single-source temporal path rather than returning `insufficient_data`.
+With no prior day record the result is `single_source_no_history`.
 
 ---
 
@@ -179,6 +200,13 @@ This contract was derived by direct static inspection of:
 - `scripts/__init__.py` — `add_observation_root_arg`, `parse_and_resolve_observation_root`
 - `scripts/epistemic_engine.py` — `main()`, `run_for_date()`, `build_epistemic_record()`, `load_sources()`
 
-No execution was performed.  No code was modified.  This document reflects the
-state of those files at the time of inspection and is authoritative as a
-frozen reference.
+Entry mode determination was additionally backed by:
+
+- CI failure evidence: workflow `main.yml` run on `main` confirmed that
+  `python scripts/epistemic_engine.py` fails with
+  `ModuleNotFoundError: No module named 'scripts'`.
+- Local execution verification: `python -m scripts.epistemic_engine`
+  confirmed functional from the repository root.
+
+No code was modified.  This document reflects the state of those files at the
+time of inspection and is authoritative as a frozen reference.
