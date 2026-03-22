@@ -1,7 +1,7 @@
 {
   "object": "3I/ATLAS",
   "source": "jpl_sbdb",
-  "retrieved_utc": "2026-03-18T05:47:40.861347+00:00",
+  "retrieved_utc": "2026-03-14T04:53:16.902349Z",
   "identity": {
     "fullname": "C/2025 N1 (ATLAS)",
     "designation": "2025 N1",
@@ -24,9 +24,9 @@
   },
   "provenance": {
     "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
-    "snapshot_id": "snapshot-2026-03-21-audited",
-    "sha256": "350af5e30ae889d91b579e8feefbc7b8b3f39d23cfec2d8feb442fe93f0b348a",
-    "manifest_ref": "data/manifests/manifest_2026-03-21.json",
+    "snapshot_id": "snapshot-2026-03-14-audited",
+    "sha256": "619c52893256a5ef8c2109e01ebc500adf634066af1bb0d4000159cd89e1884c",
+    "manifest_ref": "data/manifests/manifest_2026-03-14.json",
     "doi_absent": true
   }
 }
