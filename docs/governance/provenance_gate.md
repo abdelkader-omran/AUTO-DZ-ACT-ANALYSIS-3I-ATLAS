@@ -38,7 +38,7 @@ Every observation used in this repository **MUST** be traceable to one of the
 following, produced by the DAILY authoritative root:
 
 1. A DAILY audited snapshot identified as `snapshot-YYYY-MM-DD-audited`
-2. A DOI-linked artifact derived from such a snapshot
+2. DOI-linked artifacts are accepted only as attestations of DAILY outputs
 
 Traceability is satisfied only when **all four** of the following linkage
 elements are present and verifiable:
