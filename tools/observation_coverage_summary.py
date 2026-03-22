@@ -28,19 +28,13 @@ Usage:
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OBSERVATIONS_DIR = REPO_ROOT / "data" / "observations"
-
-
-def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+from _obs_cli import _load_json, parse_observations_dir
 
 
 def _per_day_entry(date_str: str, obs_file: Optional[Path]) -> Dict[str, Any]:
@@ -87,6 +81,21 @@ def _per_day_entry(date_str: str, obs_file: Optional[Path]) -> Dict[str, Any]:
     return entry
 
 
+def _find_missing_days(
+    first_day: str, last_day: str, per_day: List[Dict[str, Any]]
+) -> List[str]:
+    """Return ISO date strings absent from *per_day* between first and last day."""
+    present_dates = {d["date"] for d in per_day}
+    missing: List[str] = []
+    cursor = date.fromisoformat(first_day)
+    end = date.fromisoformat(last_day)
+    while cursor <= end:
+        if cursor.isoformat() not in present_dates:
+            missing.append(cursor.isoformat())
+        cursor += timedelta(days=1)
+    return missing
+
+
 def build_summary(observations_dir: Path) -> Dict[str, Any]:
     """Return a deterministic structured coverage summary."""
     per_day: List[Dict[str, Any]] = []
@@ -111,13 +120,7 @@ def build_summary(observations_dir: Path) -> Dict[str, Any]:
     # Date continuity
     missing_days: List[str] = []
     if first_day and last_day:
-        present_dates = {d["date"] for d in per_day}
-        cursor = date.fromisoformat(first_day)
-        end = date.fromisoformat(last_day)
-        while cursor <= end:
-            if cursor.isoformat() not in present_dates:
-                missing_days.append(cursor.isoformat())
-            cursor += timedelta(days=1)
+        missing_days = _find_missing_days(first_day, last_day, per_day)
 
     contiguous: bool = len(missing_days) == 0
 
@@ -161,19 +164,10 @@ def build_summary(observations_dir: Path) -> Dict[str, Any]:
 
 def main(argv: List[str]) -> int:
     """Parse arguments, build the summary, and print it as JSON to stdout."""
-    p = argparse.ArgumentParser(
-        description=(
-            "Produce a deterministic coverage summary of normalized observation files."
-        )
+    observations_dir = parse_observations_dir(
+        argv,
+        "Produce a deterministic coverage summary of normalized observation files.",
     )
-    p.add_argument(
-        "--observations-dir",
-        default=str(DEFAULT_OBSERVATIONS_DIR),
-        help="Path to observations directory (default: data/observations)",
-    )
-    args = p.parse_args(argv[1:])
-
-    observations_dir = Path(args.observations_dir)
     summary = build_summary(observations_dir)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
