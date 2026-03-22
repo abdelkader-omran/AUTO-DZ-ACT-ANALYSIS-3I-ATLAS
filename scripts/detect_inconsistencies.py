@@ -62,7 +62,11 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-from scripts import add_observation_root_arg, parse_and_resolve_observation_root
+from scripts import (
+    add_observation_root_arg,
+    build_trizel_metadata,
+    parse_and_resolve_observation_root,
+)
 
 OBJECT_NAME = "3I/ATLAS"
 
@@ -105,18 +109,10 @@ _STATE_DATA_ABSENT = "data_absent"
 # TRIZEL canonical metadata block.
 # Every artifact produced by this layer carries this block for traceability
 # and attribution (TRIZEL_KERNEL_V1.md).
-TRIZEL_METADATA: Dict[str, Any] = {
-    "project": "TRIZEL",
-    "kernel_version": "V1",
-    "kernel_status": "frozen",
-    "artifact_type": "inconsistency_report",
-    "generated_by": "scripts/detect_inconsistencies.py",
-    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
-    "governance_layer": "analysis",
-    "citation_required": True,
-    "license_reference": "SEE LICENSE IF PRESENT",
-    "notice_reference": "SEE NOTICE",
-}
+TRIZEL_METADATA: Dict[str, Any] = build_trizel_metadata(
+    artifact_type="inconsistency_report",
+    generated_by="scripts/detect_inconsistencies.py",
+)
 
 
 # ---------------------------------------------------------------------------

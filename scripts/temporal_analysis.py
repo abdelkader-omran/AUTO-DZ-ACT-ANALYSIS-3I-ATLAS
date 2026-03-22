@@ -48,6 +48,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from scripts import build_trizel_metadata
 from scripts.epistemic_engine import run_for_date
 from validation.provenance_validator import abort_if_invalid, validate_observations
 
@@ -62,18 +63,10 @@ _REQUIRED_PROVENANCE_ROOT = "AUTO-DZ-ACT-3I-ATLAS-DAILY"
 # Used to normalize absolute paths in the output record to repo-relative paths.
 _REPO_ROOT: Path = Path(__file__).resolve().parent.parent
 
-TRIZEL_METADATA: Dict[str, Any] = {
-    "project": "TRIZEL",
-    "kernel_version": "V1",
-    "kernel_status": "frozen",
-    "artifact_type": "temporal_analysis",
-    "generated_by": "scripts/temporal_analysis.py",
-    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
-    "governance_layer": "analysis",
-    "citation_required": True,
-    "license_reference": "SEE LICENSE IF PRESENT",
-    "notice_reference": "SEE NOTICE",
-}
+TRIZEL_METADATA: Dict[str, Any] = build_trizel_metadata(
+    artifact_type="temporal_analysis",
+    generated_by="scripts/temporal_analysis.py",
+)
 
 # Orbital parameters compared across days
 _ORBITAL_PARAMS = ("e", "a", "i", "q")
