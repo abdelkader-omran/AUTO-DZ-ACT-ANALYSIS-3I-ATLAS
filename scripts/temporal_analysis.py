@@ -10,9 +10,17 @@ window of observation days.
 
 The script:
   - validates provenance for every day in the window (HARD GATE)
-  - runs the epistemic engine on each day
-  - compares epistemic states and orbital parameters across consecutive days
+  - extracts orbital parameters for each day (structural only)
+  - compares orbital parameters across consecutive days
   - writes a deterministic temporal analysis record to analysis/temporal/
+
+Output model (per day):
+  - date
+  - orbital (parameters by source)
+  - provenance (sources list)
+
+No interpretative fields (epistemic_state, temporal_consistency, confidence)
+are generated or written at any stage.
 
 Constraints
 -----------
@@ -49,7 +57,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from scripts import build_trizel_metadata
-from scripts.epistemic_engine import run_for_date
+from scripts.epistemic_engine import build_epistemic_record
 from validation.provenance_validator import abort_if_invalid, validate_observations
 
 # ---------------------------------------------------------------------------
@@ -198,9 +206,10 @@ def _compare_consecutive_days(
     date_b: str,
     record_b: Dict[str, Any],
 ) -> Dict[str, Any]:
-    """Compare epistemic records for two consecutive days.
+    """Compare orbital parameters for two consecutive days.
 
     Performs exact equality comparison only; no tolerance, no inference.
+    Returns only structural fields: no labels, states, or classifications.
 
     Args:
         date_a: Earlier date string (YYYY-MM-DD).
@@ -215,21 +224,16 @@ def _compare_consecutive_days(
     params_b = _extract_orbital_params(record_b)
 
     if params_a is None or params_b is None:
-        consistency = "insufficient_data"
         changed_params: List[str] = []
     else:
         changed_params = [
             p for p in _ORBITAL_PARAMS
             if params_a.get(p) != params_b.get(p)
         ]
-        consistency = "evolved" if changed_params else "stable"
 
     return {
         "from_date": date_a,
         "to_date": date_b,
-        "from_epistemic_state": record_a.get("epistemic_state"),
-        "to_epistemic_state": record_b.get("epistemic_state"),
-        "orbital_consistency": consistency,
         "changed_parameters": changed_params,
     }
 
@@ -267,15 +271,14 @@ def _run_epistemic_engine(
     window: List[str],
     observation_dir: Path,
 ) -> Dict[str, Dict[str, Any]]:
-    """Run the epistemic engine for each day and return records keyed by date."""
-    print("Running epistemic engine for each day...")
+    """Extract orbital parameters for each day without writing per-day artifacts."""
+    print("Extracting orbital parameters for each day...")
     records: Dict[str, Dict[str, Any]] = {}
     for date_str in window:
-        record = run_for_date(observation_dir / date_str)
+        record = build_epistemic_record(observation_dir / date_str)
         records[date_str] = record
         print(
-            f"  {date_str}: epistemic_state={record.get('epistemic_state')!r}  "
-            f"temporal_consistency={record.get('temporal_consistency')!r}"
+            f"  {date_str}: sources={record.get('sources')!r}"
         )
     return records
 
@@ -296,7 +299,6 @@ def _build_comparisons(
         comparisons.append(comparison)
         print(
             f"  {comparison['from_date']} → {comparison['to_date']}: "
-            f"orbital_consistency={comparison['orbital_consistency']!r}  "
             f"changed_params={comparison['changed_parameters']}"
         )
     return comparisons
@@ -312,8 +314,9 @@ def run_temporal_analysis(
     Steps:
       1. Validate window contiguity (hard check).
       2. Validate provenance for each day (HARD GATE — abort on any failure).
-      3. Run epistemic engine for each day.
-      4. Compare consecutive day pairs.
+      3. Extract orbital parameters for each day (structural only; no per-day
+         artifacts written, no interpretative fields generated).
+      4. Compare consecutive day pairs (structural parameter diff only).
       5. Write deterministic temporal analysis record.
 
     Args:
@@ -346,11 +349,11 @@ def run_temporal_analysis(
 
     print("OK: provenance passes for all days in window.")
 
-    # Step 3 — Run epistemic engine for each day
+    # Step 3 — Extract orbital parameters for each day (no per-day file writes)
     epistemic_records = _run_epistemic_engine(window, observation_dir)
-    print("OK: epistemic engine completed for all days.")
+    print("OK: orbital extraction completed for all days.")
 
-    # Step 4 — Temporal comparison across consecutive pairs
+    # Step 4 — Structural parameter comparison across consecutive pairs
     comparisons = _build_comparisons(window, epistemic_records)
 
     # Step 5 — Write deterministic output record
@@ -373,17 +376,14 @@ def run_temporal_analysis(
                 provenance_report.get("observations", [])
             ),
         },
-        "epistemic_states": {
-            date_str: {
-                "epistemic_state": epistemic_records[date_str].get("epistemic_state"),
-                "temporal_consistency": epistemic_records[date_str].get(
-                    "temporal_consistency"
-                ),
-                "confidence": epistemic_records[date_str].get("confidence"),
-                "sources": epistemic_records[date_str].get("sources", []),
+        "day_sequence": [
+            {
+                "date": date_str,
+                "orbital": epistemic_records[date_str].get("parameters", {}),
+                "provenance": epistemic_records[date_str].get("sources", []),
             }
             for date_str in window
-        },
+        ],
         "temporal_comparisons": comparisons,
         "execution_outcome": "SUCCESS",
     }
