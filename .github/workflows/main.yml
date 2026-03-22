@@ -20,6 +20,12 @@ jobs:
         run: |
           pip install -r requirements.txt || true
 
+      - name: Run provenance validation (HARD GATE)
+        run: |
+          set -euo pipefail
+          python -m scripts.run_provenance_check \
+            --observation-root data/observations/2026-03-21
+
       - name: Run epistemic engine
         run: |
           python -m scripts.epistemic_engine \
