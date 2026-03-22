@@ -125,11 +125,28 @@ def build_summary(observations_dir: Path) -> Dict[str, Any]:
     contiguous: bool = len(missing_days) == 0
 
     # Per-field coverage counts (count of days where the field is present)
+    coverage_fields = (
+        "object_present",
+        "source_present",
+        "retrieved_utc_present",
+        "identity_present",
+        "orbital_present",
+        "physical_present",
+    )
+    provenance_fields = (
+        "provenance_present",
+        "snapshot_id_present",
+        "sha256_present",
+        "manifest_ref_present",
+        "doi_present",
+        "doi_absent_present",
+    )
+
     metadata_field_coverage: Dict[str, int] = {
-        f: sum(1 for d in per_day if d.get(f)) for f in _COVERAGE_FIELDS
+        f: sum(1 for d in per_day if d.get(f)) for f in coverage_fields
     }
     provenance_field_coverage: Dict[str, int] = {
-        f: sum(1 for d in per_day if d.get(f)) for f in _PROVENANCE_FIELDS
+        f: sum(1 for d in per_day if d.get(f)) for f in provenance_fields
     }
 
     return {
