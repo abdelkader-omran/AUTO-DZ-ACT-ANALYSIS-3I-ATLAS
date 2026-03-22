@@ -58,6 +58,10 @@ from validation.provenance_validator import abort_if_invalid, validate_observati
 _TEMPORAL_ANALYSIS_VERSION = "1.0.0"
 _REQUIRED_PROVENANCE_ROOT = "AUTO-DZ-ACT-3I-ATLAS-DAILY"
 
+# Repository root — the parent directory of this script's package directory.
+# Used to normalize absolute paths in the output record to repo-relative paths.
+_REPO_ROOT: Path = Path(__file__).resolve().parent.parent
+
 TRIZEL_METADATA: Dict[str, Any] = {
     "project": "TRIZEL",
     "kernel_version": "V1",
@@ -73,6 +77,57 @@ TRIZEL_METADATA: Dict[str, Any] = {
 
 # Orbital parameters compared across days
 _ORBITAL_PARAMS = ("e", "a", "i", "q")
+
+
+# ---------------------------------------------------------------------------
+# Path normalization
+# ---------------------------------------------------------------------------
+
+def _to_repo_relative(path_str: str, repo_root: Path = _REPO_ROOT) -> str:
+    """Return a repository-relative path string for *path_str*.
+
+    If *path_str* is an absolute path that can be expressed as a relative path
+    from *repo_root*, the relative form is returned (using forward slashes for
+    portability).  Otherwise *path_str* is returned unchanged.
+
+    Args:
+        path_str: An absolute or relative path string.
+        repo_root: The repository root directory; defaults to ``_REPO_ROOT``.
+
+    Returns:
+        A repository-relative POSIX path string, or the original string if
+        relativisation is not possible.
+    """
+    try:
+        relative = Path(path_str).relative_to(repo_root)
+        return relative.as_posix()
+    except ValueError:
+        return path_str
+
+
+def _normalize_provenance_observations(
+    observations: List[Dict[str, Any]],
+    repo_root: Path = _REPO_ROOT,
+) -> List[Dict[str, Any]]:
+    """Return a copy of *observations* with ``path`` values made repo-relative.
+
+    Each element is a shallow copy; only the ``path`` field is replaced.
+
+    Args:
+        observations: List of observation dicts as returned by
+            ``validate_observations``.
+        repo_root: Repository root used to relativise paths.
+
+    Returns:
+        New list of observation dicts with portable relative paths.
+    """
+    result: List[Dict[str, Any]] = []
+    for obs in observations:
+        entry = dict(obs)
+        if "path" in entry:
+            entry["path"] = _to_repo_relative(str(entry["path"]), repo_root)
+        result.append(entry)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -321,7 +376,9 @@ def run_temporal_analysis(
         "provenance_gate": {
             "outcome": "VALID",
             "source_required": _REQUIRED_PROVENANCE_ROOT,
-            "observations": provenance_report.get("observations", []),
+            "observations": _normalize_provenance_observations(
+                provenance_report.get("observations", [])
+            ),
         },
         "epistemic_states": {
             date_str: {

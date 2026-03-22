@@ -27,17 +27,17 @@
     "source_required": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
     "observations": [
       {
-        "path": "/home/runner/work/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/data/observations/2026-03-15/normalized_observation.json",
+        "path": "data/observations/2026-03-15/normalized_observation.json",
         "outcome": "VALID",
         "failures": []
       },
       {
-        "path": "/home/runner/work/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/data/observations/2026-03-16/normalized_observation.json",
+        "path": "data/observations/2026-03-16/normalized_observation.json",
         "outcome": "VALID",
         "failures": []
       },
       {
-        "path": "/home/runner/work/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/AUTO-DZ-ACT-ANALYSIS-3I-ATLAS/data/observations/2026-03-17/normalized_observation.json",
+        "path": "data/observations/2026-03-17/normalized_observation.json",
         "outcome": "VALID",
         "failures": []
       }
