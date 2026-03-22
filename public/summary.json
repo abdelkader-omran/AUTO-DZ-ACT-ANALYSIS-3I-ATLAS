@@ -1,12 +1,3365 @@
 {
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "artifact_type": "epistemic_output",
+    "generated_by": "TRIZEL epistemic pipeline",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "publication",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE"
+  },
   "pipeline_version": "1.0.0",
-  "generated_utc": "2026-03-18T23:47:45Z",
-  "total_days": 7,
-  "total_records": 42,
+  "generated_utc": "2026-03-22T06:47:27Z",
+  "total_days": 265,
+  "total_records": 1855,
   "days": [
     {
+      "date": "2025-07-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-01.json"
+    },
+    {
+      "date": "2025-07-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-02.json"
+    },
+    {
+      "date": "2025-07-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-03.json"
+    },
+    {
+      "date": "2025-07-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-04.json"
+    },
+    {
+      "date": "2025-07-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-05.json"
+    },
+    {
+      "date": "2025-07-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-06.json"
+    },
+    {
+      "date": "2025-07-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-07.json"
+    },
+    {
+      "date": "2025-07-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-08.json"
+    },
+    {
+      "date": "2025-07-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-09.json"
+    },
+    {
+      "date": "2025-07-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-10.json"
+    },
+    {
+      "date": "2025-07-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-11.json"
+    },
+    {
+      "date": "2025-07-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-12.json"
+    },
+    {
+      "date": "2025-07-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-13.json"
+    },
+    {
+      "date": "2025-07-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-14.json"
+    },
+    {
+      "date": "2025-07-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-15.json"
+    },
+    {
+      "date": "2025-07-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-16.json"
+    },
+    {
+      "date": "2025-07-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-17.json"
+    },
+    {
+      "date": "2025-07-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-18.json"
+    },
+    {
+      "date": "2025-07-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-19.json"
+    },
+    {
+      "date": "2025-07-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-20.json"
+    },
+    {
+      "date": "2025-07-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-21.json"
+    },
+    {
+      "date": "2025-07-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-22.json"
+    },
+    {
+      "date": "2025-07-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-23.json"
+    },
+    {
+      "date": "2025-07-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-24.json"
+    },
+    {
+      "date": "2025-07-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-25.json"
+    },
+    {
+      "date": "2025-07-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-26.json"
+    },
+    {
+      "date": "2025-07-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-27.json"
+    },
+    {
+      "date": "2025-07-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-28.json"
+    },
+    {
+      "date": "2025-07-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-29.json"
+    },
+    {
+      "date": "2025-07-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-30.json"
+    },
+    {
+      "date": "2025-07-31",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-07-31.json"
+    },
+    {
+      "date": "2025-08-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-01.json"
+    },
+    {
+      "date": "2025-08-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-02.json"
+    },
+    {
+      "date": "2025-08-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-03.json"
+    },
+    {
+      "date": "2025-08-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-04.json"
+    },
+    {
+      "date": "2025-08-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-05.json"
+    },
+    {
+      "date": "2025-08-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-06.json"
+    },
+    {
+      "date": "2025-08-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-07.json"
+    },
+    {
+      "date": "2025-08-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-08.json"
+    },
+    {
+      "date": "2025-08-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-09.json"
+    },
+    {
+      "date": "2025-08-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-10.json"
+    },
+    {
+      "date": "2025-08-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-11.json"
+    },
+    {
+      "date": "2025-08-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-12.json"
+    },
+    {
+      "date": "2025-08-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-13.json"
+    },
+    {
+      "date": "2025-08-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-14.json"
+    },
+    {
+      "date": "2025-08-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-15.json"
+    },
+    {
+      "date": "2025-08-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-16.json"
+    },
+    {
+      "date": "2025-08-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-17.json"
+    },
+    {
+      "date": "2025-08-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-18.json"
+    },
+    {
+      "date": "2025-08-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-19.json"
+    },
+    {
+      "date": "2025-08-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-20.json"
+    },
+    {
+      "date": "2025-08-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-21.json"
+    },
+    {
+      "date": "2025-08-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-22.json"
+    },
+    {
+      "date": "2025-08-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-23.json"
+    },
+    {
+      "date": "2025-08-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-24.json"
+    },
+    {
+      "date": "2025-08-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-25.json"
+    },
+    {
+      "date": "2025-08-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-26.json"
+    },
+    {
+      "date": "2025-08-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-27.json"
+    },
+    {
+      "date": "2025-08-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-28.json"
+    },
+    {
+      "date": "2025-08-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-29.json"
+    },
+    {
+      "date": "2025-08-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-30.json"
+    },
+    {
+      "date": "2025-08-31",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-08-31.json"
+    },
+    {
+      "date": "2025-09-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-01.json"
+    },
+    {
+      "date": "2025-09-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-02.json"
+    },
+    {
+      "date": "2025-09-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-03.json"
+    },
+    {
+      "date": "2025-09-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-04.json"
+    },
+    {
+      "date": "2025-09-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-05.json"
+    },
+    {
+      "date": "2025-09-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-06.json"
+    },
+    {
+      "date": "2025-09-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-07.json"
+    },
+    {
+      "date": "2025-09-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-08.json"
+    },
+    {
+      "date": "2025-09-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-09.json"
+    },
+    {
+      "date": "2025-09-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-10.json"
+    },
+    {
+      "date": "2025-09-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-11.json"
+    },
+    {
+      "date": "2025-09-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-12.json"
+    },
+    {
+      "date": "2025-09-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-13.json"
+    },
+    {
+      "date": "2025-09-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-14.json"
+    },
+    {
+      "date": "2025-09-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-15.json"
+    },
+    {
+      "date": "2025-09-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-16.json"
+    },
+    {
+      "date": "2025-09-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-17.json"
+    },
+    {
+      "date": "2025-09-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-18.json"
+    },
+    {
+      "date": "2025-09-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-19.json"
+    },
+    {
+      "date": "2025-09-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-20.json"
+    },
+    {
+      "date": "2025-09-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-21.json"
+    },
+    {
+      "date": "2025-09-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-22.json"
+    },
+    {
+      "date": "2025-09-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-23.json"
+    },
+    {
+      "date": "2025-09-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-24.json"
+    },
+    {
+      "date": "2025-09-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-25.json"
+    },
+    {
+      "date": "2025-09-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-26.json"
+    },
+    {
+      "date": "2025-09-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-27.json"
+    },
+    {
+      "date": "2025-09-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-28.json"
+    },
+    {
+      "date": "2025-09-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-29.json"
+    },
+    {
+      "date": "2025-09-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-09-30.json"
+    },
+    {
+      "date": "2025-10-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-01.json"
+    },
+    {
+      "date": "2025-10-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-02.json"
+    },
+    {
+      "date": "2025-10-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-03.json"
+    },
+    {
+      "date": "2025-10-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-04.json"
+    },
+    {
+      "date": "2025-10-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-05.json"
+    },
+    {
+      "date": "2025-10-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-06.json"
+    },
+    {
+      "date": "2025-10-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-07.json"
+    },
+    {
+      "date": "2025-10-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-08.json"
+    },
+    {
+      "date": "2025-10-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-09.json"
+    },
+    {
+      "date": "2025-10-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-10.json"
+    },
+    {
+      "date": "2025-10-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-11.json"
+    },
+    {
+      "date": "2025-10-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-12.json"
+    },
+    {
+      "date": "2025-10-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-13.json"
+    },
+    {
+      "date": "2025-10-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-14.json"
+    },
+    {
+      "date": "2025-10-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-15.json"
+    },
+    {
+      "date": "2025-10-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-16.json"
+    },
+    {
+      "date": "2025-10-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-17.json"
+    },
+    {
+      "date": "2025-10-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-18.json"
+    },
+    {
+      "date": "2025-10-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-19.json"
+    },
+    {
+      "date": "2025-10-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-20.json"
+    },
+    {
+      "date": "2025-10-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-21.json"
+    },
+    {
+      "date": "2025-10-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-22.json"
+    },
+    {
+      "date": "2025-10-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-23.json"
+    },
+    {
+      "date": "2025-10-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-24.json"
+    },
+    {
+      "date": "2025-10-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-25.json"
+    },
+    {
+      "date": "2025-10-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-26.json"
+    },
+    {
+      "date": "2025-10-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-27.json"
+    },
+    {
+      "date": "2025-10-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-28.json"
+    },
+    {
+      "date": "2025-10-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-29.json"
+    },
+    {
+      "date": "2025-10-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-30.json"
+    },
+    {
+      "date": "2025-10-31",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-10-31.json"
+    },
+    {
+      "date": "2025-11-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-01.json"
+    },
+    {
+      "date": "2025-11-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-02.json"
+    },
+    {
+      "date": "2025-11-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-03.json"
+    },
+    {
+      "date": "2025-11-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-04.json"
+    },
+    {
+      "date": "2025-11-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-05.json"
+    },
+    {
+      "date": "2025-11-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-06.json"
+    },
+    {
+      "date": "2025-11-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-07.json"
+    },
+    {
+      "date": "2025-11-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-08.json"
+    },
+    {
+      "date": "2025-11-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-09.json"
+    },
+    {
+      "date": "2025-11-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-10.json"
+    },
+    {
+      "date": "2025-11-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-11.json"
+    },
+    {
+      "date": "2025-11-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-12.json"
+    },
+    {
+      "date": "2025-11-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-13.json"
+    },
+    {
+      "date": "2025-11-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-14.json"
+    },
+    {
+      "date": "2025-11-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-15.json"
+    },
+    {
+      "date": "2025-11-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-16.json"
+    },
+    {
+      "date": "2025-11-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-17.json"
+    },
+    {
+      "date": "2025-11-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-18.json"
+    },
+    {
+      "date": "2025-11-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-19.json"
+    },
+    {
+      "date": "2025-11-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-20.json"
+    },
+    {
+      "date": "2025-11-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-21.json"
+    },
+    {
+      "date": "2025-11-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-22.json"
+    },
+    {
+      "date": "2025-11-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-23.json"
+    },
+    {
+      "date": "2025-11-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-24.json"
+    },
+    {
+      "date": "2025-11-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-25.json"
+    },
+    {
+      "date": "2025-11-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-26.json"
+    },
+    {
+      "date": "2025-11-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-27.json"
+    },
+    {
+      "date": "2025-11-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-28.json"
+    },
+    {
+      "date": "2025-11-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-29.json"
+    },
+    {
+      "date": "2025-11-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-11-30.json"
+    },
+    {
+      "date": "2025-12-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-01.json"
+    },
+    {
+      "date": "2025-12-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-02.json"
+    },
+    {
+      "date": "2025-12-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-03.json"
+    },
+    {
+      "date": "2025-12-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-04.json"
+    },
+    {
+      "date": "2025-12-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-05.json"
+    },
+    {
+      "date": "2025-12-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-06.json"
+    },
+    {
+      "date": "2025-12-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-07.json"
+    },
+    {
+      "date": "2025-12-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-08.json"
+    },
+    {
+      "date": "2025-12-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-09.json"
+    },
+    {
+      "date": "2025-12-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-10.json"
+    },
+    {
+      "date": "2025-12-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-11.json"
+    },
+    {
+      "date": "2025-12-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-12.json"
+    },
+    {
+      "date": "2025-12-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-13.json"
+    },
+    {
+      "date": "2025-12-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-14.json"
+    },
+    {
+      "date": "2025-12-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-15.json"
+    },
+    {
+      "date": "2025-12-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-16.json"
+    },
+    {
+      "date": "2025-12-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-17.json"
+    },
+    {
+      "date": "2025-12-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-18.json"
+    },
+    {
+      "date": "2025-12-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-19.json"
+    },
+    {
+      "date": "2025-12-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-20.json"
+    },
+    {
+      "date": "2025-12-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-21.json"
+    },
+    {
+      "date": "2025-12-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-22.json"
+    },
+    {
+      "date": "2025-12-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-23.json"
+    },
+    {
+      "date": "2025-12-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-24.json"
+    },
+    {
+      "date": "2025-12-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-25.json"
+    },
+    {
+      "date": "2025-12-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-26.json"
+    },
+    {
+      "date": "2025-12-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-27.json"
+    },
+    {
+      "date": "2025-12-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-28.json"
+    },
+    {
+      "date": "2025-12-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-29.json"
+    },
+    {
+      "date": "2025-12-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-30.json"
+    },
+    {
+      "date": "2025-12-31",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2025-12-31.json"
+    },
+    {
+      "date": "2026-01-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-01.json"
+    },
+    {
+      "date": "2026-01-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-02.json"
+    },
+    {
+      "date": "2026-01-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-03.json"
+    },
+    {
+      "date": "2026-01-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-04.json"
+    },
+    {
+      "date": "2026-01-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-05.json"
+    },
+    {
+      "date": "2026-01-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-06.json"
+    },
+    {
+      "date": "2026-01-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-07.json"
+    },
+    {
+      "date": "2026-01-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-08.json"
+    },
+    {
+      "date": "2026-01-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-09.json"
+    },
+    {
+      "date": "2026-01-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-10.json"
+    },
+    {
+      "date": "2026-01-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-11.json"
+    },
+    {
+      "date": "2026-01-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-12.json"
+    },
+    {
+      "date": "2026-01-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-13.json"
+    },
+    {
+      "date": "2026-01-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-14.json"
+    },
+    {
+      "date": "2026-01-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-15.json"
+    },
+    {
+      "date": "2026-01-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-16.json"
+    },
+    {
+      "date": "2026-01-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-17.json"
+    },
+    {
+      "date": "2026-01-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-18.json"
+    },
+    {
+      "date": "2026-01-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-19.json"
+    },
+    {
+      "date": "2026-01-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-20.json"
+    },
+    {
+      "date": "2026-01-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-21.json"
+    },
+    {
+      "date": "2026-01-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-22.json"
+    },
+    {
+      "date": "2026-01-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-23.json"
+    },
+    {
+      "date": "2026-01-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-24.json"
+    },
+    {
+      "date": "2026-01-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-25.json"
+    },
+    {
+      "date": "2026-01-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-26.json"
+    },
+    {
+      "date": "2026-01-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-27.json"
+    },
+    {
+      "date": "2026-01-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-28.json"
+    },
+    {
+      "date": "2026-01-29",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-29.json"
+    },
+    {
+      "date": "2026-01-30",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-30.json"
+    },
+    {
+      "date": "2026-01-31",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-01-31.json"
+    },
+    {
+      "date": "2026-02-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-01.json"
+    },
+    {
+      "date": "2026-02-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-02.json"
+    },
+    {
+      "date": "2026-02-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-03.json"
+    },
+    {
+      "date": "2026-02-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-04.json"
+    },
+    {
+      "date": "2026-02-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-05.json"
+    },
+    {
+      "date": "2026-02-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-06.json"
+    },
+    {
+      "date": "2026-02-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-07.json"
+    },
+    {
+      "date": "2026-02-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-08.json"
+    },
+    {
+      "date": "2026-02-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-09.json"
+    },
+    {
+      "date": "2026-02-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-10.json"
+    },
+    {
+      "date": "2026-02-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-11.json"
+    },
+    {
+      "date": "2026-02-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-12.json"
+    },
+    {
+      "date": "2026-02-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-13.json"
+    },
+    {
+      "date": "2026-02-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-14.json"
+    },
+    {
+      "date": "2026-02-15",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-15.json"
+    },
+    {
+      "date": "2026-02-16",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-16.json"
+    },
+    {
+      "date": "2026-02-17",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-17.json"
+    },
+    {
+      "date": "2026-02-18",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-18.json"
+    },
+    {
+      "date": "2026-02-19",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-19.json"
+    },
+    {
+      "date": "2026-02-20",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-20.json"
+    },
+    {
+      "date": "2026-02-21",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-21.json"
+    },
+    {
+      "date": "2026-02-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-22.json"
+    },
+    {
+      "date": "2026-02-23",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-23.json"
+    },
+    {
+      "date": "2026-02-24",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-24.json"
+    },
+    {
+      "date": "2026-02-25",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-25.json"
+    },
+    {
+      "date": "2026-02-26",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-26.json"
+    },
+    {
+      "date": "2026-02-27",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-27.json"
+    },
+    {
+      "date": "2026-02-28",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-02-28.json"
+    },
+    {
+      "date": "2026-03-01",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-01.json"
+    },
+    {
+      "date": "2026-03-02",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-02.json"
+    },
+    {
+      "date": "2026-03-03",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-03.json"
+    },
+    {
+      "date": "2026-03-04",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-04.json"
+    },
+    {
+      "date": "2026-03-05",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-05.json"
+    },
+    {
+      "date": "2026-03-06",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-06.json"
+    },
+    {
+      "date": "2026-03-07",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-07.json"
+    },
+    {
+      "date": "2026-03-08",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-08.json"
+    },
+    {
+      "date": "2026-03-09",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-09.json"
+    },
+    {
+      "date": "2026-03-10",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-10.json"
+    },
+    {
+      "date": "2026-03-11",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-11.json"
+    },
+    {
+      "date": "2026-03-12",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-12.json"
+    },
+    {
+      "date": "2026-03-13",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-13.json"
+    },
+    {
+      "date": "2026-03-14",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-14.json"
+    },
+    {
       "date": "2026-03-15",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -19,7 +3372,7 @@
     },
     {
       "date": "2026-03-16",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -32,7 +3385,7 @@
     },
     {
       "date": "2026-03-17",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -45,7 +3398,7 @@
     },
     {
       "date": "2026-03-18",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -58,7 +3411,7 @@
     },
     {
       "date": "2026-03-19",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -71,7 +3424,7 @@
     },
     {
       "date": "2026-03-20",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -84,7 +3437,7 @@
     },
     {
       "date": "2026-03-21",
-      "record_count": 6,
+      "record_count": 7,
       "sources": [
         "ESA_NEOCC",
         "JPL_HORIZONS",
@@ -94,6 +3447,19 @@
         "NASA_PDS"
       ],
       "path": "observations/2026-03-21.json"
+    },
+    {
+      "date": "2026-03-22",
+      "record_count": 7,
+      "sources": [
+        "ESA_NEOCC",
+        "JPL_HORIZONS",
+        "MPC",
+        "NASA_CNEOS",
+        "NASA_JPL_SBDB",
+        "NASA_PDS"
+      ],
+      "path": "observations/2026-03-22.json"
     }
   ]
 }

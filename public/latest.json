@@ -1,56 +1,76 @@
 {
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "artifact_type": "epistemic_output",
+    "generated_by": "TRIZEL epistemic pipeline",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "publication",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE"
+  },
   "pipeline_version": "1.0.0",
-  "generated_utc": "2026-03-18T23:47:45Z",
-  "latest_day": "2026-03-21",
-  "redirect": "observations/2026-03-21.json",
-  "record_count": 6,
+  "generated_utc": "2026-03-22T06:47:27Z",
+  "latest_day": "2026-03-22",
+  "redirect": "observations/2026-03-22.json",
+  "record_count": 7,
   "observations": [
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
       "source_id": "ESA_NEOCC",
       "retrieved_utc": "",
-      "sha256": "a2c434d7ab3fdf25b9b6aff7576c677ad21488dd495929d31cbc69d0bb2f473c",
-      "raw_path": "2026-03-21/ESA_NEOCC.html",
+      "sha256": "89d2096d60959951a4b87901dbd872dc5e453f50422d521229f4e33f1bdb86af",
+      "raw_path": "2026-03-22/ESA_NEOCC.html",
       "source_url": "https://neo.ssa.esa.int/"
     },
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
       "source_id": "JPL_HORIZONS",
       "retrieved_utc": "",
-      "sha256": "3141cb27f81e3f29b2c4d953ddaed1181313346cc007e84c95236173d0989255",
-      "raw_path": "2026-03-21/NASA_JPL_HORIZONS.html",
+      "sha256": "ae7b2f15acd48d137f7e261e8eef9a44faf6c72a655a28aeae5ee9a0a8bb928c",
+      "raw_path": "2026-03-22/NASA_JPL_HORIZONS.html",
       "source_url": "https://ssd.jpl.nasa.gov/api/horizons.api"
     },
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
       "source_id": "MPC",
       "retrieved_utc": "",
-      "sha256": "bd03282508312c52a8bd49e388f15da604dcfca74bf3717f3e493843c7056f82",
-      "raw_path": "2026-03-21/IAU_MPC.html",
+      "sha256": "81546bf621ef59bca16d770961b1768e3546ddc949f581bb125cec0b1a012aa6",
+      "raw_path": "2026-03-22/IAU_MPC.html",
       "source_url": "https://minorplanetcenter.net/"
     },
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
       "source_id": "NASA_CNEOS",
       "retrieved_utc": "",
       "sha256": "b2b0245543a10b90a3eddc75229eb4e66ed505418e795d8d6ae9829945ec5b48",
-      "raw_path": "2026-03-21/NASA_CNEOS.html",
+      "raw_path": "2026-03-22/NASA_CNEOS.html",
       "source_url": "https://cneos.jpl.nasa.gov/"
     },
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
       "source_id": "NASA_JPL_SBDB",
       "retrieved_utc": "",
-      "sha256": "880136c3ce1acffb358a245c5c8a64d4f96cbe721b6f79cfbacef3d397795884",
-      "raw_path": "2026-03-21/NASA_JPL_SBDB.html",
+      "sha256": "c50358e1bd0fcb0991b3db80243fe123f80e2cf96a36f66188248f311237e976",
+      "raw_path": "2026-03-22/NASA_JPL_SBDB.html",
       "source_url": "https://ssd-api.jpl.nasa.gov/sbdb.api"
     },
     {
-      "requested_day_utc": "2026-03-21",
+      "requested_day_utc": "2026-03-22",
+      "source_id": "NASA_JPL_SBDB",
+      "retrieved_utc": "",
+      "sha256": "a2f1d44cc33dfd235e83b97d9404812e18c3de0a83c4fae6fdaeb8c4dc6b9732",
+      "raw_path": "2026-03-22/NASA_JPL_SBDB_QUERY__3I_ATLAS.json",
+      "source_url": "https://ssd-api.jpl.nasa.gov/sbdb.api"
+    },
+    {
+      "requested_day_utc": "2026-03-22",
       "source_id": "NASA_PDS",
       "retrieved_utc": "",
       "sha256": "6e3ffd596631d0dcf9a5e8b9e7edb279ac5e5f865c7ad1c73c87ff4e19648ebc",
-      "raw_path": "2026-03-21/NASA_PDS_SMALL_BODIES.html",
+      "raw_path": "2026-03-22/NASA_PDS_SMALL_BODIES.html",
       "source_url": "https://pds.nasa.gov/"
     }
   ]

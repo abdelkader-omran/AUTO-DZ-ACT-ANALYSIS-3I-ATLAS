@@ -1,0 +1,849 @@
+{
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "artifact_type": "epistemic_output",
+    "generated_by": "TRIZEL epistemic pipeline",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "publication",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE"
+  },
+  "pipeline_version": "1.0.0",
+  "generated_utc": "2026-03-22T06:47:27Z",
+  "requested_day_utc": "2025-09-16",
+  "record_count": 7,
+  "observations": [
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "ESA_NEOCC",
+      "retrieved_utc": "",
+      "sha256": "0a9b179d8876567de7486037fe7ed024e79652821e7344b2f694564d87ab5642",
+      "raw_path": "2025-09-16/ESA_NEOCC.html",
+      "source_url": "https://neo.ssa.esa.int/"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "JPL_HORIZONS",
+      "retrieved_utc": "",
+      "sha256": "ae7b2f15acd48d137f7e261e8eef9a44faf6c72a655a28aeae5ee9a0a8bb928c",
+      "raw_path": "2025-09-16/NASA_JPL_HORIZONS.html",
+      "source_url": "https://ssd.jpl.nasa.gov/api/horizons.api"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "MPC",
+      "retrieved_utc": "",
+      "sha256": "b7042b91998de824cf737aaeb2c7f0eec6f2555525c7ea488e0020394d5f5bc7",
+      "raw_path": "2025-09-16/IAU_MPC.html",
+      "source_url": "https://minorplanetcenter.net/"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "NASA_CNEOS",
+      "retrieved_utc": "",
+      "sha256": "b2b0245543a10b90a3eddc75229eb4e66ed505418e795d8d6ae9829945ec5b48",
+      "raw_path": "2025-09-16/NASA_CNEOS.html",
+      "source_url": "https://cneos.jpl.nasa.gov/"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "NASA_JPL_SBDB",
+      "retrieved_utc": "",
+      "sha256": "c50358e1bd0fcb0991b3db80243fe123f80e2cf96a36f66188248f311237e976",
+      "raw_path": "2025-09-16/NASA_JPL_SBDB.html",
+      "source_url": "https://ssd-api.jpl.nasa.gov/sbdb.api"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "NASA_JPL_SBDB",
+      "retrieved_utc": "",
+      "sha256": "37ffcd88cd51f3325560cabfe8a5eeee990a676df8ab85be340a38e4122bdd52",
+      "raw_path": "2025-09-16/NASA_JPL_SBDB_QUERY__3I_ATLAS.json",
+      "source_url": "https://ssd-api.jpl.nasa.gov/sbdb.api"
+    },
+    {
+      "requested_day_utc": "2025-09-16",
+      "source_id": "NASA_PDS",
+      "retrieved_utc": "",
+      "sha256": "6e3ffd596631d0dcf9a5e8b9e7edb279ac5e5f865c7ad1c73c87ff4e19648ebc",
+      "raw_path": "2025-09-16/NASA_PDS_SMALL_BODIES.html",
+      "source_url": "https://pds.nasa.gov/"
+    }
+  ],
+  "object_key": "atlas-2025-n1",
+  "designation_snapshot": "3I/ATLAS",
+  "designation_current": "3I/ATLAS",
+  "aliases": [
+    "C/2025 N1 (ATLAS)",
+    "3I/ATLAS"
+  ],
+  "registry_version": "v1.0",
+  "epistemic_state": {
+    "object": "3I/ATLAS",
+    "sources": [],
+    "parameters": {},
+    "comparison": null,
+    "temporal_consistency": "no_history",
+    "epistemic_state": "single_source_no_history",
+    "confidence": "limited"
+  },
+  "profile_completeness": {
+    "phenomenon_type": "small_body_orbit",
+    "required_fields": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ],
+    "missing_required_fields": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ],
+    "optional_fields": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve",
+      "gas_species",
+      "dust_signature"
+    ],
+    "missing_optional_fields": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve",
+      "gas_species",
+      "dust_signature"
+    ],
+    "missing_not_ingested": [
+      "gas_species",
+      "dust_signature"
+    ],
+    "missing_potentially_observable": [
+      "coma",
+      "tail",
+      "jet",
+      "magnitude",
+      "light_curve"
+    ],
+    "missing_not_ingested_attribution": {
+      "gas_species": {
+        "capability_type": "spectroscopy",
+        "possible_source_families": [
+          "jwst",
+          "alma",
+          "vlt",
+          "ground_spectroscopy"
+        ]
+      },
+      "dust_signature": {
+        "capability_type": "spectroscopy",
+        "possible_source_families": [
+          "jwst",
+          "alma",
+          "vlt",
+          "ground_spectroscopy"
+        ]
+      }
+    },
+    "missing_potentially_observable_attribution": {
+      "coma": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical"
+        ]
+      },
+      "tail": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical"
+        ]
+      },
+      "jet": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical",
+          "high_resolution_imaging"
+        ]
+      },
+      "magnitude": {
+        "capability_type": "photometry",
+        "possible_source_families": [
+          "ground_optical",
+          "survey_optical",
+          "space_optical"
+        ]
+      },
+      "light_curve": {
+        "capability_type": "time_series_photometry",
+        "possible_source_families": [
+          "ground_optical",
+          "survey_optical",
+          "space_optical"
+        ]
+      }
+    },
+    "currently_ingested_fields": [
+      "e",
+      "a",
+      "i",
+      "q"
+    ],
+    "completeness_state": "core_incomplete",
+    "profile_version": "v1.3"
+  },
+  "profile_temporal_availability": {
+    "missing_not_ingested_temporal": {
+      "gas_species": {
+        "capability_type": "spectroscopy",
+        "possible_source_families": [
+          "jwst",
+          "alma",
+          "vlt",
+          "ground_spectroscopy"
+        ],
+        "source_temporal_availability": {
+          "jwst": "unknown",
+          "alma": "unknown",
+          "vlt": "unknown",
+          "ground_spectroscopy": "unknown"
+        },
+        "availability": "unknown"
+      },
+      "dust_signature": {
+        "capability_type": "spectroscopy",
+        "possible_source_families": [
+          "jwst",
+          "alma",
+          "vlt",
+          "ground_spectroscopy"
+        ],
+        "source_temporal_availability": {
+          "jwst": "unknown",
+          "alma": "unknown",
+          "vlt": "unknown",
+          "ground_spectroscopy": "unknown"
+        },
+        "availability": "unknown"
+      }
+    },
+    "missing_potentially_observable_temporal": {
+      "coma": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical"
+        ],
+        "source_temporal_availability": {
+          "ground_optical": "unknown",
+          "space_optical": "unknown"
+        },
+        "availability": "unknown"
+      },
+      "tail": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical"
+        ],
+        "source_temporal_availability": {
+          "ground_optical": "unknown",
+          "space_optical": "unknown"
+        },
+        "availability": "unknown"
+      },
+      "jet": {
+        "capability_type": "activity_imaging",
+        "possible_source_families": [
+          "ground_optical",
+          "space_optical",
+          "high_resolution_imaging"
+        ],
+        "source_temporal_availability": {
+          "ground_optical": "unknown",
+          "space_optical": "unknown",
+          "high_resolution_imaging": "unknown"
+        },
+        "availability": "unknown"
+      },
+      "magnitude": {
+        "capability_type": "photometry",
+        "possible_source_families": [
+          "ground_optical",
+          "survey_optical",
+          "space_optical"
+        ],
+        "source_temporal_availability": {
+          "ground_optical": "unknown",
+          "survey_optical": "unknown",
+          "space_optical": "unknown"
+        },
+        "availability": "unknown"
+      },
+      "light_curve": {
+        "capability_type": "time_series_photometry",
+        "possible_source_families": [
+          "ground_optical",
+          "survey_optical",
+          "space_optical"
+        ],
+        "source_temporal_availability": {
+          "ground_optical": "unknown",
+          "survey_optical": "unknown",
+          "space_optical": "unknown"
+        },
+        "availability": "unknown"
+      }
+    },
+    "reference_date": "2026-03-22"
+  },
+  "observational_outcome": {
+    "field_outcomes": {
+      "e": "unknown",
+      "a": "unknown",
+      "i": "unknown",
+      "q": "unknown",
+      "coma": "unknown",
+      "tail": "unknown",
+      "jet": "unknown",
+      "magnitude": "unknown",
+      "light_curve": "unknown",
+      "gas_species": "not_ingested",
+      "dust_signature": "not_ingested"
+    },
+    "outcome_summary": {
+      "observed": [],
+      "not_observed": [],
+      "not_available": [],
+      "not_ingested": [
+        "gas_species",
+        "dust_signature"
+      ],
+      "unknown": [
+        "e",
+        "a",
+        "i",
+        "q",
+        "coma",
+        "tail",
+        "jet",
+        "magnitude",
+        "light_curve"
+      ]
+    }
+  },
+  "source_outcome_attribution": {
+    "e": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": "unknown",
+        "mpc": "unknown",
+        "esa": "unknown",
+        "imcce": "unknown"
+      }
+    },
+    "a": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": "unknown",
+        "mpc": "unknown",
+        "esa": "unknown",
+        "imcce": "unknown"
+      }
+    },
+    "i": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": "unknown",
+        "mpc": "unknown",
+        "esa": "unknown",
+        "imcce": "unknown"
+      }
+    },
+    "q": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": "unknown",
+        "mpc": "unknown",
+        "esa": "unknown",
+        "imcce": "unknown"
+      }
+    },
+    "coma": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": "unknown",
+        "space_optical": "unknown"
+      }
+    },
+    "tail": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": "unknown",
+        "space_optical": "unknown"
+      }
+    },
+    "jet": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": "unknown",
+        "space_optical": "unknown",
+        "high_resolution_imaging": "unknown"
+      }
+    },
+    "magnitude": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": "unknown",
+        "survey_optical": "unknown",
+        "space_optical": "unknown"
+      }
+    },
+    "light_curve": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": "unknown",
+        "survey_optical": "unknown",
+        "space_optical": "unknown"
+      }
+    },
+    "gas_species": {
+      "state": "not_ingested",
+      "sources": {
+        "jwst": "not_ingested",
+        "alma": "not_ingested",
+        "vlt": "not_ingested",
+        "ground_spectroscopy": "not_ingested"
+      }
+    },
+    "dust_signature": {
+      "state": "not_ingested",
+      "sources": {
+        "jwst": "not_ingested",
+        "alma": "not_ingested",
+        "vlt": "not_ingested",
+        "ground_spectroscopy": "not_ingested"
+      }
+    }
+  },
+  "source_evidence": {
+    "e": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "mpc": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "esa": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "imcce": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "a": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "mpc": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "esa": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "imcce": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "i": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "mpc": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "esa": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "imcce": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "q": {
+      "state": "unknown",
+      "sources": {
+        "jpl_sbdb": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "mpc": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "esa": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "imcce": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "coma": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "space_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "tail": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "space_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "jet": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "space_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "high_resolution_imaging": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "magnitude": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "survey_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "space_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "light_curve": {
+      "state": "unknown",
+      "sources": {
+        "ground_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "survey_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        },
+        "space_optical": {
+          "state": "unknown",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "no_source_evidence"
+          }
+        }
+      }
+    },
+    "gas_species": {
+      "state": "not_ingested",
+      "sources": {
+        "jwst": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "alma": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "vlt": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "ground_spectroscopy": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        }
+      }
+    },
+    "dust_signature": {
+      "state": "not_ingested",
+      "sources": {
+        "jwst": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "alma": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "vlt": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        },
+        "ground_spectroscopy": {
+          "state": "not_ingested",
+          "evidence": {
+            "ingested": false,
+            "present_in_snapshot": false,
+            "trace_type": "not_ingested"
+          }
+        }
+      }
+    }
+  },
+  "multi_source_consistency": {
+    "e": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "a": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "i": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "q": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "coma": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "tail": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "jet": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "magnitude": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "light_curve": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "gas_species": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    },
+    "dust_signature": {
+      "state": "insufficient_evidence",
+      "comparable_sources": [],
+      "source_values": {}
+    }
+  }
+}
