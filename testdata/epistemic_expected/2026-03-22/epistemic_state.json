@@ -1,0 +1,32 @@
+{
+  "object": "3I/ATLAS",
+  "sources": [
+    "jpl_sbdb",
+    "mpc"
+  ],
+  "parameters": {
+    "jpl_sbdb": {
+      "e": 6.14,
+      "a": -0.264,
+      "i": 175.0,
+      "q": 1.36
+    },
+    "mpc": {
+      "e": 6.14,
+      "a": -0.264,
+      "i": 175.0,
+      "q": 1.36
+    }
+  },
+  "comparison": {
+    "jpl_sbdb__vs__mpc": {
+      "\u0394e": 0.0,
+      "\u0394a": 0.0,
+      "\u0394i": 0.0,
+      "\u0394q": 0.0
+    }
+  },
+  "temporal_consistency": null,
+  "epistemic_state": "consensus",
+  "confidence": "multi_source_comparison"
+}
