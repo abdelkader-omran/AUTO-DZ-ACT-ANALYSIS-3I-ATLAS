@@ -22,15 +22,12 @@ Usage:
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OBSERVATIONS_DIR = REPO_ROOT / "data" / "observations"
+from observation_utils import parse_observations_dir
 
 
 def _load_json(path: Path) -> Any:
@@ -68,17 +65,10 @@ def build_report(observations_dir: Path) -> List[Dict[str, Optional[str]]]:
 
 def main(argv: List[str]) -> int:
     """Parse arguments, build the report, and print it as JSON to stdout."""
-    p = argparse.ArgumentParser(
-        description="Report provenance metadata from normalized observation files."
+    observations_dir = parse_observations_dir(
+        argv,
+        "Report provenance metadata from normalized observation files.",
     )
-    p.add_argument(
-        "--observations-dir",
-        default=str(DEFAULT_OBSERVATIONS_DIR),
-        help="Path to observations directory (default: data/observations)",
-    )
-    args = p.parse_args(argv[1:])
-
-    observations_dir = Path(args.observations_dir)
     report = build_report(observations_dir)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0

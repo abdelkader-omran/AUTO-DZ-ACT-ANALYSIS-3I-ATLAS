@@ -28,15 +28,13 @@ Usage:
 
 from __future__ import annotations
 
-import argparse
 import json
 import sys
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OBSERVATIONS_DIR = REPO_ROOT / "data" / "observations"
+from observation_utils import parse_observations_dir
 
 
 def _load_json(path: Path) -> Any:
@@ -87,6 +85,24 @@ def _per_day_entry(date_str: str, obs_file: Optional[Path]) -> Dict[str, Any]:
     return entry
 
 
+_COVERAGE_FIELDS = (
+    "object_present",
+    "source_present",
+    "retrieved_utc_present",
+    "identity_present",
+    "orbital_present",
+    "physical_present",
+)
+_PROVENANCE_FIELDS = (
+    "provenance_present",
+    "snapshot_id_present",
+    "sha256_present",
+    "manifest_ref_present",
+    "doi_present",
+    "doi_absent_present",
+)
+
+
 def build_summary(observations_dir: Path) -> Dict[str, Any]:
     """Return a deterministic structured coverage summary."""
     per_day: List[Dict[str, Any]] = []
@@ -122,28 +138,11 @@ def build_summary(observations_dir: Path) -> Dict[str, Any]:
     contiguous: bool = len(missing_days) == 0
 
     # Per-field coverage counts (count of days where the field is present)
-    coverage_fields = (
-        "object_present",
-        "source_present",
-        "retrieved_utc_present",
-        "identity_present",
-        "orbital_present",
-        "physical_present",
-    )
-    provenance_fields = (
-        "provenance_present",
-        "snapshot_id_present",
-        "sha256_present",
-        "manifest_ref_present",
-        "doi_present",
-        "doi_absent_present",
-    )
-
     metadata_field_coverage: Dict[str, int] = {
-        f: sum(1 for d in per_day if d.get(f)) for f in coverage_fields
+        f: sum(1 for d in per_day if d.get(f)) for f in _COVERAGE_FIELDS
     }
     provenance_field_coverage: Dict[str, int] = {
-        f: sum(1 for d in per_day if d.get(f)) for f in provenance_fields
+        f: sum(1 for d in per_day if d.get(f)) for f in _PROVENANCE_FIELDS
     }
 
     return {
@@ -161,19 +160,10 @@ def build_summary(observations_dir: Path) -> Dict[str, Any]:
 
 def main(argv: List[str]) -> int:
     """Parse arguments, build the summary, and print it as JSON to stdout."""
-    p = argparse.ArgumentParser(
-        description=(
-            "Produce a deterministic coverage summary of normalized observation files."
-        )
+    observations_dir = parse_observations_dir(
+        argv,
+        "Produce a deterministic coverage summary of normalized observation files.",
     )
-    p.add_argument(
-        "--observations-dir",
-        default=str(DEFAULT_OBSERVATIONS_DIR),
-        help="Path to observations directory (default: data/observations)",
-    )
-    args = p.parse_args(argv[1:])
-
-    observations_dir = Path(args.observations_dir)
     summary = build_summary(observations_dir)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0
