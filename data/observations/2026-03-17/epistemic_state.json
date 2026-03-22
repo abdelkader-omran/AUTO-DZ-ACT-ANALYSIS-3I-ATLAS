@@ -1,0 +1,18 @@
+{
+  "object": "3I/ATLAS",
+  "sources": [
+    "jpl_sbdb"
+  ],
+  "parameters": {
+    "jpl_sbdb": {
+      "e": 6.14,
+      "a": -0.264,
+      "i": 175.0,
+      "q": 1.36
+    }
+  },
+  "comparison": null,
+  "temporal_consistency": "stable",
+  "epistemic_state": "single_source_temporally_stable",
+  "confidence": "limited"
+}

@@ -20,13 +20,26 @@ jobs:
         run: |
           pip install -r requirements.txt || true
 
-      - name: Run epistemic engine
+      - name: Run epistemic engine across temporal window
         run: |
-          python -m scripts.epistemic_engine \
-          --observation-root data/observations/2026-03-21
+          set -euo pipefail
+          WINDOW_START="2026-03-14"
+          OBS_ROOT="data/observations"
+          for day_dir in $(ls -d "${OBS_ROOT}"/2026-03-* 2>/dev/null | sort); do
+            day=$(basename "${day_dir}")
+            if [[ "${day}" < "${WINDOW_START}" ]]; then
+              continue
+            fi
+            if [ ! -f "${day_dir}/normalized_observation.json" ]; then
+              echo "Skipping ${day}: normalized_observation.json not present"
+              continue
+            fi
+            echo "Running epistemic engine for ${day}"
+            python -m scripts.epistemic_engine --observation-root "${day_dir}"
+          done
 
-      - name: Upload artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: epistemic-state
-          path: data/observations/2026-03-21/epistemic_state.json
+          name: epistemic-states
+          path: data/observations/*/epistemic_state.json
