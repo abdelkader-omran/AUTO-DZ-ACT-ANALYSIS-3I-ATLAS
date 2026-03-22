@@ -1,0 +1,254 @@
+{
+  "title": "Orbital Equivalence Proof — DAILY Snapshot → Observation",
+  "description": "Demonstrates that orbital values in each normalized_observation.json are directly copied from the corresponding DAILY audited snapshot, not fetched independently from JPL. The sha256 recorded in each observation's provenance block is the SHA-256 hash of the snapshot file on disk. Orbital fields are byte-for-byte identical between snapshot and observation.",
+  "example_day": "2026-03-21",
+  "example_snapshot": {
+    "snapshot_id": "snapshot-2026-03-21-audited",
+    "snapshot_date": "2026-03-21",
+    "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+    "audit_status": "audited",
+    "source": "jpl_sbdb",
+    "retrieved_utc": "2026-03-18T05:47:40.861347+00:00",
+    "object": "3I/ATLAS",
+    "identity": {
+      "fullname": "C/2025 N1 (ATLAS)",
+      "designation": "2025 N1",
+      "prefix": "C"
+    },
+    "orbital": {
+      "eccentricity": 6.14,
+      "semi_major_axis": -0.264,
+      "perihelion_distance": 1.36,
+      "inclination": 175.0,
+      "ascending_node": 322.0,
+      "argument_of_perihelion": 128.0,
+      "mean_anomaly": 818.0,
+      "time_of_perihelion": 2460977.995
+    },
+    "physical": {
+      "absolute_magnitude": null,
+      "diameter": null,
+      "albedo": null
+    }
+  },
+  "example_observation": {
+    "object": "3I/ATLAS",
+    "source": "jpl_sbdb",
+    "retrieved_utc": "2026-03-18T05:47:40.861347+00:00",
+    "identity": {
+      "fullname": "C/2025 N1 (ATLAS)",
+      "designation": "2025 N1",
+      "prefix": "C"
+    },
+    "orbital": {
+      "eccentricity": 6.14,
+      "semi_major_axis": -0.264,
+      "perihelion_distance": 1.36,
+      "inclination": 175.0,
+      "ascending_node": 322.0,
+      "argument_of_perihelion": 128.0,
+      "mean_anomaly": 818.0,
+      "time_of_perihelion": 2460977.995
+    },
+    "physical": {
+      "absolute_magnitude": null,
+      "diameter": null,
+      "albedo": null
+    },
+    "provenance": {
+      "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+      "snapshot_id": "snapshot-2026-03-21-audited",
+      "sha256": "55252788e67fd349617e8fea6d4a4e54ce6bac436c1084c15cd05360a125fa5e",
+      "manifest_ref": "data/manifests/manifest_2026-03-21.json",
+      "doi_absent": true
+    }
+  },
+  "example_equivalence": {
+    "orbital_match": true,
+    "snapshot_sha256": "55252788e67fd349617e8fea6d4a4e54ce6bac436c1084c15cd05360a125fa5e",
+    "observation_recorded_sha256": "55252788e67fd349617e8fea6d4a4e54ce6bac436c1084c15cd05360a125fa5e",
+    "hashes_match": true
+  },
+  "all_days": [
+    {
+      "day": "2026-03-12",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-12-audited.json",
+      "snapshot_sha256": "b8b1073cd8294179e056107c52e159ca9d7fa04be46fb62579345fefab3a6c3c",
+      "observation_path": "data/observations/2026-03-12/normalized_observation.json",
+      "observation_provenance_sha256": "b8b1073cd8294179e056107c52e159ca9d7fa04be46fb62579345fefab3a6c3c",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-13",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-13-audited.json",
+      "snapshot_sha256": "438d8c5dd34ecf38013edd932324f1882fcd22783bebab51e66df585c8d8a3d3",
+      "observation_path": "data/observations/2026-03-13/normalized_observation.json",
+      "observation_provenance_sha256": "438d8c5dd34ecf38013edd932324f1882fcd22783bebab51e66df585c8d8a3d3",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-14",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-14-audited.json",
+      "snapshot_sha256": "015e4524bec6896301225296bfb1d183551a5822cc74bb2b4e5a2f2528879db4",
+      "observation_path": "data/observations/2026-03-14/normalized_observation.json",
+      "observation_provenance_sha256": "015e4524bec6896301225296bfb1d183551a5822cc74bb2b4e5a2f2528879db4",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-15",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-15-audited.json",
+      "snapshot_sha256": "d9598696ac42d0fbf90fc6e21c71326b838cc19d30d6b66653f14fe4ea08a44f",
+      "observation_path": "data/observations/2026-03-15/normalized_observation.json",
+      "observation_provenance_sha256": "d9598696ac42d0fbf90fc6e21c71326b838cc19d30d6b66653f14fe4ea08a44f",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-16",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-16-audited.json",
+      "snapshot_sha256": "202427f164292a6cce6dfa2bf969f27317493f2d3b93420e3c544f90d1d7b5b7",
+      "observation_path": "data/observations/2026-03-16/normalized_observation.json",
+      "observation_provenance_sha256": "202427f164292a6cce6dfa2bf969f27317493f2d3b93420e3c544f90d1d7b5b7",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-17",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-17-audited.json",
+      "snapshot_sha256": "c5305ca0b0f4751204dea28bac53123f66ed6397bc651f6c8973d3d49d066f8f",
+      "observation_path": "data/observations/2026-03-17/normalized_observation.json",
+      "observation_provenance_sha256": "c5305ca0b0f4751204dea28bac53123f66ed6397bc651f6c8973d3d49d066f8f",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-18",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-18-audited.json",
+      "snapshot_sha256": "3640b3f9651beb0c13f680e93940583c8491581fcc00efd3f44ca85c83e5768e",
+      "observation_path": "data/observations/2026-03-18/normalized_observation.json",
+      "observation_provenance_sha256": "3640b3f9651beb0c13f680e93940583c8491581fcc00efd3f44ca85c83e5768e",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-19",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-19-audited.json",
+      "snapshot_sha256": "1e5047abe811146f89e5e16ae97d75bb09293ad425f73c09d7bd1063f50b969f",
+      "observation_path": "data/observations/2026-03-19/normalized_observation.json",
+      "observation_provenance_sha256": "1e5047abe811146f89e5e16ae97d75bb09293ad425f73c09d7bd1063f50b969f",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-20",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-20-audited.json",
+      "snapshot_sha256": "cbc815d64cf951ab82ca82c9674f26f6800547078a04f436e1330e736dda4d2e",
+      "observation_path": "data/observations/2026-03-20/normalized_observation.json",
+      "observation_provenance_sha256": "cbc815d64cf951ab82ca82c9674f26f6800547078a04f436e1330e736dda4d2e",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    },
+    {
+      "day": "2026-03-21",
+      "snapshot_path": "data/snapshots/snapshot-2026-03-21-audited.json",
+      "snapshot_sha256": "55252788e67fd349617e8fea6d4a4e54ce6bac436c1084c15cd05360a125fa5e",
+      "observation_path": "data/observations/2026-03-21/normalized_observation.json",
+      "observation_provenance_sha256": "55252788e67fd349617e8fea6d4a4e54ce6bac436c1084c15cd05360a125fa5e",
+      "orbital_fields_match": true,
+      "orbital": {
+        "eccentricity": 6.14,
+        "semi_major_axis": -0.264,
+        "perihelion_distance": 1.36,
+        "inclination": 175.0,
+        "ascending_node": 322.0,
+        "argument_of_perihelion": 128.0,
+        "mean_anomaly": 818.0,
+        "time_of_perihelion": 2460977.995
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "manifest_id": "manifest_2026-03-14",
+  "manifest_date": "2026-03-14",
+  "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+  "snapshots": [
+    {
+      "snapshot_id": "snapshot-2026-03-14-audited",
+      "path": "data/snapshots/snapshot-2026-03-14-audited.json",
+      "sha256": "015e4524bec6896301225296bfb1d183551a5822cc74bb2b4e5a2f2528879db4"
+    }
+  ]
+}

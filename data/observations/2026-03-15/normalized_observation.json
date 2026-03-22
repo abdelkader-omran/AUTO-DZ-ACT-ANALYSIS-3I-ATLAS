@@ -25,7 +25,7 @@
   "provenance": {
     "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
     "snapshot_id": "snapshot-2026-03-15-audited",
-    "sha256": "e22b2dc8a9511b93f419c6ffeaee440a13a30439ba6a756b16bbea7b947350bb",
+    "sha256": "d9598696ac42d0fbf90fc6e21c71326b838cc19d30d6b66653f14fe4ea08a44f",
     "manifest_ref": "data/manifests/manifest_2026-03-15.json",
     "doi_absent": true
   }
