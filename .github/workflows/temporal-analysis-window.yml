@@ -1,0 +1,116 @@
+name: Temporal Analysis — Provenance-Valid Contiguous Window
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporal-analysis-window
+  cancel-in-progress: false
+
+jobs:
+  temporal-analysis:
+    name: Run temporal analysis (2026-03-15 → 2026-03-17)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Assert observation directories exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for date in 2026-03-15 2026-03-16 2026-03-17; do
+            dir="data/observations/${date}"
+            if [ ! -d "${dir}" ]; then
+              echo "ERROR: observation directory not found: ${dir}"
+              exit 2
+            fi
+            if [ ! -f "${dir}/normalized_observation.json" ]; then
+              echo "ERROR: normalized_observation.json missing in ${dir}"
+              exit 2
+            fi
+            echo "OK: ${dir}/normalized_observation.json exists."
+          done
+
+      - name: Run provenance validation (HARD GATE)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m scripts.run_provenance_check \
+            --observation-root data/observations/2026-03-15 \
+            --observation-root data/observations/2026-03-16 \
+            --observation-root data/observations/2026-03-17
+
+      - name: Run temporal analysis over 3-day window
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/temporal_analysis.py \
+            --window 2026-03-15 2026-03-16 2026-03-17 \
+            --observation-dir data/observations \
+            --output-dir analysis/temporal
+
+      - name: Assert temporal analysis output exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="analysis/temporal/2026-03-15--2026-03-17/temporal_analysis.json"
+          if [ ! -f "${OUT}" ]; then
+            echo "ERROR: temporal analysis output not found: ${OUT}"
+            exit 1
+          fi
+          echo "OK: ${OUT} exists."
+          python - <<'PYEOF'
+          import json, pathlib, sys
+
+          path = pathlib.Path("analysis/temporal/2026-03-15--2026-03-17/temporal_analysis.json")
+          record = json.loads(path.read_text(encoding="utf-8"))
+
+          outcome = record.get("execution_outcome")
+          if outcome != "SUCCESS":
+              print(f"ERROR: execution_outcome is {outcome!r}, expected 'SUCCESS'", file=sys.stderr)
+              sys.exit(1)
+
+          prov_outcome = record.get("provenance_gate", {}).get("outcome")
+          if prov_outcome != "VALID":
+              print(f"ERROR: provenance_gate.outcome is {prov_outcome!r}, expected 'VALID'", file=sys.stderr)
+              sys.exit(1)
+
+          window = record.get("window", {})
+          days = window.get("days", [])
+          expected = ["2026-03-15", "2026-03-16", "2026-03-17"]
+          if days != expected:
+              print(f"ERROR: window.days is {days!r}, expected {expected!r}", file=sys.stderr)
+              sys.exit(1)
+
+          comparisons = record.get("temporal_comparisons", [])
+          if len(comparisons) != 2:
+              print(f"ERROR: expected 2 temporal comparisons, got {len(comparisons)}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"OK: execution_outcome={outcome!r}")
+          print(f"OK: provenance_gate.outcome={prov_outcome!r}")
+          print(f"OK: window.days={days!r}")
+          print(f"OK: {len(comparisons)} temporal comparisons present")
+          PYEOF
+
+      - name: Upload temporal analysis artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: temporal-analysis-2026-03-15--2026-03-17
+          path: analysis/temporal/2026-03-15--2026-03-17/
