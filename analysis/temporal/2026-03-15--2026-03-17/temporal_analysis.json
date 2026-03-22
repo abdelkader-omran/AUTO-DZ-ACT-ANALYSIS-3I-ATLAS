@@ -3,13 +3,13 @@
     "project": "TRIZEL",
     "kernel_version": "V1",
     "kernel_status": "frozen",
-    "artifact_type": "temporal_analysis",
-    "generated_by": "scripts/temporal_analysis.py",
     "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
     "governance_layer": "analysis",
     "citation_required": true,
     "license_reference": "SEE LICENSE IF PRESENT",
-    "notice_reference": "SEE NOTICE"
+    "notice_reference": "SEE NOTICE",
+    "artifact_type": "temporal_analysis",
+    "generated_by": "scripts/temporal_analysis.py"
   },
   "temporal_analysis_version": "1.0.0",
   "window": {
@@ -43,47 +43,59 @@
       }
     ]
   },
-  "epistemic_states": {
-    "2026-03-15": {
-      "epistemic_state": "single_source_no_history",
-      "temporal_consistency": "no_history",
-      "confidence": "limited",
-      "sources": [
+  "day_sequence": [
+    {
+      "date": "2026-03-15",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
         "jpl_sbdb"
       ]
     },
-    "2026-03-16": {
-      "epistemic_state": "single_source_temporally_stable",
-      "temporal_consistency": "stable",
-      "confidence": "limited",
-      "sources": [
+    {
+      "date": "2026-03-16",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
         "jpl_sbdb"
       ]
     },
-    "2026-03-17": {
-      "epistemic_state": "single_source_temporally_stable",
-      "temporal_consistency": "stable",
-      "confidence": "limited",
-      "sources": [
+    {
+      "date": "2026-03-17",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
         "jpl_sbdb"
       ]
     }
-  },
+  ],
   "temporal_comparisons": [
     {
       "from_date": "2026-03-15",
       "to_date": "2026-03-16",
-      "from_epistemic_state": "single_source_no_history",
-      "to_epistemic_state": "single_source_temporally_stable",
-      "orbital_consistency": "stable",
       "changed_parameters": []
     },
     {
       "from_date": "2026-03-16",
       "to_date": "2026-03-17",
-      "from_epistemic_state": "single_source_temporally_stable",
-      "to_epistemic_state": "single_source_temporally_stable",
-      "orbital_consistency": "stable",
       "changed_parameters": []
     }
   ],
