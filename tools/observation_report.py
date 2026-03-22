@@ -48,6 +48,7 @@ def _extract_entry(date: str, obs: Dict[str, Any]) -> Dict[str, Optional[str]]:
 
 
 def build_report(observations_dir: Path) -> List[Dict[str, Optional[str]]]:
+    """Return a list of provenance metadata entries, one per dated observation directory."""
     report: List[Dict[str, Optional[str]]] = []
 
     if not observations_dir.is_dir():
@@ -66,6 +67,7 @@ def build_report(observations_dir: Path) -> List[Dict[str, Optional[str]]]:
 
 
 def main(argv: List[str]) -> int:
+    """Parse arguments, build the report, and print it as JSON to stdout."""
     p = argparse.ArgumentParser(
         description="Report provenance metadata from normalized observation files."
     )
