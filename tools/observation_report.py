@@ -27,11 +27,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from observation_utils import parse_observations_dir
-
-
-def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+from observation_utils import iter_observations, parse_observations_dir
 
 
 def _extract_entry(date: str, obs: Dict[str, Any]) -> Dict[str, Optional[str]]:
@@ -46,21 +42,7 @@ def _extract_entry(date: str, obs: Dict[str, Any]) -> Dict[str, Optional[str]]:
 
 def build_report(observations_dir: Path) -> List[Dict[str, Optional[str]]]:
     """Return a list of provenance metadata entries, one per dated observation directory."""
-    report: List[Dict[str, Optional[str]]] = []
-
-    if not observations_dir.is_dir():
-        return report
-
-    for entry in sorted(observations_dir.iterdir()):
-        if not entry.is_dir():
-            continue
-        obs_file = entry / "normalized_observation.json"
-        if not obs_file.is_file():
-            continue
-        obs = _load_json(obs_file)
-        report.append(_extract_entry(entry.name, obs))
-
-    return report
+    return [_extract_entry(date, obs) for date, obs in iter_observations(observations_dir)]
 
 
 def main(argv: List[str]) -> int:

@@ -28,30 +28,15 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-from observation_utils import parse_observations_dir
-
-
-def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+from observation_utils import iter_observations, parse_observations_dir
 
 
 def load_observations(observations_dir: Path) -> List[Dict[str, Any]]:
     """Return all normalized observations found under *observations_dir*."""
-    result: List[Dict[str, Any]] = []
-
-    if not observations_dir.is_dir():
-        return result
-
-    for entry in sorted(observations_dir.iterdir()):
-        if not entry.is_dir():
-            continue
-        obs_file = entry / "normalized_observation.json"
-        if not obs_file.is_file():
-            continue
-        obs = _load_json(obs_file)
-        result.append({"date": entry.name, "observation": obs})
-
-    return result
+    return [
+        {"date": date, "observation": obs}
+        for date, obs in iter_observations(observations_dir)
+    ]
 
 
 def main(argv: List[str]) -> int:
