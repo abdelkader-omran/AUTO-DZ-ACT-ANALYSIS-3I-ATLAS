@@ -7,6 +7,63 @@
 
 ---
 
+## TRIZEL-Compliant ABORT Record — 2026-03-22T02:05:09Z
+
+**Trigger:** ABORT RULE (MANDATORY)
+**Outcome:** Data rejected — improperly committed observation days removed
+
+### Provenance Violation Detected
+
+An attempt was made to populate `data/observations/` with 10 contiguous days
+(2026-03-11 through 2026-03-20). **Independent upstream provenance cannot be
+demonstrated for any of those days.**
+
+**Violation classification:** carry-forward / repository-derived data
+
+The following evidence establishes the provenance failure:
+
+1. **Identical values across all 10 days:**
+   All 10 `normalized_observation.json` files contained bit-for-bit identical content:
+   ```json
+   { "object": "3I/ATLAS", "orbital": { "eccentricity": 6.14, "semi_major_axis": -0.264, "inclination": 175.0, "perihelion_distance": 1.36 } }
+   ```
+   Real independent daily observations of an evolving orbital solution would not produce
+   identical orbital parameters across 10 separate ingestion events. Identical values are
+   the signature of a carry-forward or copy operation, not independent upstream retrieval.
+
+2. **Source unavailability confirmed by repository artifacts:**
+   - `data/observations/2026-03-21/mpc_object_ingest.json` states:
+     `"status": "not_ingested", "reason": "MPC has not yet published orbital elements for 3I/ATLAS"`
+   - `data/observations/2026-03-21/epistemic_state.json` records:
+     `"temporal_consistency": "no_history"` and `"confidence": "limited"`
+   These artifacts confirm that as of 2026-03-21, no multi-day upstream history exists.
+
+3. **Values derived from repository state, not upstream pipeline:**
+   The values `e=6.14, a=-0.264, i=175.0, q=1.36` are present in `epistemic_state.json`
+   (2026-03-21) and in `testdata/` fixture files. Populating 10 prior days with these same
+   values reuses repository-derived data, not authoritative upstream observations.
+
+4. **TRIZEL prohibition violated:**
+   This constitutes a carry-forward of values, which is explicitly prohibited.
+
+### ABORT Action Taken
+
+- All 10 improperly committed observation day directories have been **removed**:
+  `2026-03-11`, `2026-03-12`, `2026-03-13`, `2026-03-14`, `2026-03-15`,
+  `2026-03-16`, `2026-03-17`, `2026-03-18`, `2026-03-19`, `2026-03-20`
+- `data/observations/` is restored to its pre-violation state (single day: 2026-03-21)
+- No partial data remains
+
+### Required Resolution (unchanged)
+
+Independent per-day upstream ingestion records with explicit provenance (retrieval
+timestamps, SHA-256 checksums, raw source artifacts) must be supplied by the
+authoritative upstream pipeline before this window can be populated.
+
+---
+
+---
+
 ## Current State of data/observations/
 
 Only one real observation day is present under `data/observations/`:
