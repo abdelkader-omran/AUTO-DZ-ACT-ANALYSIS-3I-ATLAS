@@ -1,0 +1,128 @@
+{
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "analysis",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE",
+    "artifact_type": "temporal_analysis",
+    "generated_by": "scripts/temporal_analysis.py"
+  },
+  "temporal_analysis_version": "1.0.0",
+  "window": {
+    "start": "2026-03-18",
+    "end": "2026-03-21",
+    "days": [
+      "2026-03-18",
+      "2026-03-19",
+      "2026-03-20",
+      "2026-03-21"
+    ],
+    "length": 4
+  },
+  "provenance_gate": {
+    "outcome": "VALID",
+    "source_required": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+    "observations": [
+      {
+        "path": "data/observations/2026-03-18/normalized_observation.json",
+        "outcome": "VALID",
+        "failures": []
+      },
+      {
+        "path": "data/observations/2026-03-19/normalized_observation.json",
+        "outcome": "VALID",
+        "failures": []
+      },
+      {
+        "path": "data/observations/2026-03-20/normalized_observation.json",
+        "outcome": "VALID",
+        "failures": []
+      },
+      {
+        "path": "data/observations/2026-03-21/normalized_observation.json",
+        "outcome": "VALID",
+        "failures": []
+      }
+    ]
+  },
+  "day_sequence": [
+    {
+      "date": "2026-03-18",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
+        "jpl_sbdb"
+      ]
+    },
+    {
+      "date": "2026-03-19",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
+        "jpl_sbdb"
+      ]
+    },
+    {
+      "date": "2026-03-20",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
+        "jpl_sbdb"
+      ]
+    },
+    {
+      "date": "2026-03-21",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
+        "jpl_sbdb"
+      ]
+    }
+  ],
+  "temporal_comparisons": [
+    {
+      "from_date": "2026-03-18",
+      "to_date": "2026-03-19",
+      "changed_parameters": []
+    },
+    {
+      "from_date": "2026-03-19",
+      "to_date": "2026-03-20",
+      "changed_parameters": []
+    },
+    {
+      "from_date": "2026-03-20",
+      "to_date": "2026-03-21",
+      "changed_parameters": []
+    }
+  ],
+  "execution_outcome": "SUCCESS"
+}
