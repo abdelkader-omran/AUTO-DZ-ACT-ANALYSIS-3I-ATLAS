@@ -1,0 +1,52 @@
+{
+  "trizel_metadata": {
+    "project": "TRIZEL",
+    "kernel_version": "V1",
+    "kernel_status": "frozen",
+    "repository": "AUTO-DZ-ACT-ANALYSIS-3I-ATLAS",
+    "governance_layer": "analysis",
+    "citation_required": true,
+    "license_reference": "SEE LICENSE IF PRESENT",
+    "notice_reference": "SEE NOTICE",
+    "artifact_type": "temporal_analysis",
+    "generated_by": "scripts/temporal_analysis.py"
+  },
+  "temporal_analysis_version": "1.0.0",
+  "window": {
+    "start": "2026-03-26",
+    "end": "2026-03-26",
+    "days": [
+      "2026-03-26"
+    ],
+    "length": 1
+  },
+  "provenance_gate": {
+    "outcome": "VALID",
+    "source_required": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+    "observations": [
+      {
+        "path": "data/observations/2026-03-26/normalized_observation.json",
+        "outcome": "VALID",
+        "failures": []
+      }
+    ]
+  },
+  "day_sequence": [
+    {
+      "date": "2026-03-26",
+      "orbital": {
+        "jpl_sbdb": {
+          "e": 6.14,
+          "a": -0.264,
+          "i": 175.0,
+          "q": 1.36
+        }
+      },
+      "provenance": [
+        "jpl_sbdb"
+      ]
+    }
+  ],
+  "temporal_comparisons": [],
+  "execution_outcome": "SUCCESS"
+}
