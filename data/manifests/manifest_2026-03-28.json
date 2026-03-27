@@ -1,0 +1,11 @@
+{
+  "manifest_date": "2026-03-28",
+  "snapshot_id": "snapshot-2026-03-28-audited",
+  "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+  "generated_utc": "2026-03-28T05:47:38.000000+00:00",
+  "files": {
+    "data/raw/2026-03-28/jpl_sbdb_raw.json": "7dc2f47f0fb07fffdfa1222b2bc4bbd69a00befa02227b674134acf537fc7af2",
+    "data/snapshots/snapshot_2026-03-28.json": "ffe6c97229d596e9a65dd097425d8ac54964b07c66ac122a0a0b55423c0fda5e"
+  },
+  "algorithm": "sha256"
+}

@@ -1,0 +1,32 @@
+{
+  "object": "3I/ATLAS",
+  "source": "jpl_sbdb",
+  "retrieved_utc": "2026-03-28T05:47:38.000000+00:00",
+  "identity": {
+    "fullname": "C/2025 N1 (ATLAS)",
+    "designation": "2025 N1",
+    "prefix": "C"
+  },
+  "orbital": {
+    "eccentricity": 6.14,
+    "semi_major_axis": -0.264,
+    "perihelion_distance": 1.36,
+    "inclination": 175.0,
+    "ascending_node": 322.0,
+    "argument_of_perihelion": 128.0,
+    "mean_anomaly": 818.0,
+    "time_of_perihelion": 2460977.995
+  },
+  "physical": {
+    "absolute_magnitude": null,
+    "diameter": null,
+    "albedo": null
+  },
+  "provenance": {
+    "provenance_root": "AUTO-DZ-ACT-3I-ATLAS-DAILY",
+    "snapshot_id": "snapshot-2026-03-28-audited",
+    "sha256": "ffe6c97229d596e9a65dd097425d8ac54964b07c66ac122a0a0b55423c0fda5e",
+    "manifest_ref": "data/manifests/manifest_2026-03-28.json",
+    "doi_absent": true
+  }
+}
