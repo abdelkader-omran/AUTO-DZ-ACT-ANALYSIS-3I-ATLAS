@@ -1,0 +1,356 @@
+name: ANALYSIS — DAILY Dispatch Receiver
+
+# Receives the governed DAILY → ANALYSIS handoff.
+#
+# DAILY dispatches this event after its own admission gate passes, attaching
+# the list of provenance-valid dates that ANALYSIS should admit.
+#
+# Payload contract (client_payload):
+#   admitted_dates  : list[str]  — ISO-8601 dates (YYYY-MM-DD) admitted by DAILY
+#   source_repo     : str        — must equal "abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY"
+#   dispatch_sha    : str        — 40-char hex SHA of the DAILY commit that was admitted
+#
+# Fail-closed: the workflow aborts at the first sign of a malformed, missing,
+# or provenance-incompatible payload.
+#
+# Output: governed ANALYSIS-side admission artifact in its contract location:
+#   data/observations/YYYY-MM-DD/normalized_observation.json
+#
+# DAILY Layer-1 artifacts (data/raw/, data/snapshots/, data/manifests/) are
+# NOT copied into ANALYSIS.  Provenance linkage back to DAILY is preserved
+# through fields embedded in normalized_observation.json:
+#   provenance_root, snapshot_id, sha256, manifest_ref
+#
+# public/ is NOT touched by this workflow.  It is a downstream publication
+# surface and must not be used as a persistence layer for admission logic.
+
+on:
+  repository_dispatch:
+    types: [daily-admitted-dates]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: daily-dispatch-receiver
+  cancel-in-progress: false
+
+jobs:
+  receive-and-admit:
+    name: Receive DAILY dispatch — validate, admit, and gate observations
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Validate dispatch payload (fail closed)                           #
+      #    Checks structure, date format, source provenance, and SHA.        #
+      # ------------------------------------------------------------------ #
+      - name: Validate dispatch payload
+        id: validate_payload
+        shell: bash
+        env:
+          CLIENT_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import re
+          import sys
+
+          payload_raw = os.environ.get("CLIENT_PAYLOAD", "")
+          if not payload_raw:
+              print("ERROR: client_payload is empty — aborting.", file=sys.stderr)
+              sys.exit(1)
+
+          try:
+              payload = json.loads(payload_raw)
+          except json.JSONDecodeError as exc:
+              print(f"ERROR: client_payload is not valid JSON: {exc}", file=sys.stderr)
+              sys.exit(1)
+
+          if not isinstance(payload, dict):
+              print("ERROR: client_payload must be a JSON object", file=sys.stderr)
+              sys.exit(1)
+
+          # --- admitted_dates ---
+          admitted_dates = payload.get("admitted_dates")
+          if not isinstance(admitted_dates, list) or not admitted_dates:
+              print(
+                  "ERROR: admitted_dates is absent, empty, or not a list — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+          for d in admitted_dates:
+              if not isinstance(d, str) or not date_re.fullmatch(d):
+                  print(
+                      f"ERROR: invalid date in admitted_dates: {d!r} — aborting.",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+          # --- source_repo provenance ---
+          EXPECTED_SOURCE = "abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY"
+          source_repo = payload.get("source_repo", "")
+          if source_repo != EXPECTED_SOURCE:
+              print(
+                  f"ERROR: source_repo provenance mismatch: "
+                  f"{source_repo!r} != {EXPECTED_SOURCE!r} — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          # --- dispatch_sha ---
+          dispatch_sha = payload.get("dispatch_sha", "")
+          if not dispatch_sha or not re.fullmatch(r"[0-9a-f]{40}", dispatch_sha):
+              print(
+                  f"ERROR: dispatch_sha is absent or not a valid 40-char hex SHA: "
+                  f"{dispatch_sha!r} — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          # Write validated values to GITHUB_OUTPUT
+          github_output = os.environ.get("GITHUB_OUTPUT", "")
+          if github_output:
+              with open(github_output, "a", encoding="utf-8") as fh:
+                  fh.write(f"admitted_dates_json={json.dumps(admitted_dates)}\n")
+                  fh.write(f"source_repo={source_repo}\n")
+                  fh.write(f"dispatch_sha={dispatch_sha}\n")
+
+          print(f"OK: admitted_dates={admitted_dates!r}")
+          print(f"OK: source_repo={source_repo!r}")
+          print(f"OK: dispatch_sha={dispatch_sha!r}")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 2. Checkout this analysis repository                                #
+      # ------------------------------------------------------------------ #
+      - name: Checkout analysis repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ------------------------------------------------------------------ #
+      # 3. Checkout DAILY repository read-only, pinned at dispatch_sha       #
+      #    Pinning to dispatch_sha preserves provenance traceability and     #
+      #    prevents drift between what DAILY admitted and what we process.   #
+      # ------------------------------------------------------------------ #
+      - name: Checkout DAILY repository (read-only, pinned at dispatch_sha)
+        uses: actions/checkout@v4
+        with:
+          repository: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
+          ref: ${{ steps.validate_payload.outputs.dispatch_sha }}
+          token: ${{ secrets.GH_PAT }}
+          path: _daily_repo
+
+      # ------------------------------------------------------------------ #
+      # 4. Set up Python                                                     #
+      # ------------------------------------------------------------------ #
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ------------------------------------------------------------------ #
+      # 5. Set PYTHONPATH so validation.* and scripts.* are importable       #
+      # ------------------------------------------------------------------ #
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> "$GITHUB_ENV"
+
+      # ------------------------------------------------------------------ #
+      # 6. Admit normalized_observation.json for each admitted date          #
+      #    Only the ANALYSIS contract artifact is copied from _daily_repo:   #
+      #      data/observations/YYYY-MM-DD/normalized_observation.json        #
+      #    DAILY Layer-1 artifacts (raw/, snapshots/, manifests/) are NOT    #
+      #    copied.  Provenance linkage is carried inside the observation      #
+      #    file itself (provenance_root, snapshot_id, sha256, manifest_ref). #
+      #    Aborts on first missing required artifact.                         #
+      # ------------------------------------------------------------------ #
+      - name: Admit normalized_observation.json for each admitted date
+        shell: bash
+        env:
+          ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import pathlib
+          import shutil
+          import sys
+
+          dates = json.loads(os.environ["ADMITTED_DATES_JSON"])
+          print(f"Admitting {len(dates)} date(s): {dates!r}")
+
+          for date in dates:
+              # --- normalized_observation.json (required) ---
+              src_obs = pathlib.Path(f"_daily_repo/data/observations/{date}/normalized_observation.json")
+              if not src_obs.is_file():
+                  print(
+                      f"ERROR: normalized_observation.json not found in DAILY for {date!r}: "
+                      f"{src_obs} — aborting.",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              dst_obs_dir = pathlib.Path(f"data/observations/{date}")
+              dst_obs_dir.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(src_obs, dst_obs_dir / "normalized_observation.json")
+              print(f"OK: admitted {src_obs} → {dst_obs_dir / 'normalized_observation.json'}")
+
+          print(f"OK: admission complete for all {len(dates)} date(s).")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 7. Provenance hard gate (ANALYSIS-side)                              #
+      #    Runs scripts/run_provenance_check.py against every admitted       #
+      #    observation.  Exits non-zero on ANY failure — full abort.         #
+      # ------------------------------------------------------------------ #
+      - name: Provenance hard gate
+        shell: bash
+        env:
+          ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import subprocess
+          import sys
+
+          dates = json.loads(os.environ["ADMITTED_DATES_JSON"])
+          args = [sys.executable, "-m", "scripts.run_provenance_check"]
+          for date in dates:
+              args += ["--observation-root", f"data/observations/{date}"]
+
+          print(f"Running provenance gate for {len(dates)} observation(s)...")
+          result = subprocess.run(args, check=False)
+          if result.returncode != 0:
+              print(
+                  "ERROR: PROVENANCE GATE FAILED — full abort.",
+                  file=sys.stderr,
+              )
+              sys.exit(result.returncode)
+
+          print("OK: provenance gate passed for all admitted observations.")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 8. Verify admitted observation files                                 #
+      #    Structural check: each date has a readable normalized_observation #
+      #    with a matching date field in its provenance.snapshot_id.         #
+      # ------------------------------------------------------------------ #
+      - name: Verify admitted observation files
+        shell: bash
+        env:
+          ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          dates = json.loads(os.environ["ADMITTED_DATES_JSON"])
+          for date in dates:
+              obs_file = pathlib.Path(f"data/observations/{date}/normalized_observation.json")
+              if not obs_file.is_file():
+                  print(
+                      f"ERROR: admitted observation file missing: {obs_file}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              try:
+                  obs = json.loads(obs_file.read_text(encoding="utf-8"))
+              except json.JSONDecodeError as exc:
+                  print(
+                      f"ERROR: admitted observation for {date!r} is not valid JSON: {exc}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              provenance = obs.get("provenance", {})
+              snapshot_id = provenance.get("snapshot_id", "")
+              expected_snapshot = f"snapshot-{date}-audited"
+              if snapshot_id != expected_snapshot:
+                  print(
+                      f"ERROR: snapshot_id mismatch for {date!r}: "
+                      f"{snapshot_id!r} != {expected_snapshot!r}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              provenance_root = provenance.get("provenance_root", "")
+              if provenance_root != "AUTO-DZ-ACT-3I-ATLAS-DAILY":
+                  print(
+                      f"ERROR: provenance_root mismatch for {date!r}: {provenance_root!r}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              print(f"OK: {obs_file} — snapshot_id={snapshot_id!r}")
+
+          print(f"OK: all {len(dates)} admitted observation file(s) verified.")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 9. Detect changes in data/observations/                              #
+      # ------------------------------------------------------------------ #
+      - name: Detect data/observations/ changes
+        id: detect_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/observations/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "${GITHUB_OUTPUT}"
+            echo "No changes detected in data/observations/."
+          else
+            echo "has_changes=true" >> "${GITHUB_OUTPUT}"
+            echo "Changes detected in data/observations/."
+          fi
+
+      # ------------------------------------------------------------------ #
+      # 10. Open PR for governed data/ updates — no direct push to main      #
+      #     public/ is never staged or committed.                            #
+      # ------------------------------------------------------------------ #
+      - name: Create Pull Request for governed data/ updates
+        if: steps.detect_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_PAT }}
+          commit-message: "admission: admit DAILY observations into governed data/ locations"
+          title: "admission: DAILY dispatch — admit observations"
+          body: |
+            Governed admission of DAILY observation artifacts into the ANALYSIS contract location.
+
+            **Dispatch source:** `${{ steps.validate_payload.outputs.source_repo }}@${{ steps.validate_payload.outputs.dispatch_sha }}`
+            **Admitted dates:** `${{ steps.validate_payload.outputs.admitted_dates_json }}`
+
+            Admitted artifact (per date):
+            - `data/observations/YYYY-MM-DD/normalized_observation.json`
+
+            Provenance linkage back to DAILY is preserved through fields embedded in each
+            observation file: `provenance_root`, `snapshot_id`, `sha256`, `manifest_ref`.
+            DAILY Layer-1 artifacts (raw/, snapshots/, manifests/) are not persisted in ANALYSIS.
+
+            All admitted observations have passed the ANALYSIS-side provenance hard gate.
+          branch: automation/daily-dispatch-${{ github.run_id }}-${{ github.run_attempt }}
+          delete-branch: true
+
+      # ------------------------------------------------------------------ #
+      # 11. Upload admitted observations as workflow artifact                 #
+      # ------------------------------------------------------------------ #
+      - name: Upload admitted observations as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-dispatch-observations-${{ github.run_id }}
+          path: data/observations/
+          if-no-files-found: warn
