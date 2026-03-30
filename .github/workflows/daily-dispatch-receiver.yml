@@ -1,0 +1,331 @@
+name: ANALYSIS — DAILY Dispatch Receiver
+
+# Receives the governed DAILY → ANALYSIS handoff.
+#
+# DAILY dispatches this event after its own admission gate passes, attaching
+# the list of provenance-valid dates that ANALYSIS should build observations for.
+#
+# Payload contract (client_payload):
+#   admitted_dates  : list[str]  — ISO-8601 dates (YYYY-MM-DD) admitted by DAILY
+#   source_repo     : str        — must equal "abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY"
+#   dispatch_sha    : str        — 40-char hex SHA of the DAILY commit that was admitted
+#
+# Fail-closed: the workflow aborts at the first sign of a malformed, missing,
+# or provenance-incompatible payload.  No DAILY Layer-1 artifacts are committed
+# into this repository.
+
+on:
+  repository_dispatch:
+    types: [daily-admitted-dates]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: daily-dispatch-receiver
+  cancel-in-progress: false
+
+jobs:
+  receive-and-build:
+    name: Receive DAILY dispatch — validate and build observations
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      # ------------------------------------------------------------------ #
+      # 1. Validate dispatch payload (fail closed)                           #
+      #    Checks structure, date format, source provenance, and SHA.        #
+      # ------------------------------------------------------------------ #
+      - name: Validate dispatch payload
+        id: validate_payload
+        shell: bash
+        env:
+          CLIENT_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import re
+          import sys
+
+          payload_raw = os.environ.get("CLIENT_PAYLOAD", "")
+          if not payload_raw:
+              print("ERROR: client_payload is empty — aborting.", file=sys.stderr)
+              sys.exit(1)
+
+          try:
+              payload = json.loads(payload_raw)
+          except json.JSONDecodeError as exc:
+              print(f"ERROR: client_payload is not valid JSON: {exc}", file=sys.stderr)
+              sys.exit(1)
+
+          if not isinstance(payload, dict):
+              print("ERROR: client_payload must be a JSON object", file=sys.stderr)
+              sys.exit(1)
+
+          # --- admitted_dates ---
+          admitted_dates = payload.get("admitted_dates")
+          if not isinstance(admitted_dates, list) or not admitted_dates:
+              print(
+                  "ERROR: admitted_dates is absent, empty, or not a list — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+          for d in admitted_dates:
+              if not isinstance(d, str) or not date_re.fullmatch(d):
+                  print(
+                      f"ERROR: invalid date in admitted_dates: {d!r} — aborting.",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+          # --- source_repo provenance ---
+          EXPECTED_SOURCE = "abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY"
+          source_repo = payload.get("source_repo", "")
+          if source_repo != EXPECTED_SOURCE:
+              print(
+                  f"ERROR: source_repo provenance mismatch: "
+                  f"{source_repo!r} != {EXPECTED_SOURCE!r} — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          # --- dispatch_sha ---
+          dispatch_sha = payload.get("dispatch_sha", "")
+          if not dispatch_sha or not re.fullmatch(r"[0-9a-f]{40}", dispatch_sha):
+              print(
+                  f"ERROR: dispatch_sha is absent or not a valid 40-char hex SHA: "
+                  f"{dispatch_sha!r} — aborting.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          # Write validated values to GITHUB_OUTPUT
+          github_output = os.environ.get("GITHUB_OUTPUT", "")
+          if github_output:
+              with open(github_output, "a", encoding="utf-8") as fh:
+                  fh.write(f"admitted_dates_json={json.dumps(admitted_dates)}\n")
+                  fh.write(f"source_repo={source_repo}\n")
+                  fh.write(f"dispatch_sha={dispatch_sha}\n")
+
+          print(f"OK: admitted_dates={admitted_dates!r}")
+          print(f"OK: source_repo={source_repo!r}")
+          print(f"OK: dispatch_sha={dispatch_sha!r}")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 2. Checkout this analysis repository                                #
+      # ------------------------------------------------------------------ #
+      - name: Checkout analysis repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ------------------------------------------------------------------ #
+      # 3. Checkout DAILY repository read-only, pinned at dispatch_sha       #
+      #    Pinning to dispatch_sha preserves provenance traceability and     #
+      #    prevents drift between what DAILY admitted and what we process.   #
+      # ------------------------------------------------------------------ #
+      - name: Checkout DAILY repository (read-only, pinned at dispatch_sha)
+        uses: actions/checkout@v4
+        with:
+          repository: abdelkader-omran/AUTO-DZ-ACT-3I-ATLAS-DAILY
+          ref: ${{ steps.validate_payload.outputs.dispatch_sha }}
+          token: ${{ secrets.GH_PAT }}
+          path: _daily_repo
+
+      # ------------------------------------------------------------------ #
+      # 4. Set up Python                                                     #
+      # ------------------------------------------------------------------ #
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ------------------------------------------------------------------ #
+      # 5. Set PYTHONPATH so pipeline.* modules are importable               #
+      # ------------------------------------------------------------------ #
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd)" >> "$GITHUB_ENV"
+
+      # ------------------------------------------------------------------ #
+      # 6. Run build_observations for each admitted date                     #
+      #    Processes dates sequentially; aborts on first failure.            #
+      # ------------------------------------------------------------------ #
+      - name: Run build_observations for each admitted date
+        shell: bash
+        env:
+          ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import subprocess
+          import sys
+
+          dates = json.loads(os.environ["ADMITTED_DATES_JSON"])
+          print(f"Admitted dates to process ({len(dates)}): {dates!r}")
+
+          for date in dates:
+              raw_dir = f"_daily_repo/data/raw/{date}"
+              if not os.path.isdir(raw_dir):
+                  print(
+                      f"ERROR: raw data directory not found for admitted date {date!r}: "
+                      f"{raw_dir!r} — aborting.",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              print(f"Running pipeline for date: {date!r}")
+              result = subprocess.run(
+                  [
+                      sys.executable,
+                      "pipeline/build_observations.py",
+                      "--raw-dir", "_daily_repo/data/raw",
+                      "--public-dir", "public",
+                      "--date", date,
+                  ],
+                  check=False,
+              )
+              if result.returncode != 0:
+                  print(
+                      f"ERROR: pipeline/build_observations.py failed for date {date!r} "
+                      f"(exit {result.returncode}) — aborting.",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+              print(f"OK: pipeline succeeded for {date!r}")
+
+          print(f"OK: all {len(dates)} admitted date(s) processed.")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 7. Verify observation outputs for each admitted date                 #
+      # ------------------------------------------------------------------ #
+      - name: Verify observation outputs
+        shell: bash
+        env:
+          ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PYEOF'
+          import json
+          import os
+          import pathlib
+          import sys
+
+          dates = json.loads(os.environ["ADMITTED_DATES_JSON"])
+          for date in dates:
+              obs_file = pathlib.Path(f"public/observations/{date}.json")
+              if not obs_file.exists():
+                  print(
+                      f"ERROR: observation file missing for date {date!r}: {obs_file}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              try:
+                  obs = json.loads(obs_file.read_text(encoding="utf-8"))
+              except json.JSONDecodeError as exc:
+                  print(
+                      f"ERROR: observation file for {date!r} is not valid JSON: {exc}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              obs_date = obs.get("date")
+              if obs_date != date:
+                  print(
+                      f"ERROR: observation date mismatch for {date!r}: "
+                      f"file contains date={obs_date!r}",
+                      file=sys.stderr,
+                  )
+                  sys.exit(1)
+
+              print(f"OK: {obs_file} — date={obs_date!r}")
+
+          print(f"OK: all {len(dates)} observation file(s) verified.")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 8. Verify shared outputs (summary.json, latest.json)                #
+      # ------------------------------------------------------------------ #
+      - name: Verify summary and latest outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "public/summary.json" || { echo "ERROR: public/summary.json missing"; exit 1; }
+          test -f "public/latest.json"  || { echo "ERROR: public/latest.json missing"; exit 1; }
+
+          python3 - <<'PYEOF'
+          import json
+          import pathlib
+          import sys
+
+          summary = json.loads(pathlib.Path("public/summary.json").read_text(encoding="utf-8"))
+          total_days = summary.get("total_days", -1)
+          total_records = summary.get("total_records", -1)
+
+          if not isinstance(total_days, int) or total_days < 0:
+              print(f"ERROR: summary.total_days is invalid: {total_days!r}", file=sys.stderr)
+              sys.exit(1)
+          if not isinstance(total_records, int) or total_records < 0:
+              print(f"ERROR: summary.total_records is invalid: {total_records!r}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"OK: summary.json — total_days={total_days}, total_records={total_records}")
+          PYEOF
+
+      # ------------------------------------------------------------------ #
+      # 9. Detect whether public/ changed                                    #
+      # ------------------------------------------------------------------ #
+      - name: Detect public/ changes
+        id: detect_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add public/
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "${GITHUB_OUTPUT}"
+            echo "No changes detected in public/."
+          else
+            echo "has_changes=true" >> "${GITHUB_OUTPUT}"
+            echo "Changes detected in public/."
+          fi
+
+      # ------------------------------------------------------------------ #
+      # 10. Open PR for public/ updates — no direct push to main             #
+      #     DAILY Layer-1 artifacts (_daily_repo/) are never committed here. #
+      # ------------------------------------------------------------------ #
+      - name: Create Pull Request for public/ updates
+        if: steps.detect_changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GH_PAT }}
+          commit-message: "pipeline: update public/ observations from DAILY dispatch"
+          title: "pipeline: update public/ observations (DAILY dispatch)"
+          body: |
+            Automated update of `public/` observation artifacts triggered by the governed DAILY→ANALYSIS handoff.
+
+            **Dispatch source:** `${{ steps.validate_payload.outputs.source_repo }}@${{ steps.validate_payload.outputs.dispatch_sha }}`
+            **Admitted dates:** `${{ steps.validate_payload.outputs.admitted_dates_json }}`
+
+            This PR was opened automatically by the `daily-admitted-dates` dispatch receiver.
+            Repository separation is maintained: DAILY Layer-1 artifacts are not committed into ANALYSIS.
+          branch: automation/daily-dispatch-${{ github.run_id }}-${{ github.run_attempt }}
+          delete-branch: true
+
+      # ------------------------------------------------------------------ #
+      # 11. Upload observation artifacts for CI inspection                   #
+      # ------------------------------------------------------------------ #
+      - name: Upload public/ as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-dispatch-observations-${{ github.run_id }}
+          path: public/
+          if-no-files-found: warn
