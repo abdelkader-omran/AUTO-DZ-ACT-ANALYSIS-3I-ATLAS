@@ -13,11 +13,13 @@ name: ANALYSIS — DAILY Dispatch Receiver
 # Fail-closed: the workflow aborts at the first sign of a malformed, missing,
 # or provenance-incompatible payload.
 #
-# Output: governed ANALYSIS-side admission artifacts in their contract locations:
+# Output: governed ANALYSIS-side admission artifact in its contract location:
 #   data/observations/YYYY-MM-DD/normalized_observation.json
-#   data/raw/YYYY-MM-DD/
-#   data/snapshots/snapshot_YYYY-MM-DD.json
-#   data/manifests/manifest_YYYY-MM-DD.json
+#
+# DAILY Layer-1 artifacts (data/raw/, data/snapshots/, data/manifests/) are
+# NOT copied into ANALYSIS.  Provenance linkage back to DAILY is preserved
+# through fields embedded in normalized_observation.json:
+#   provenance_root, snapshot_id, sha256, manifest_ref
 #
 # public/ is NOT touched by this workflow.  It is a downstream publication
 # surface and must not be used as a persistence layer for admission logic.
@@ -161,16 +163,15 @@ jobs:
         run: echo "PYTHONPATH=$(pwd)" >> "$GITHUB_ENV"
 
       # ------------------------------------------------------------------ #
-      # 6. Admit DAILY artifacts into governed data/ locations               #
-      #    For each admitted date, copies the following from _daily_repo:    #
+      # 6. Admit normalized_observation.json for each admitted date          #
+      #    Only the ANALYSIS contract artifact is copied from _daily_repo:   #
       #      data/observations/YYYY-MM-DD/normalized_observation.json        #
-      #      data/raw/YYYY-MM-DD/                                            #
-      #      data/snapshots/snapshot_YYYY-MM-DD.json                        #
-      #      data/manifests/manifest_YYYY-MM-DD.json                        #
-      #    Aborts on first missing required artifact.                        #
-      #    public/ is never touched.                                         #
+      #    DAILY Layer-1 artifacts (raw/, snapshots/, manifests/) are NOT    #
+      #    copied.  Provenance linkage is carried inside the observation      #
+      #    file itself (provenance_root, snapshot_id, sha256, manifest_ref). #
+      #    Aborts on first missing required artifact.                         #
       # ------------------------------------------------------------------ #
-      - name: Admit DAILY artifacts into governed data/ locations
+      - name: Admit normalized_observation.json for each admitted date
         shell: bash
         env:
           ADMITTED_DATES_JSON: ${{ steps.validate_payload.outputs.admitted_dates_json }}
@@ -201,42 +202,6 @@ jobs:
               dst_obs_dir.mkdir(parents=True, exist_ok=True)
               shutil.copy2(src_obs, dst_obs_dir / "normalized_observation.json")
               print(f"OK: admitted {src_obs} → {dst_obs_dir / 'normalized_observation.json'}")
-
-              # --- data/raw/YYYY-MM-DD/ (required) ---
-              src_raw = pathlib.Path(f"_daily_repo/data/raw/{date}")
-              if not src_raw.is_dir():
-                  print(
-                      f"ERROR: raw data directory not found in DAILY for {date!r}: "
-                      f"{src_raw} — aborting.",
-                      file=sys.stderr,
-                  )
-                  sys.exit(1)
-
-              dst_raw = pathlib.Path(f"data/raw/{date}")
-              if dst_raw.exists():
-                  shutil.rmtree(dst_raw)
-              shutil.copytree(src_raw, dst_raw)
-              print(f"OK: admitted {src_raw} → {dst_raw}")
-
-              # --- snapshot (optional; admit if present) ---
-              src_snapshot = pathlib.Path(f"_daily_repo/data/snapshots/snapshot_{date}.json")
-              if src_snapshot.is_file():
-                  dst_snapshots = pathlib.Path("data/snapshots")
-                  dst_snapshots.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(src_snapshot, dst_snapshots / f"snapshot_{date}.json")
-                  print(f"OK: admitted {src_snapshot} → {dst_snapshots / f'snapshot_{date}.json'}")
-              else:
-                  print(f"INFO: no snapshot found for {date!r} in DAILY — skipping.")
-
-              # --- manifest (optional; admit if present) ---
-              src_manifest = pathlib.Path(f"_daily_repo/data/manifests/manifest_{date}.json")
-              if src_manifest.is_file():
-                  dst_manifests = pathlib.Path("data/manifests")
-                  dst_manifests.mkdir(parents=True, exist_ok=True)
-                  shutil.copy2(src_manifest, dst_manifests / f"manifest_{date}.json")
-                  print(f"OK: admitted {src_manifest} → {dst_manifests / f'manifest_{date}.json'}")
-              else:
-                  print(f"INFO: no manifest found for {date!r} in DAILY — skipping.")
 
           print(f"OK: admission complete for all {len(dates)} date(s).")
           PYEOF
@@ -336,20 +301,20 @@ jobs:
           PYEOF
 
       # ------------------------------------------------------------------ #
-      # 9. Detect changes in governed data/ locations                        #
+      # 9. Detect changes in data/observations/                              #
       # ------------------------------------------------------------------ #
-      - name: Detect data/ changes
+      - name: Detect data/observations/ changes
         id: detect_changes
         shell: bash
         run: |
           set -euo pipefail
-          git add data/observations/ data/raw/ data/snapshots/ data/manifests/
+          git add data/observations/
           if git diff --cached --quiet; then
             echo "has_changes=false" >> "${GITHUB_OUTPUT}"
-            echo "No changes detected in governed data/ locations."
+            echo "No changes detected in data/observations/."
           else
             echo "has_changes=true" >> "${GITHUB_OUTPUT}"
-            echo "Changes detected in governed data/ locations."
+            echo "Changes detected in data/observations/."
           fi
 
       # ------------------------------------------------------------------ #
@@ -364,19 +329,19 @@ jobs:
           commit-message: "admission: admit DAILY observations into governed data/ locations"
           title: "admission: DAILY dispatch — admit observations"
           body: |
-            Governed admission of DAILY observation artifacts into ANALYSIS contract locations.
+            Governed admission of DAILY observation artifacts into the ANALYSIS contract location.
 
             **Dispatch source:** `${{ steps.validate_payload.outputs.source_repo }}@${{ steps.validate_payload.outputs.dispatch_sha }}`
             **Admitted dates:** `${{ steps.validate_payload.outputs.admitted_dates_json }}`
 
-            Admitted paths:
+            Admitted artifact (per date):
             - `data/observations/YYYY-MM-DD/normalized_observation.json`
-            - `data/raw/YYYY-MM-DD/`
-            - `data/snapshots/snapshot_YYYY-MM-DD.json` (if present in DAILY)
-            - `data/manifests/manifest_YYYY-MM-DD.json` (if present in DAILY)
+
+            Provenance linkage back to DAILY is preserved through fields embedded in each
+            observation file: `provenance_root`, `snapshot_id`, `sha256`, `manifest_ref`.
+            DAILY Layer-1 artifacts (raw/, snapshots/, manifests/) are not persisted in ANALYSIS.
 
             All admitted observations have passed the ANALYSIS-side provenance hard gate.
-            `public/` was not modified by this workflow.
           branch: automation/daily-dispatch-${{ github.run_id }}-${{ github.run_attempt }}
           delete-branch: true
 
